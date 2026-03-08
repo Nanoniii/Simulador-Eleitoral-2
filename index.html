@@ -540,6 +540,38 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .election-btn{padding:10px 24px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;font-size:13px;font-weight:500;transition:all var(--t)}
 .election-btn.active{border-color:var(--accent);background:rgba(0,212,255,.1);color:var(--accent)}
 .election-btn.wip{opacity:.4;cursor:not-allowed}
+
+/* ── Setup Flow ── */
+.setup-step{width:100%;animation:fadeSlideIn .25s ease}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.setup-back-btn{background:transparent;border:1px solid var(--border2);color:var(--text3);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;transition:all var(--t);white-space:nowrap}
+.setup-back-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Country Cards */
+.country-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;width:100%;margin-bottom:8px}
+.country-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 14px;cursor:pointer;text-align:center;transition:all var(--t);display:flex;flex-direction:column;align-items:center;gap:5px}
+.country-card:hover:not(.locked){border-color:var(--accent);background:rgba(0,212,255,.06);transform:translateY(-2px)}
+.country-card.active{border-color:var(--accent);background:rgba(0,212,255,.1);box-shadow:0 0 20px rgba(0,212,255,.15)}
+.country-card.locked{opacity:.4;cursor:not-allowed}
+.country-flag{font-size:30px;line-height:1}
+.country-name{font-weight:700;font-size:13px;color:var(--text)}
+.country-desc{font-size:10px;color:var(--text3);line-height:1.4}
+.country-avail{font-size:9px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--green);margin-top:2px}
+.country-avail.coming-soon{color:var(--text3)}
+
+/* Era Cards */
+.era-grid-container{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;width:100%;margin-bottom:8px}
+.era-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 16px;cursor:pointer;transition:all var(--t);text-align:left;position:relative;overflow:hidden}
+.era-card:hover:not(.locked){border-color:var(--accent);background:rgba(0,212,255,.06);transform:translateY(-2px)}
+.era-card.active{border-color:var(--accent);background:rgba(0,212,255,.08);box-shadow:0 0 16px rgba(0,212,255,.12)}
+.era-card.locked{opacity:.38;cursor:not-allowed}
+.era-card-header{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.era-card-icon{font-size:24px}
+.era-card-name{font-weight:700;font-size:13px;color:var(--text)}
+.era-card-years{font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--accent);letter-spacing:1px;margin-top:2px}
+.era-card-desc{font-size:11px;color:var(--text3);line-height:1.5}
+.era-card-badge{position:absolute;top:10px;right:10px;font-size:9px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:4px;background:rgba(0,212,255,.12);color:var(--accent)}
+.era-card-badge.locked-badge{background:rgba(255,255,255,.05);color:var(--text3)}
 .diff-section{margin-bottom:32px;width:100%;max-width:700px}
 .diff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .diff-btn{padding:12px 8px;border-radius:8px;border:2px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .25s;font-family:'IBM Plex Sans',sans-serif}
@@ -962,55 +994,121 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 <div class="screen active" id="intro-screen">
   <div class="intro-bg"></div><div class="intro-grid"></div>
   <div class="intro-content">
+
     <div style="text-align:center;margin-bottom:40px">
       <div class="game-title">SIMULADOR ELEITORAL GLOBAL 2</div>
-      <div class="game-subtitle"> Versão 1.0 - ALPHA</div>
+      <div class="game-subtitle">Versão 1.0 - ALPHA</div>
     </div>
 
-    <!-- Election -->
-    <div style="margin-bottom:32px;width:100%;text-align:center">
-      <div class="section-heading">Selecione a Eleição</div>
-      <div class="election-buttons">
-        <button class="election-btn active" onclick="selElection(2022,this)">🗳️ Eleição 2022</button>
-        <button class="election-btn" onclick="selElection(2018,this)">🗳️ Eleição 2018</button>
-        <button class="election-btn" onclick="selElection(2014,this)">🗳️ Eleição 2014</button>
-        <button class="election-btn wip" title="Em Desenvolvimento">🗳️ Eleição 2010</button>
+    <!-- ── STEP 1: PAÍS ── -->
+    <div id="step-country" class="setup-step">
+      <div class="section-heading">① Selecione o País</div>
+      <div class="country-grid">
+
+        <button class="country-card" onclick="selCountry('BR',this)">
+          <div class="country-flag">🇧🇷</div>
+          <div class="country-name">Brasil</div>
+          <div class="country-desc">Federação presidencialista · Voto direto obrigatório</div>
+          <div class="country-avail">Disponível</div>
+        </button>
+
+        <button class="country-card locked" disabled>
+          <div class="country-flag">🇺🇸</div>
+          <div class="country-name">Estados Unidos</div>
+          <div class="country-desc">República federal · Colégio Eleitoral</div>
+          <div class="country-avail coming-soon">Em Breve</div>
+        </button>
+
+        <button class="country-card locked" disabled>
+          <div class="country-flag">🇦🇷</div>
+          <div class="country-name">Argentina</div>
+          <div class="country-desc">República presidencial · Eleições diretas</div>
+          <div class="country-avail coming-soon">Em Breve</div>
+        </button>
+
+        <button class="country-card locked" disabled>
+          <div class="country-flag">🇲🇽</div>
+          <div class="country-name">México</div>
+          <div class="country-desc">República federal · Turno único</div>
+          <div class="country-avail coming-soon">Em Breve</div>
+        </button>
+
+        <button class="country-card locked" disabled>
+          <div class="country-flag">🇫🇷</div>
+          <div class="country-name">França</div>
+          <div class="country-desc">República semipresidencial · Dois turnos</div>
+          <div class="country-avail coming-soon">Em Breve</div>
+        </button>
+
+        <button class="country-card locked" disabled>
+          <div class="country-flag">🌍</div>
+          <div class="country-name">Outros Países</div>
+          <div class="country-desc">Alemanha · Portugal · Venezuela · e mais...</div>
+          <div class="country-avail coming-soon">Em Breve</div>
+        </button>
+
       </div>
     </div>
 
-    <!-- Difficulty -->
-    <div class="diff-section">
-      <div class="section-heading">Modo de Dificuldade</div>
-      <div class="diff-grid" id="diff-grid"></div>
-    </div>
+    <!-- ── STEP 2: PERÍODO ── -->
+    <div id="step-era" class="setup-step" style="display:none">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;width:100%;justify-content:center">
+        <button class="setup-back-btn" onclick="goBackToStep('country')">← Voltar</button>
+        <div class="section-heading" style="margin:0" id="era-step-heading">② Selecione o Período Histórico</div>
+      </div>
+      <div id="era-grid" class="era-grid-container">
+        <!-- Populated by JS -->
+      </div>
+      <!-- Eleições inline — aparecem abaixo ao selecionar uma era -->
+      <div id="inline-election-zone" style="display:none;width:100%;margin-top:28px;animation:fadeSlideIn .25s ease">
+        <div class="section-heading" id="inline-election-heading" style="margin-bottom:16px">③ Selecione a Eleição</div>
+        <div class="election-buttons" id="election-buttons-dyn"></div>
+      </div>
 
-    <!-- Sandbox -->
-    <div style="margin-bottom:28px">
-      <label class="sandbox-toggle">
-        <input type="checkbox" id="sandbox-check" onchange="toggleSandbox(this.checked)">
-        <div>
-          <div class="sandbox-label">🏖️ MODO SANDBOX</div>
-          <div class="sandbox-desc">Dinheiro infinito · Sem rejeição · Ganhar tudo que quiser</div>
+      <!-- Config/Candidatos inline — aparecem abaixo ao selecionar uma eleição -->
+      <div id="inline-config-zone" style="display:none;width:100%;margin-top:36px;animation:fadeSlideIn .25s ease">
+
+        <!-- Difficulty -->
+        <div class="diff-section">
+          <div class="section-heading">Modo de Dificuldade</div>
+          <div class="diff-grid" id="diff-grid"></div>
         </div>
-      </label>
+
+        <!-- Sandbox -->
+        <div style="margin-bottom:28px">
+          <label class="sandbox-toggle">
+            <input type="checkbox" id="sandbox-check" onchange="toggleSandbox(this.checked)">
+            <div>
+              <div class="sandbox-label">🏖️ MODO SANDBOX</div>
+              <div class="sandbox-desc">Dinheiro infinito · Sem rejeição · Ganhar tudo que quiser</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Candidates -->
+        <div style="width:100%;margin-bottom:36px">
+          <div class="section-heading">Escolha Seu Candidato</div>
+          <div class="candidates-grid" id="candidates-grid"></div>
+        </div>
+
+        <!-- Vice -->
+        <div class="vice-section" id="vice-section" style="display:none">
+          <div class="section-heading">Escolha Seu Vice-Presidente</div>
+          <div class="vice-grid" id="vice-grid"></div>
+        </div>
+
+        <div style="margin-top:36px;display:flex;flex-direction:column;align-items:center;gap:10px">
+          <button class="start-btn" id="start-btn" onclick="startGame()" disabled>INICIAR CAMPANHA</button>
+          <div style="font-size:11px;color:var(--text3)" id="start-hint">Selecione candidato e vice para começar</div>
+        </div>
+
+      </div><!-- /inline-config-zone -->
     </div>
 
-    <!-- Candidates -->
-    <div style="width:100%;margin-bottom:36px">
-      <div class="section-heading">Escolha Seu Candidato</div>
-      <div class="candidates-grid" id="candidates-grid"></div>
-    </div>
+    <!-- Steps vazios mantidos para compatibilidade interna -->
+    <div id="step-election" class="setup-step" style="display:none"></div>
+    <div id="step-config" class="setup-step" style="display:none"></div>
 
-    <!-- Vice -->
-    <div class="vice-section" id="vice-section" style="display:none">
-      <div class="section-heading">Escolha Seu Vice-Presidente</div>
-      <div class="vice-grid" id="vice-grid"></div>
-    </div>
-
-    <div style="margin-top:36px;display:flex;flex-direction:column;align-items:center;gap:10px">
-      <button class="start-btn" id="start-btn" onclick="startGame()" disabled>INICIAR CAMPANHA</button>
-      <div style="font-size:11px;color:var(--text3)" id="start-hint">Selecione candidato e vice para começar</div>
-    </div>
   </div>
 </div>
 
@@ -1141,9 +1239,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <div class="tab-panel" id="tab-social">
         <div style="margin-bottom:14px"><div class="panel-title">Redes Sociais</div><div class="panel-subtitle">Notícias, memes e debates online</div></div>
         <div class="platform-tabs">
-          <button class="platform-btn active" onclick="switchPlatform('twitter',this)">🐦 Twitter/X</button>
-          <button class="platform-btn" onclick="switchPlatform('instagram',this)">📸 Instagram</button>
-          <button class="platform-btn" onclick="switchPlatform('news',this)">📰 Notícias</button>
+          <button class="platform-btn active" onclick="switchPlatform('twitter',this)" id="btn-twitter" style="${CURRENT_ELECTION<2006?'display:none':''}">🐦 Twitter/X</button>
+          <button class="platform-btn" onclick="switchPlatform('instagram',this)" id="btn-instagram" style="${CURRENT_ELECTION<2006?'display:none':''}">📸 Instagram</button>
+          <button class="platform-btn ${CURRENT_ELECTION<2006?'active':''}" onclick="switchPlatform('news',this)" id="btn-news">📰 Notícias</button>
         </div>
         <div id="twitter-tweet-zone" style="display:none;margin-bottom:14px">
           <button class="btn-primary" onclick="openTweetModal()" style="width:100%;padding:12px;font-size:13px;background:linear-gradient(135deg,#1DA1F2,#0d7bc4);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">🐦 Tweetar como ${G.player?.shortName||'Candidato'}</button>
@@ -1376,6 +1474,19 @@ const PARTY_LOGOS = {
   'PSL':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Partido_Social_Liberal_logo.svg/250px-Partido_Social_Liberal_logo.svg.png',
   'PSC':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/PSC_logo%28cortado%29.png/250px-PSC_logo%28cortado%29.png',
   'PSDC':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Logomarca_Democracia_Crist%C3%A3.png/250px-Logomarca_Democracia_Crist%C3%A3.png',
+  'PFL':'https://upload.wikimedia.org/wikipedia/commons/e/e7/Partido_da_Frente_Liberal_logo_%281985-2005%29.svg',
+  'PRP':'https://upload.wikimedia.org/wikipedia/commons/a/a0/Prp-logo.png',
+  'Democratas':'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Democratas_%28Brazil%29_logo_%282018-2022%29_%28horizontal%29.svg/1920px-Democratas_%28Brazil%29_logo_%282018-2022%29_%28horizontal%29.svg.png',
+  'DEM':'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Democratas_%28Brazil%29_logo_%282018-2022%29_%28horizontal%29.svg/1920px-Democratas_%28Brazil%29_logo_%282018-2022%29_%28horizontal%29.svg.png',
+  'PRB':'https://upload.wikimedia.org/wikipedia/commons/a/a2/Logomarca_do_Partido_Republicano_Brasileiro_%282012%E2%80%932019%29.png',
+  'PMDB':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Movimento_Democr%C3%A1tico_Brasileiro_%282017%29.svg/960px-Movimento_Democr%C3%A1tico_Brasileiro_%282017%29.svg.png',
+  'PPS':'https://upload.wikimedia.org/wikipedia/commons/d/d3/Logomarca_do_Partido_Popular_Socialista.png',
+  'PRONA':'https://upload.wikimedia.org/wikipedia/commons/e/e6/PRONA_2004_2006.png',
+  'MOBILIZA':'https://upload.wikimedia.org/wikipedia/commons/7/7f/Logomarca_Partido_Mobiliza.png',
+  'PTN':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/PTN_logo_%28Recria%C3%A7%C3%A3o%29.svg/1920px-PTN_logo_%28Recria%C3%A7%C3%A3o%29.svg.png',
+  'PTdoB':'https://www.camaraiguatemi.ms.gov.br/wp-content/uploads/2015/04/ptdob.png',
+  'PSN':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Logo_-_Partido_Humanista_da_Solidariedade.png/1920px-Logo_-_Partido_Humanista_da_Solidariedade.png',
+  'PHS':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Logo_-_Partido_Humanista_da_Solidariedade.png/1920px-Logo_-_Partido_Humanista_da_Solidariedade.png',
 };
 
 // ════════════════════════════════════════════════════════
@@ -1576,7 +1687,7 @@ const VICES_2014 = {
 
 // Real 2014 first-round results by state (Dilma %, Aécio %, Marina %)
 const REAL_RESULTS_2014 = {
-  AC:{dilma:49.1,aecio:28.6,marina:17.5}, AL:{dilma:57.5,aecio:21.4,marina:16.0},
+  AC:{dilma:34.5,aecio:22.6,marina:38.5}, AL:{dilma:57.5,aecio:21.4,marina:16.0},
   AM:{dilma:40.7,aecio:35.2,marina:18.5}, AP:{dilma:43.2,aecio:30.0,marina:21.0},
   BA:{dilma:68.4,aecio:14.3,marina:13.5}, CE:{dilma:66.3,aecio:16.0,marina:13.5},
   DF:{dilma:30.6,aecio:42.0,marina:20.5}, ES:{dilma:35.8,aecio:43.5,marina:16.0},
@@ -1628,6 +1739,379 @@ const REAL_RESULTS_2022 = {
   RS:{lula:39.5,bolsonaro:51.7}, SC:{lula:26.9,bolsonaro:66.1},
   SE:{lula:60.0,bolsonaro:33.7}, SP:{lula:40.9,bolsonaro:51.5},
   TO:{lula:38.3,bolsonaro:54.0}
+};
+
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATES 2010
+// ════════════════════════════════════════════════════════
+const CANDIDATES_2010 = [
+  { id:'dilma10', name:'Dilma Vana Rousseff', shortName:'Dilma', party:'PT', partyColor:'#e53935', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/b/bd/Dilma_Rousseff_fevereiro_2011_3-B.jpg',
+    baseVote:46, baseReject:35, attrs:{carisma:62,experiencia:80,rejeicao:35,apoioPartidario:88,arrecadacao:72},
+    regionBias:{N:1.0,NE:1.65,CO:0.85,SE:0.9,S:0.7},
+    vices:['temer10','ciro10_v','jaques10'],
+    debateStrengths:['programas_sociais','economia','saude','educacao'],
+    description:'Ministra-chefe da Casa Civil, candidata de Lula à presidência, ex-guerrilheira e economista' },
+  { id:'serra10', name:'José Serra', shortName:'Serra', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/9/9b/Jos%C3%A9_Serra_no_Rio.jpg',
+    baseVote:32, baseReject:32, attrs:{carisma:65,experiencia:88,rejeicao:32,apoioPartidario:72,arrecadacao:65},
+    regionBias:{N:0.85,NE:0.65,CO:1.2,SE:1.25,S:1.3},
+    vices:['indio10','aecio10_v'],
+    debateStrengths:['economia','saude','privatizacoes','corrupcao'],
+    description:'Ex-governador de SP e ex-candidato à presidência em 2002, candidato do PSDB' },
+  { id:'marina10', name:'Marina Silva', shortName:'Marina Silva', party:'PV', partyColor:'#388e3c', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/8/8a/MarinaSilva2010_%28cropped%29.jpg',
+    baseVote:19, baseReject:22, attrs:{carisma:78,experiencia:72,rejeicao:22,apoioPartidario:50,arrecadacao:30},
+    regionBias:{N:1.2,NE:1.1,CO:0.95,SE:1.0,S:0.9},
+    vices:[{id:'rogerio10',name:'Guilherme Leal',region:'Sudeste',party:'PV',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:55,exp:60,align:85,bonus:{SP:2},desc:'Empresário e ambientalista, vice real de Marina Silva em 2010'}],
+    debateStrengths:['meio_ambiente','educacao','saude'],
+    description:'Ex-ministra do Meio Ambiente, candidata do PV, forte no Acre e Norte' },
+  { id:'plinio10', name:'Plínio Arruda Sampaio', shortName:'Plínio', party:'PSOL', partyColor:'#9c27b0', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Pl%C3%ADnio_Sampaio_2008.jpg/500px-Pl%C3%ADnio_Sampaio_2008.jpg',
+    baseVote:0.87, baseReject:20, attrs:{carisma:62,experiencia:75,rejeicao:20,apoioPartidario:50,arrecadacao:10},
+    regionBias:{N:0.8,NE:0.9,CO:0.8,SE:1.15,S:1.1},
+    vices:[{id:'hamilton10v',name:'Hamilton Assis',region:'Nordeste',party:'PSOL',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:32,exp:45,align:95,bonus:{BA:1,NE:1},desc:'Pedagogo baiano, vice real de Plínio Arruda Sampaio em 2010'}],
+    debateStrengths:['programas_sociais','educacao','saude','meio_ambiente'],
+    description:'Advogado e defensor dos direitos humanos, candidato do PSOL' },
+  { id:'eymael10', name:'José Maria Eymael', shortName:'Eymael', party:'PSDC', partyColor:'#33691e', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    baseVote:0.09, baseReject:12, attrs:{carisma:40,experiencia:65,rejeicao:12,apoioPartidario:28,arrecadacao:6},
+    regionBias:{N:0.6,NE:0.6,CO:0.8,SE:1.2,S:1.2},
+    vices:[{id:'eymael10v',name:'Álvaro de Oliveira',region:'Sudeste',party:'PSDC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:92,bonus:{},desc:'Vice do PSDC em 2010'}],
+    debateStrengths:['religiao','valores','educacao'],
+    description:'Advogado, fundador do PSDC, democrata cristão' },
+  { id:'zemaria10', name:'José Maria de Almeida', shortName:'Zé Maria', party:'PSTU', partyColor:'#b71c1c', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    baseVote:0.07, baseReject:15, attrs:{carisma:50,experiencia:50,rejeicao:15,apoioPartidario:34,arrecadacao:4},
+    regionBias:{N:0.7,NE:0.9,CO:0.7,SE:1.1,S:1.0},
+    vices:[{id:'zemaria10v',name:'Raimundo Vieira Filho',region:'Nordeste',party:'PSTU',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:22,exp:30,align:96,bonus:{},desc:'Vice do PSTU em 2010'}],
+    debateStrengths:['programas_sociais','economia','saude'],
+    description:'Metalúrgico e fundador do PSTU' },
+  { id:'fidelix10', name:'Levy Fidélix', shortName:'Levy Fidélix', party:'PRTB', partyColor:'#795548', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/ae/Levy_Fidelix_tv_brasil_%28cropped%29.jpg',
+    baseVote:0.06, baseReject:20, attrs:{carisma:45,experiencia:48,rejeicao:20,apoioPartidario:26,arrecadacao:6},
+    regionBias:{N:0.7,NE:0.7,CO:0.9,SE:1.2,S:1.0},
+    vices:[{id:'fidelix10v',name:'Silvio Navarro',region:'Sudeste',party:'PRTB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:35,align:90,bonus:{},desc:'Vice do PRTB em 2010'}],
+    debateStrengths:['seguranca','valores','economia'],
+    description:'Fundador do PRTB, empresário e apresentador de TV' },
+  { id:'ivan10', name:'Ivan Pinheiro', shortName:'Ivan Pinheiro', party:'PCB', partyColor:'#c62828', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/f/fc/Ivan_Pinheiro_PCB_-_2014_%28cropped%29.jpg',
+    baseVote:0.04, baseReject:14, attrs:{carisma:45,experiencia:55,rejeicao:14,apoioPartidario:28,arrecadacao:3},
+    regionBias:{N:0.6,NE:0.7,CO:0.7,SE:1.2,S:1.0},
+    vices:[{id:'ivan10v',name:'Edmilson Costa',region:'Sudeste',party:'PCB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:30,align:97,bonus:{},desc:'Vice do PCB em 2010'}],
+    debateStrengths:['programas_sociais','economia','saude'],
+    description:'Presidente do PCB, marxista, candidato à presidência em 2010' },
+  { id:'ruicosta10', name:'Rui Costa Pimenta', shortName:'Rui Costa Pimenta', party:'PCO', partyColor:'#880e4f', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    baseVote:0.03, baseReject:12, attrs:{carisma:42,experiencia:56,rejeicao:12,apoioPartidario:24,arrecadacao:2},
+    regionBias:{N:0.5,NE:0.6,CO:0.6,SE:1.3,S:1.1},
+    vices:[{id:'ruicosta10v',name:'Edmilson Rodrigues',region:'Norte',party:'PCO',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:98,bonus:{},desc:'Vice do PCO em 2010'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Jornalista e editor do jornal Causa Operária' }
+];
+
+const VICES_2010 = {
+  temer10:{ id:'temer10', name:'Michel Temer', party:'MDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg/500px-Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg', region:'Sudeste', pop:52, exp:80, align:80, bonus:{SP:3,SE:2}, desc:'Presidente da Câmara, PMDB de São Paulo — vice real de Dilma em 2010' },
+  ciro10_v:{ id:'ciro10_v', name:'Ciro Gomes', party:'PSB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Presidente_Ciro_Gomes.png/500px-Presidente_Ciro_Gomes.png', region:'Nordeste', pop:60, exp:82, align:78, bonus:{CE:3,NE:2}, desc:'Ex-governador do Ceará e ministro — forte no Nordeste' },
+  jaques10:{ id:'jaques10', name:'Jaques Wagner', party:'PT', photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg', region:'Nordeste', pop:65, exp:76, align:95, bonus:{BA:4,NE:2}, desc:'Governador da Bahia — muito popular no Nordeste' },
+  indio10:{ id:'indio10', name:'Índio da Costa', party:'Democratas', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Indiodacosta30062010.jpg/500px-Indiodacosta30062010.jpg', region:'Sudeste', pop:42, exp:55, align:85, bonus:{RJ:2,SE:1}, desc:'Deputado federal pelo Rio de Janeiro, vice real de Serra em 2010' },
+  aecio10_v:{ id:'aecio10_v', name:'Aécio Neves', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg', region:'Sudeste', pop:62, exp:80, align:88, bonus:{MG:5,SE:3}, desc:'Governador de Minas Gerais — fortíssimo em MG' }
+};
+
+// Real 2010 first-round results by state (Dilma %, Serra %, Marina %)
+const REAL_RESULTS_2010 = {
+  AC:{dilma10:35.5,serra10:22.8,marina10:36.2}, AL:{dilma10:55.1,serra10:22.0,marina10:17.6},
+  AM:{dilma10:43.5,serra10:30.2,marina10:19.8}, AP:{dilma10:44.6,serra10:25.5,marina10:23.0},
+  BA:{dilma10:67.8,serra10:13.0,marina10:14.2}, CE:{dilma10:61.5,serra10:16.0,marina10:16.8},
+  DF:{dilma10:33.5,serra10:38.5,marina10:22.0}, ES:{dilma10:38.0,serra10:38.5,marina10:17.5},
+  GO:{dilma10:36.5,serra10:39.0,marina10:18.0}, MA:{dilma10:60.5,serra10:13.5,marina10:20.0},
+  MG:{dilma10:43.5,serra10:38.0,marina10:13.5}, MS:{dilma10:37.0,serra10:41.0,marina10:16.0},
+  MT:{dilma10:37.5,serra10:41.5,marina10:15.5}, PA:{dilma10:47.0,serra10:25.0,marina10:21.0},
+  PB:{dilma10:56.5,serra10:19.0,marina10:18.8}, PE:{dilma10:58.0,serra10:18.5,marina10:17.8},
+  PI:{dilma10:61.5,serra10:15.5,marina10:17.8}, PR:{dilma10:35.5,serra10:39.5,marina10:19.2},
+  RJ:{dilma10:38.0,serra10:34.5,marina10:21.8}, RN:{dilma10:56.5,serra10:18.0,marina10:19.5},
+  RO:{dilma10:40.5,serra10:39.0,marina10:14.5}, RR:{dilma10:37.5,serra10:37.0,marina10:19.5},
+  RS:{dilma10:42.5,serra10:33.5,marina10:17.8}, SC:{dilma10:30.0,serra10:44.5,marina10:20.0},
+  SE:{dilma10:57.5,serra10:18.5,marina10:18.5}, SP:{dilma10:33.5,serra10:43.5,marina10:17.8},
+  TO:{dilma10:43.0,serra10:34.0,marina10:17.5}
+};
+
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATES 2006
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATES 1998
+// ════════════════════════════════════════════════════════
+const CANDIDATES_1998 = [
+  { id:'fhc98', name:'Fernando Henrique Cardoso', shortName:'FHC', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/4/47/Fernando_Henrique_Cardoso_%28cropped%29.jpg',
+    baseVote:53, baseReject:30, attrs:{carisma:65,experiencia:92,rejeicao:30,apoioPartidario:80,arrecadacao:75},
+    regionBias:{N:0.8,NE:0.75,CO:1.15,SE:1.3,S:1.2},
+    vices:['marco_maciel98','serra98'],
+    debateStrengths:['economia','saude','educacao','corrupcao'],
+    description:'Presidente incumbente buscando reeleição, pai do Plano Real — venceu no 1º turno com 53,1%' },
+  { id:'lula98', name:'Luiz Inácio Lula da Silva', shortName:'Lula', party:'PT', partyColor:'#e53935', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/a0/Lula_sentando_em_uma_cadeira_sorrindo_%28cropped%29.jpg',
+    baseVote:31, baseReject:38, attrs:{carisma:82,experiencia:72,rejeicao:38,apoioPartidario:85,arrecadacao:55},
+    regionBias:{N:1.0,NE:1.55,CO:0.85,SE:0.9,S:0.8},
+    vices:['brizola98','cristovam98','arraes98'],
+    debateStrengths:['programas_sociais','economia','saude','educacao'],
+    description:'Terceira candidatura presidencial do metalúrgico e fundador do PT — obteve 31,7%' },
+  { id:'ciro98', name:'Ciro Gomes', shortName:'Ciro Gomes', party:'PPS', partyColor:'#00796b', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg/500px-Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg',
+    baseVote:11, baseReject:28, attrs:{carisma:68,experiencia:80,rejeicao:28,apoioPartidario:55,arrecadacao:35},
+    regionBias:{N:0.9,NE:1.6,CO:0.85,SE:0.85,S:0.8},
+    vices:[{id:'ciro98v',name:'Sílvio Pereira',region:'Nordeste',party:'PPS',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:35,exp:50,align:82,bonus:{NE:1},desc:'Vice real de Ciro Gomes em 1998'}],
+    debateStrengths:['economia','saude','educacao','programas_sociais'],
+    description:'Ex-governador do Ceará e ex-ministro da Fazenda — 3º colocado com 10,9%' },
+  { id:'eneas98', name:'Enéas Carneiro', shortName:'Enéas', party:'PRONA', partyColor:'#b71c1c', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Carneiro_cropped.jpg/500px-Carneiro_cropped.jpg',
+    baseVote:2.0, baseReject:20, attrs:{carisma:72,experiencia:50,rejeicao:20,apoioPartidario:38,arrecadacao:12},
+    regionBias:{N:0.7,NE:0.8,CO:0.9,SE:1.3,S:1.1},
+    vices:[{id:'eneas98v',name:'João Batista Soares da Silva',region:'Sudeste',party:'PRONA',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:20,exp:35,align:92,bonus:{},desc:'Vice real de Enéas Carneiro em 1998'}],
+    debateStrengths:['valores','seguranca','economia'],
+    description:'Médico e político nacionalista, candidato do PRONA — obteve 2,1%. Famoso pelo slogan "Meu nome é Enéas!"' },
+  { id:'ivanfrota98', name:'Ivan Frota', shortName:'Ivan Frota', party:'MOBILIZA', partyColor:'#546e7a', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/pt/f/f7/Foto-Brig.-Ivan-Frota-1.jpg',
+    baseVote:0.3, baseReject:14, attrs:{carisma:45,experiencia:60,rejeicao:14,apoioPartidario:28,arrecadacao:8},
+    regionBias:{N:0.8,NE:0.7,CO:1.0,SE:1.1,S:1.0},
+    vices:[{id:'ivanfrota98v',name:'Evandro Milhomem',region:'Norte',party:'MOBILIZA',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:20,exp:30,align:88,bonus:{},desc:'Vice real de Ivan Frota em 1998'}],
+    debateStrengths:['seguranca','valores'],
+    description:'Brigadeiro da Força Aérea Brasileira, candidato do partido MOBILIZA' },
+  { id:'sirkis98', name:'Alfredo Sirkis', shortName:'Alfredo Sirkis', party:'PV', partyColor:'#388e3c', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Alfredo_sirkis.JPG/500px-Alfredo_sirkis.JPG',
+    baseVote:0.5, baseReject:13, attrs:{carisma:55,experiencia:58,rejeicao:13,apoioPartidario:38,arrecadacao:10},
+    regionBias:{N:0.7,NE:0.7,CO:0.8,SE:1.2,S:1.1},
+    vices:[{id:'sirkis98v',name:'Eduardo Jorge',region:'Sudeste',party:'PV',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:30,exp:45,align:88,bonus:{SP:1},desc:'Médico sanitarista, vice real de Alfredo Sirkis em 1998'}],
+    debateStrengths:['meio_ambiente','educacao','saude'],
+    description:'Ex-guerrilheiro e ecologista, candidato do Partido Verde em 1998' },
+  { id:'zemaria98', name:'Zé Maria', shortName:'Zé Maria', party:'PSTU', partyColor:'#880e4f', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    baseVote:0.6, baseReject:14, attrs:{carisma:50,experiencia:48,rejeicao:14,apoioPartidario:30,arrecadacao:5},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.2,S:1.1},
+    vices:[{id:'zemaria98v',name:'Tânia Margarida',region:'Centro-Oeste',party:'PSTU',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:30,align:96,bonus:{},desc:'Vice real de Zé Maria em 1998'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Metalúrgico e sindicalista do PSTU — primeira candidatura presidencial (0,6%)' },
+  { id:'jdeus98', name:'João de Deus', shortName:'João de Deus', party:'PTdoB', partyColor:'#1b5e20', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://i.ytimg.com/vi/TqXqbPRSaE4/mqdefault.jpg',
+    baseVote:0.1, baseReject:12, attrs:{carisma:40,experiencia:45,rejeicao:12,apoioPartidario:25,arrecadacao:5},
+    regionBias:{N:0.7,NE:0.9,CO:0.8,SE:1.1,S:0.9},
+    vices:[{id:'jdeus98v',name:'Adalberto Monteiro',region:'Nordeste',party:'PTdoB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:90,bonus:{},desc:'Vice real de João de Deus (PTdoB) em 1998'}],
+    debateStrengths:['programas_sociais','educacao'],
+    description:'Candidato do Partido dos Trabalhadores do Brasil (PTdoB) em 1998' },
+  { id:'eymael98', name:'José Maria Eymael', shortName:'Eymael', party:'PSDC', partyColor:'#33691e', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    baseVote:0.08, baseReject:12, attrs:{carisma:42,experiencia:60,rejeicao:12,apoioPartidario:26,arrecadacao:5},
+    regionBias:{N:0.6,NE:0.6,CO:0.8,SE:1.2,S:1.2},
+    vices:[{id:'eymael98v',name:'Hélio Gueiros',region:'Norte',party:'PSDC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:32,align:90,bonus:{PA:1},desc:'Vice real de Eymael em 1998'}],
+    debateStrengths:['religiao','valores','educacao'],
+    description:'Advogado democrata cristão, primeira candidatura presidencial' },
+  { id:'therezaruiz98', name:'Thereza Ruiz', shortName:'Thereza Ruiz', party:'PTN', partyColor:'#4a148c', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2022/08/Thereza-Ruiz-PTN.png?w=1320&h=742&crop=0',
+    baseVote:0.1, baseReject:13, attrs:{carisma:45,experiencia:42,rejeicao:13,apoioPartidario:22,arrecadacao:4},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.1,S:1.0},
+    vices:[{id:'therezaruiz98v',name:'Nair Cardoso',region:'Sudeste',party:'PTN',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:25,align:88,bonus:{},desc:'Vice real de Thereza Ruiz em 1998'}],
+    debateStrengths:['saude','educacao'],
+    description:'Candidata do PTN em 1998 — uma das primeiras mulheres a disputar a presidência' },
+  { id:'sergiobueno98', name:'Sérgio Bueno', shortName:'Sérgio Bueno', party:'PSC', partyColor:'#2e7d32', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://i.ytimg.com/vi/v5qPG6vIgjY/maxresdefault.jpg',
+    baseVote:0.08, baseReject:12, attrs:{carisma:40,experiencia:40,rejeicao:12,apoioPartidario:22,arrecadacao:4},
+    regionBias:{N:0.7,NE:0.8,CO:0.9,SE:1.1,S:1.0},
+    vices:[{id:'sergiobueno98v',name:'Francisco Amorim',region:'Sudeste',party:'PSC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:88,bonus:{},desc:'Vice real de Sérgio Bueno (PSC) em 1998'}],
+    debateStrengths:['valores','seguranca'],
+    description:'Candidato do Partido Social Cristão (PSC) em 1998' },
+  { id:'vasconeto98', name:'Vasco Azevedo Neto', shortName:'Vasco Neto', party:'PSN', partyColor:'#00695c', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4NmAcBT-FkJym-rfakw-Zuo5AZa0ut574RQ&s',
+    baseVote:0.06, baseReject:11, attrs:{carisma:38,experiencia:38,rejeicao:11,apoioPartidario:20,arrecadacao:3},
+    regionBias:{N:0.8,NE:0.8,CO:0.8,SE:1.1,S:0.9},
+    vices:[{id:'vasconeto98v',name:'José Thomaz Nonô',region:'Nordeste',party:'PSN',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:30,align:85,bonus:{},desc:'Vice real de Vasco Azevedo Neto (PSN) em 1998'}],
+    debateStrengths:['educacao','saude'],
+    description:'Candidato do Partido da Solidariedade Nacional (PSN) em 1998' }
+];
+
+const VICES_1998 = {
+  marco_maciel98:{ id:'marco_maciel98', name:'Marco Maciel', party:'PFL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Marco_maciel_2010.jpg/500px-Marco_maciel_2010.jpg', region:'Nordeste', pop:65, exp:85, align:88, bonus:{NE:3,PE:3}, desc:'Vice real de FHC — político pernambucano e vice-presidente da República (1995-2003)' },
+  serra98:{ id:'serra98', name:'José Serra', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/JoseSerra25464_%28cropped_3x4%29.jpg/500px-JoseSerra25464_%28cropped_3x4%29.jpg', region:'Sudeste', pop:60, exp:82, align:85, bonus:{SP:4,SE:3}, desc:'Ministro da Saúde e futuro candidato presidencial — forte em SP e Sudeste' },
+  brizola98:{ id:'brizola98', name:'Leonel Brizola', party:'PDT', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Brizola.jpg/500px-Brizola.jpg', region:'Sul', pop:68, exp:90, align:80, bonus:{RS:5,RJ:3,S:2}, desc:'Ex-governador do RS e RJ, ícone do trabalhismo — fortíssimo no Sul' },
+  cristovam98:{ id:'cristovam98', name:'Cristovam Buarque', party:'PT', photo:'https://upload.wikimedia.org/wikipedia/commons/2/29/Foto_oficial_de_Cristovam_Buarque.jpg', region:'Centro-Oeste', pop:58, exp:75, align:88, bonus:{DF:4,CO:2}, desc:'Governador do DF e defensor da educação pública' },
+  arraes98:{ id:'arraes98', name:'Miguel Arraes', party:'PSB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Miguel_Arraes.jpg/500px-Miguel_Arraes.jpg', region:'Nordeste', pop:70, exp:92, align:85, bonus:{PE:5,NE:3}, desc:'Ex-governador de Pernambuco e ícone da esquerda nordestina' }
+};
+
+const REAL_RESULTS_1998 = {
+  AC:{fhc98:54.5,lula98:30.5}, AL:{fhc98:46.5,lula98:41.0},
+  AM:{fhc98:52.0,lula98:30.5}, AP:{fhc98:46.5,lula98:37.0},
+  BA:{fhc98:44.5,lula98:43.0}, CE:{fhc98:48.5,lula98:33.0},
+  DF:{fhc98:63.0,lula98:26.0}, ES:{fhc98:60.0,lula98:27.0},
+  GO:{fhc98:60.5,lula98:24.5}, MA:{fhc98:45.5,lula98:38.5},
+  MG:{fhc98:55.0,lula98:32.0}, MS:{fhc98:62.0,lula98:24.5},
+  MT:{fhc98:62.5,lula98:22.0}, PA:{fhc98:49.5,lula98:33.0},
+  PB:{fhc98:55.0,lula98:32.5}, PE:{fhc98:47.5,lula98:38.5},
+  PI:{fhc98:50.0,lula98:36.0}, PR:{fhc98:58.0,lula98:27.5},
+  RJ:{fhc98:51.0,lula98:31.5}, RN:{fhc98:55.0,lula98:31.5},
+  RO:{fhc98:62.0,lula98:22.5}, RR:{fhc98:58.0,lula98:25.0},
+  RS:{fhc98:50.5,lula98:38.0}, SC:{fhc98:62.0,lula98:23.0},
+  SE:{fhc98:48.5,lula98:40.0}, SP:{fhc98:57.5,lula98:29.5},
+  TO:{fhc98:60.0,lula98:25.5}
+};
+
+// DATA — CANDIDATES 2002
+// ════════════════════════════════════════════════════════
+
+const CANDIDATES_2002 = [
+  { id:'lula02', name:'Luiz Inácio Lula da Silva', shortName:'Lula', party:'PT', partyColor:'#e53935', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Luiz_In%C3%A1cio_Lula_da_Silva_%28cropped%29.jpg/500px-Luiz_In%C3%A1cio_Lula_da_Silva_%28cropped%29.jpg',
+    baseVote:46, baseReject:40, attrs:{carisma:85,experiencia:78,rejeicao:40,apoioPartidario:85,arrecadacao:72},
+    regionBias:{N:1.0,NE:1.6,CO:0.85,SE:0.9,S:0.75},
+    vices:['alencar02','cristovam02'],
+    debateStrengths:['programas_sociais','economia','saude','educacao'],
+    description:'Metalúrgico e sindicalista, quarta candidatura à presidência — eleito com 61% no 2º turno' },
+  { id:'serra02', name:'José Serra', shortName:'Serra', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/JoseSerra25464_%28cropped_3x4%29.jpg/500px-JoseSerra25464_%28cropped_3x4%29.jpg',
+    baseVote:23, baseReject:30, attrs:{carisma:52,experiencia:85,rejeicao:30,apoioPartidario:75,arrecadacao:68},
+    regionBias:{N:0.8,NE:0.55,CO:1.1,SE:1.35,S:1.3},
+    vices:['ritacamata02','aecio02'],
+    debateStrengths:['economia','saude','corrupcao'],
+    description:'Ex-ministro da Saúde e do Planejamento, candidato do PSDB apoiado pelo governo FHC' },
+  { id:'garotinho02', name:'Anthony Garotinho', shortName:'Garotinho', party:'PSB', partyColor:'#e65100', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Deputado_Anthony_Garotinho_entrevistado_em_2011_%28cropped%29.jpg/500px-Deputado_Anthony_Garotinho_entrevistado_em_2011_%28cropped%29.jpg',
+    baseVote:17.9, baseReject:28, attrs:{carisma:74,experiencia:70,rejeicao:28,apoioPartidario:62,arrecadacao:42},
+    regionBias:{N:0.85,NE:1.0,CO:0.85,SE:1.6,S:0.8},
+    vices:['costaleite02'],
+    debateStrengths:['programas_sociais','seguranca','religiao'],
+    description:'Governador do Rio de Janeiro, forte entre evangélicos — 3º colocado com 17,9%' },
+  { id:'ciro02', name:'Ciro Gomes', shortName:'Ciro Gomes', party:'PPS', partyColor:'#00796b', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg/500px-Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg',
+    baseVote:12, baseReject:35, attrs:{carisma:72,experiencia:80,rejeicao:35,apoioPartidario:58,arrecadacao:38},
+    regionBias:{N:0.8,NE:1.5,CO:0.85,SE:0.8,S:0.85},
+    vices:['paulinhoforca02'],
+    debateStrengths:['economia','saude','educacao','programas_sociais'],
+    description:'Ex-governador do Ceará e ministro da Fazenda — 4º colocado com 12%' },
+  { id:'zemaria02', name:'Zé Maria', shortName:'Zé Maria', party:'PSTU', partyColor:'#880e4f', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    baseVote:0.5, baseReject:14, attrs:{carisma:50,experiencia:52,rejeicao:14,apoioPartidario:30,arrecadacao:6},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.2,S:1.1},
+    vices:[{id:'zemaria02v',name:'Tânia Margarida',region:'Centro-Oeste',party:'PSTU',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:32,align:96,bonus:{},desc:'Metalúrgica e militante do PSTU, vice real de Zé Maria em 2002'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Metalúrgico e sindicalista do PSTU — obteve 0,5% dos votos' },
+  { id:'ruicosta02', name:'Rui Costa Pimenta', shortName:'Rui Costa Pimenta', party:'PCO', partyColor:'#4a148c', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    baseVote:0.04, baseReject:10, attrs:{carisma:40,experiencia:48,rejeicao:10,apoioPartidario:20,arrecadacao:2},
+    regionBias:{N:0.5,NE:0.6,CO:0.6,SE:1.3,S:1.1},
+    vices:[{id:'ruicosta02v',name:'Vito Augusto Giannotti',region:'Sudeste',party:'PCO',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:12,exp:28,align:98,bonus:{},desc:'Sindicalista e militante do PCO, vice real de Rui Costa Pimenta em 2002'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Jornalista e editor do jornal Causa Operária — obteve menos de 0,05% dos votos' }
+];
+
+const VICES_2002 = {
+  alencar02:{ id:'alencar02', name:'José Alencar', party:'PL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Jose_alencar_23_out_2007.jpg/500px-Jose_alencar_23_out_2007.jpg', region:'Sudeste', pop:70, exp:76, align:90, bonus:{MG:4,NE:2}, desc:'Empresário mineiro do setor têxtil — vice real e depois VP de Lula (2003–2011)' },
+  cristovam02:{ id:'cristovam02', name:'Cristovam Buarque', party:'PT', photo:'https://upload.wikimedia.org/wikipedia/commons/2/29/Foto_oficial_de_Cristovam_Buarque.jpg', region:'Centro-Oeste', pop:58, exp:78, align:88, bonus:{DF:4,CO:2}, desc:'Ex-governador do DF e defensor da educação pública' },
+  ritacamata02:{ id:'ritacamata02', name:'Rita Camata', party:'PMDB', photo:'https://upload.wikimedia.org/wikipedia/commons/b/b0/RitaCamata.jpg', region:'Sudeste', pop:52, exp:65, align:82, bonus:{ES:3,SE:2}, desc:'Deputada federal capixaba — vice real de Serra em 2002' },
+  aecio02:{ id:'aecio02', name:'Aécio Neves', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg', region:'Sudeste', pop:62, exp:72, align:88, bonus:{MG:5,SE:3}, desc:'Governador eleito de Minas Gerais em 2002 — fortíssimo em MG' },
+  costaleite02:{ id:'costaleite02', name:'Paulo Costa Leite', party:'PSB', photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg', region:'Sul', pop:50, exp:80, align:85, bonus:{RS:2,SC:1}, desc:'Ex-presidente do STJ — vice de Garotinho em 2002' },
+  paulinhoforca02:{ id:'paulinhoforca02', name:'Paulinho da Força', party:'PTB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Paulinho_for%C3%A7a_sindical.jpeg/500px-Paulinho_for%C3%A7a_sindical.jpeg', region:'Sudeste', pop:55, exp:62, align:82, bonus:{SP:2,SE:1}, desc:'Sindicalista e presidente da Força Sindical — vice real de Ciro em 2002' }
+};
+
+const REAL_RESULTS_2002 = {
+  AC:{lula02:46.4,serra02:25.3,garotinho02:13.5,ciro02:11.2}, AL:{lula02:37.0,serra02:24.5,garotinho02:21.8,ciro02:12.0},
+  AM:{lula02:38.5,serra02:20.5,garotinho02:15.5,ciro02:21.0}, AP:{lula02:40.8,serra02:18.5,garotinho02:20.5,ciro02:16.0},
+  BA:{lula02:44.5,serra02:15.5,garotinho02:18.5,ciro02:17.0}, CE:{lula02:33.5,serra02:12.0,garotinho02:15.0,ciro02:35.5},
+  DF:{lula02:38.5,serra02:32.5,garotinho02:12.5,ciro02:11.5}, ES:{lula02:32.0,serra02:29.0,garotinho02:23.0,ciro02:11.5},
+  GO:{lula02:34.5,serra02:31.5,garotinho02:17.0,ciro02:13.0}, MA:{lula02:38.5,serra02:14.5,garotinho02:18.0,ciro02:25.0},
+  MG:{lula02:40.0,serra02:28.0,garotinho02:17.5,ciro02:10.5}, MS:{lula02:35.5,serra02:33.5,garotinho02:16.5,ciro02:11.0},
+  MT:{lula02:34.5,serra02:34.0,garotinho02:16.5,ciro02:11.5}, PA:{lula02:38.0,serra02:19.5,garotinho02:20.0,ciro02:18.5},
+  PB:{lula02:40.0,serra02:18.5,garotinho02:21.0,ciro02:16.5}, PE:{lula02:38.5,serra02:16.0,garotinho02:18.5,ciro02:23.0},
+  PI:{lula02:42.0,serra02:14.5,garotinho02:17.5,ciro02:22.0}, PR:{lula02:34.5,serra02:30.5,garotinho02:19.0,ciro02:12.0},
+  RJ:{lula02:28.5,serra02:18.5,garotinho02:37.0,ciro02:11.5}, RN:{lula02:38.0,serra02:15.5,garotinho02:19.5,ciro02:23.0},
+  RO:{lula02:35.0,serra02:30.5,garotinho02:18.5,ciro02:12.5}, RR:{lula02:37.5,serra02:27.0,garotinho02:17.0,ciro02:14.5},
+  RS:{lula02:41.5,serra02:27.0,garotinho02:17.0,ciro02:10.5}, SC:{lula02:35.5,serra02:32.0,garotinho02:18.0,ciro02:11.0},
+  SE:{lula02:43.5,serra02:15.5,garotinho02:21.5,ciro02:15.5}, SP:{lula02:37.0,serra02:29.5,garotinho02:19.5,ciro02:10.5},
+  TO:{lula02:37.5,serra02:26.5,garotinho02:18.5,ciro02:14.5}
+};
+
+const CANDIDATES_2006 = [
+  { id:'lula06', name:'Luiz Inácio Lula da Silva', shortName:'Lula', party:'PT', partyColor:'#e53935', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://i1.sndcdn.com/artworks-000358367157-zp3sca-t500x500.jpg',
+    baseVote:48, baseReject:34, attrs:{carisma:88,experiencia:85,rejeicao:34,apoioPartidario:88,arrecadacao:75},
+    regionBias:{N:1.0,NE:1.7,CO:0.85,SE:0.85,S:0.7},
+    vices:['alencar06','ciro06_v','aldo06','jaques06_v'],
+    debateStrengths:['programas_sociais','economia','saude','educacao'],
+    description:'Presidente em busca da reeleição, fundador do PT, ícone da esquerda brasileira' },
+  { id:'alckmin06', name:'Geraldo Alckmin', shortName:'Alckmin', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Lula_and_Alckmin_%28cropped%29.jpg/500px-Lula_and_Alckmin_%28cropped%29.jpg',
+    baseVote:41, baseReject:28, attrs:{carisma:55,experiencia:88,rejeicao:28,apoioPartidario:78,arrecadacao:70},
+    regionBias:{N:0.8,NE:0.6,CO:1.15,SE:1.3,S:1.3},
+    vices:['josejorge06','tasso06','aecio06_v'],
+    debateStrengths:['economia','privatizacoes','saude','corrupcao'],
+    description:'Ex-governador de SP e governador em exercício, candidato do PSDB' },
+  { id:'cristovam06', name:'Cristovam Buarque', shortName:'Cristovam Buarque', party:'PDT', partyColor:'#e65100', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/2/29/Foto_oficial_de_Cristovam_Buarque.jpg',
+    baseVote:2.6, baseReject:18, attrs:{carisma:65,experiencia:80,rejeicao:18,apoioPartidario:55,arrecadacao:25},
+    regionBias:{N:0.8,NE:0.9,CO:1.1,SE:1.0,S:1.0},
+    vices:[{id:'crist06v',name:'Jefferson Péres',region:'Norte',party:'PDT',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:35,exp:55,align:85,bonus:{AM:2},desc:'Senador do Amazonas, vice de Cristovam Buarque em 2006'}],
+    debateStrengths:['educacao','programas_sociais','corrupcao'],
+    description:'Ex-governador do DF e ministro da Educação de Lula, defensor da educação pública' },
+  { id:'heloisa06', name:'Heloísa Helena', shortName:'Heloísa Helena', party:'PSOL', partyColor:'#9c27b0', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/9/96/Agenda_Marina_Silva_com_Vereadora_Heloisa_Helena_-_REDE_-_Macei%C3%B3_-_AL_-_31348264202_%28cropped%29.jpg',
+    baseVote:6.9, baseReject:22, attrs:{carisma:72,experiencia:68,rejeicao:22,apoioPartidario:55,arrecadacao:18},
+    regionBias:{N:0.75,NE:1.1,CO:0.8,SE:1.0,S:1.1},
+    vices:[{id:'cesarbenjamin06v',name:'César Benjamin',region:'Rio de Janeiro',party:'PSOL',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:35,exp:65,align:92,bonus:{RJ:1},desc:'Economista e intelectual carioca, vice real de Heloísa Helena em 2006'}],
+    debateStrengths:['programas_sociais','educacao','saude','meio_ambiente'],
+    description:'Ex-senadora por Alagoas, fundadora do PSOL, ex-petista' },
+  { id:'rangel06', name:'Ana Maria Rangel', shortName:'Ana Maria Rangel', party:'PRP', partyColor:'#c0392b', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://www1.folha.uol.com.br/folha/especial/2006/eleicoes/images/20060905-ana230.jpg',
+    baseVote:0.08, baseReject:14, attrs:{carisma:45,experiencia:42,rejeicao:14,apoioPartidario:28,arrecadacao:5},
+    regionBias:{N:0.8,NE:0.9,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'rangel06v',name:'Delma Gama e Narcini',region:'Sudeste',party:'PRP',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:88,bonus:{},desc:'Vice real de Ana Maria Rangel (PRP) em 2006'}],
+    debateStrengths:['valores','religiao'],
+    description:'Professora e política, primeira mulher a concorrer à presidência do Brasil, candidata do PRP' },
+  { id:'eymael06', name:'José Maria Eymael', shortName:'Eymael', party:'PSDC', partyColor:'#33691e', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    baseVote:0.06, baseReject:12, attrs:{carisma:40,experiencia:63,rejeicao:12,apoioPartidario:26,arrecadacao:5},
+    regionBias:{N:0.6,NE:0.6,CO:0.8,SE:1.2,S:1.2},
+    vices:[{id:'eymael06v',name:'Humberto Câmara',region:'Nordeste',party:'PSDC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:92,bonus:{},desc:'Vice do PSDC em 2006'}],
+    debateStrengths:['religiao','valores','educacao'],
+    description:'Advogado democrata cristão, candidato recorrente' },
+  { id:'bivar06', name:'Luciano Bivar', shortName:'Luciano Bivar', party:'PSL', partyColor:'#1b5e20', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Luciano_Bivar.jpg/500px-Luciano_Bivar.jpg',
+    baseVote:0.06, baseReject:14, attrs:{carisma:42,experiencia:55,rejeicao:14,apoioPartidario:30,arrecadacao:8},
+    regionBias:{N:0.7,NE:0.9,CO:0.8,SE:1.1,S:0.9},
+    vices:[{id:'bivar06v',name:'João Américo de Souza',region:'Nordeste',party:'PSL',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:20,exp:32,align:88,bonus:{},desc:'Vice real de Luciano Bivar (PSL) em 2006'}],
+    debateStrengths:['seguranca','valores'],
+    description:'Fundador do PSL, deputado federal de Pernambuco' },
+  { id:'ruicosta06', name:'Rui Costa Pimenta', shortName:'Rui Costa Pimenta', party:'PCO', partyColor:'#880e4f', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    baseVote:0.05, baseReject:12, attrs:{carisma:42,experiencia:55,rejeicao:12,apoioPartidario:24,arrecadacao:2},
+    regionBias:{N:0.5,NE:0.6,CO:0.6,SE:1.3,S:1.1},
+    vices:[{id:'ruicosta06v',name:'Flávio Goulart',region:'Sudeste',party:'PCO',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:98,bonus:{},desc:'Vice do PCO em 2006'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Jornalista e editor do jornal Causa Operária, candidato recorrente' }
+];
+
+const VICES_2006 = {
+  alencar06:{ id:'alencar06', name:'José Alencar', party:'PRB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Jose_alencar_23_out_2007.jpg/500px-Jose_alencar_23_out_2007.jpg', region:'Sudeste', pop:72, exp:78, align:92, bonus:{MG:4,NE:2}, desc:'Vice-presidente em exercício e empresário mineiro — vice real de Lula em 2006' },
+  ciro06_v:{ id:'ciro06_v', name:'Ciro Gomes', party:'PSB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Presidente_Ciro_Gomes.png/500px-Presidente_Ciro_Gomes.png', region:'Nordeste', pop:62, exp:82, align:80, bonus:{CE:3,NE:2}, desc:'Ex-governador do Ceará e ministro — forte no Nordeste' },
+  aldo06:{ id:'aldo06', name:'Aldo Rebelo', party:'PCdoB', photo:'https://pbs.twimg.com/profile_images/1900909467073490944/BiJZl8M-_400x400.jpg', region:'Sudeste', pop:55, exp:72, align:90, bonus:{SP:2,SE:1}, desc:'Deputado federal e liderança do PCdoB' },
+  jaques06_v:{ id:'jaques06_v', name:'Jaques Wagner', party:'PT', photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg', region:'Nordeste', pop:60, exp:72, align:95, bonus:{BA:3,NE:2}, desc:'Ex-ministro do governo Lula, forte na Bahia' },
+  josejorge06:{ id:'josejorge06', name:'José Jorge', party:'PFL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Jos%C3%A9_Jorge_03.jpg/960px-Jos%C3%A9_Jorge_03.jpg', region:'Nordeste', pop:52, exp:72, align:85, bonus:{PE:3,NE:2}, desc:'Senador de Pernambuco, vice real de Alckmin em 2006' },
+  tasso06:{ id:'tasso06', name:'Tasso Jereissati', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Senadores_da_56%C2%AA_Legislatura_%2846293124934%29.jpg/500px-Senadores_da_56%C2%AA_Legislatura_%2846293124934%29.jpg', region:'Nordeste', pop:60, exp:80, align:88, bonus:{CE:4,NE:3}, desc:'Ex-governador do Ceará — muito popular no Nordeste' },
+  aecio06_v:{ id:'aecio06_v', name:'Aécio Neves', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg', region:'Sudeste', pop:65, exp:80, align:88, bonus:{MG:5,SE:3}, desc:'Governador de Minas Gerais — fortíssimo em MG' }
+};
+
+// Real 2006 first-round results by state (Lula %, Alckmin %)
+const REAL_RESULTS_2006 = {
+  AC:{lula06:50.5,alckmin06:26.8}, AL:{lula06:57.0,alckmin06:22.5},
+  AM:{lula06:44.5,alckmin06:29.8}, AP:{lula06:46.0,alckmin06:27.5},
+  BA:{lula06:65.5,alckmin06:14.0}, CE:{lula06:62.5,alckmin06:15.8},
+  DF:{lula06:33.0,alckmin06:41.5}, ES:{lula06:39.0,alckmin06:42.0},
+  GO:{lula06:35.0,alckmin06:45.5}, MA:{lula06:62.0,alckmin06:15.0},
+  MG:{lula06:44.0,alckmin06:42.5}, MS:{lula06:37.5,alckmin06:45.0},
+  MT:{lula06:37.0,alckmin06:46.5}, PA:{lula06:49.5,alckmin06:27.5},
+  PB:{lula06:57.5,alckmin06:20.5}, PE:{lula06:60.5,alckmin06:18.8},
+  PI:{lula06:62.0,alckmin06:16.0}, PR:{lula06:36.0,alckmin06:44.5},
+  RJ:{lula06:40.5,alckmin06:36.0}, RN:{lula06:60.5,alckmin06:18.5},
+  RO:{lula06:40.5,alckmin06:43.0}, RR:{lula06:37.5,alckmin06:42.0},
+  RS:{lula06:44.5,alckmin06:38.5}, SC:{lula06:31.5,alckmin06:51.0},
+  SE:{lula06:60.0,alckmin06:20.5}, SP:{lula06:34.5,alckmin06:48.0},
+  TO:{lula06:43.0,alckmin06:37.0}
 };
 
 const STATES = {
@@ -1701,7 +2185,33 @@ const SCHEDULED_DEBATES_2014 = [
   {date:'2014-09-26',name:'Debate Globo',participants:'top6',round:1},
   {date:'2014-10-24',name:'Debate Globo 2º Turno',participants:'top2',round:2}
 ];
-function getScheduledDebates(){ return CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:CURRENT_ELECTION===2014?SCHEDULED_DEBATES_2014:SCHEDULED_DEBATES_2022; }
+function getScheduledDebates(){ return CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:CURRENT_ELECTION===2014?SCHEDULED_DEBATES_2014:CURRENT_ELECTION===2010?SCHEDULED_DEBATES_2010:CURRENT_ELECTION===2006?SCHEDULED_DEBATES_2006:CURRENT_ELECTION===2002?SCHEDULED_DEBATES_2002:CURRENT_ELECTION===1998?SCHEDULED_DEBATES_1998:SCHEDULED_DEBATES_2022; }
+
+const SCHEDULED_DEBATES_2010 = [
+  {date:'2010-08-08',name:'Debate Band',participants:'todos',round:1},
+  {date:'2010-09-05',name:'Debate SBT/Record',participants:'todos',round:1},
+  {date:'2010-09-24',name:'Debate Globo',participants:'top6',round:1},
+  {date:'2010-10-29',name:'Debate Globo 2º Turno',participants:'top2',round:2}
+];
+const SCHEDULED_DEBATES_2006 = [
+  {date:'2006-08-25',name:'Debate Band',participants:'todos',round:1},
+  {date:'2006-09-08',name:'Debate SBT/Record',participants:'todos',round:1},
+  {date:'2006-09-22',name:'Debate Globo',participants:'top6',round:1},
+  {date:'2006-10-27',name:'Debate Globo 2º Turno',participants:'top2',round:2}
+];
+
+const SCHEDULED_DEBATES_2002 = [
+  {date:'2002-08-22',name:'Debate Band',participants:'todos',round:1},
+  {date:'2002-09-05',name:'Debate SBT',participants:'todos',round:1},
+  {date:'2002-09-19',name:'Debate Globo',participants:'top4',round:1},
+  {date:'2002-10-24',name:'Debate Globo 2º Turno',participants:'top2',round:2}
+];
+
+const SCHEDULED_DEBATES_1998 = [
+  {date:'1998-08-13',name:'Debate Band',participants:'todos',round:1},
+  {date:'1998-09-10',name:'Debate SBT',participants:'todos',round:1},
+  {date:'1998-09-24',name:'Debate Globo',participants:'top4',round:1}
+];
 
 // Enhanced random events with choices
 const RANDOM_EVENTS = [
@@ -2043,25 +2553,171 @@ function updateMorePanelActive(){
 // ════════════════════════════════════════════════════════
 let CURRENT_ELECTION = 2022;
 
-function getCandidates(){ return CURRENT_ELECTION===2018?CANDIDATES_2018:CURRENT_ELECTION===2014?CANDIDATES_2014:CANDIDATES_2022; }
-function getVices(){ return CURRENT_ELECTION===2018?VICES_2018:CURRENT_ELECTION===2014?VICES_2014:VICES_2022; }
-function getRealResults(){ return CURRENT_ELECTION===2018?REAL_RESULTS_2018:CURRENT_ELECTION===2014?REAL_RESULTS_2014:REAL_RESULTS_2022; }
+function getCandidates(){ return CURRENT_ELECTION===2018?CANDIDATES_2018:CURRENT_ELECTION===2014?CANDIDATES_2014:CURRENT_ELECTION===2010?CANDIDATES_2010:CURRENT_ELECTION===2006?CANDIDATES_2006:CURRENT_ELECTION===2002?CANDIDATES_2002:CURRENT_ELECTION===1998?CANDIDATES_1998:CANDIDATES_2022; }
+function getVices(){ return CURRENT_ELECTION===2018?VICES_2018:CURRENT_ELECTION===2014?VICES_2014:CURRENT_ELECTION===2010?VICES_2010:CURRENT_ELECTION===2006?VICES_2006:CURRENT_ELECTION===2002?VICES_2002:CURRENT_ELECTION===1998?VICES_1998:VICES_2022; }
+function getRealResults(){ return CURRENT_ELECTION===2018?REAL_RESULTS_2018:CURRENT_ELECTION===2014?REAL_RESULTS_2014:CURRENT_ELECTION===2010?REAL_RESULTS_2010:CURRENT_ELECTION===2006?REAL_RESULTS_2006:CURRENT_ELECTION===2002?REAL_RESULTS_2002:CURRENT_ELECTION===1998?REAL_RESULTS_1998:REAL_RESULTS_2022; }
 function getElectionDates(){
   if(CURRENT_ELECTION===2018) return {start:'2017-10-07',first:'2018-10-07',second:'2018-10-28',totalDays:366};
   if(CURRENT_ELECTION===2014) return {start:'2013-10-05',first:'2014-10-05',second:'2014-10-26',totalDays:366};
+  if(CURRENT_ELECTION===2010) return {start:'2009-10-03',first:'2010-10-03',second:'2010-10-31',totalDays:366};
+  if(CURRENT_ELECTION===2006) return {start:'2005-10-01',first:'2006-10-01',second:'2006-10-29',totalDays:366};
+  if(CURRENT_ELECTION===2002) return {start:'2001-10-06',first:'2002-10-06',second:'2002-10-27',totalDays:366};
+  if(CURRENT_ELECTION===1998) return {start:'1997-10-04',first:'1998-10-04',second:'1998-10-25',totalDays:366};
   return {start:'2021-10-02',first:'2022-10-02',second:'2022-10-30',totalDays:366};
 }
 
-function selElection(y,btn){
-  document.querySelectorAll('.election-btn:not(.wip)').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  CURRENT_ELECTION=y;
-  G.selectedCandidate=null;G.selectedVice=null;
-  document.getElementById('vice-section').style.display='none';
-  document.getElementById('start-btn').disabled=true;
-  document.getElementById('start-hint').textContent='Selecione candidato e vice para começar';
-  renderCandidateCards();
+// ════════════════════════════════════════════════════════
+// COUNTRY & ERA SELECTION — 3-step progressive flow
+// ════════════════════════════════════════════════════════
+
+const COUNTRY_ERAS = {
+  BR: [
+    {
+      id:'nova_republica',
+      icon:'🗳️',
+      name:'Nova República',
+      years:'1985 – presente',
+      desc:'Eleições diretas com sistema de dois turnos. Partidos modernos, TV, redes sociais e financiamento de campanha.',
+      detail:'🗳️ Mecânica: dois turnos diretos · Coligações · HGPE · Debates na TV',
+      elections:[2022,2018,2014,2010,2006,2002,1998],
+      electionLabels:{2022:'🗳️ Eleição 2022',2018:'🗳️ Eleição 2018',2014:'🗳️ Eleição 2014',2010:'🗳️ Eleição 2010',2006:'🗳️ Eleição 2006',2002:'🗳️ Eleição 2002',1998:'🗳️ Eleição 1998'},
+      available:true
+    },
+    {
+      id:'ditadura_militar',
+      icon:'🎖️',
+      name:'Ditadura Militar',
+      years:'1964 – 1985',
+      desc:'Eleição indireta pelo Colégio Eleitoral. Bipartidarismo ARENA/MDB. Mecânica de pressão, censura e negociação.',
+      detail:'⚠️ Mecânica: eleição indireta · Censura · Abertura gradual · Diretas Já',
+      elections:[],
+      available:false
+    },
+    {
+      id:'republica_populista',
+      icon:'⚙️',
+      name:'República Populista',
+      years:'1945 – 1964',
+      desc:'Democracia populista com multipartidarismo. Getúlio Vargas, Juscelino Kubitschek, João Goulart.',
+      detail:'🏭 Mecânica: populismo · Industrialização · Trabalhismo · Golpe de 1964',
+      elections:[],
+      available:false
+    },
+    {
+      id:'republica_velha',
+      icon:'🎩',
+      name:'República Velha',
+      years:'1889 – 1930',
+      desc:'Política do café com leite. Oligarquias estaduais dominam. Voto a descoberto e coronelismo.',
+      detail:'☕ Mecânica: coronelismo · Voto de cabresto · Revolução de 1930',
+      elections:[],
+      available:false
+    }
+  ]
+};
+
+let CURRENT_COUNTRY = 'BR';
+let CURRENT_ERA = null;
+
+// Show/hide steps with animation
+function showSetupStep(id){
+  ['step-country','step-era','step-election','step-config'].forEach(s=>{
+    const el=document.getElementById(s);
+    if(el) el.style.display = s===id ? '' : 'none';
+  });
+  // Scroll to top
+  const ic=document.querySelector('.intro-content');
+  if(ic) ic.scrollTop=0;
 }
+
+function goBackToStep(target){
+  if(target==='country'){
+    CURRENT_ERA=null;
+    const zone=document.getElementById('inline-election-zone');
+    const zone2=document.getElementById('inline-config-zone');
+    if(zone) zone.style.display='none';
+    if(zone2) zone2.style.display='none';
+    document.querySelectorAll('.era-card').forEach(c=>c.classList.remove('active'));
+    showSetupStep('step-country');
+  } else if(target==='era'){
+    showSetupStep('step-era');
+  } else if(target==='election'){
+    showSetupStep('step-era');
+  }
+}
+
+function selCountry(code, btn){
+  document.querySelectorAll('.country-card').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  CURRENT_COUNTRY = code;
+
+  // Populate era grid and advance
+  const eras = COUNTRY_ERAS[code] || [];
+  const g = document.getElementById('era-grid');
+  const countryNames = {BR:'Brasil',US:'Estados Unidos',AR:'Argentina',MX:'México',FR:'França'};
+  document.getElementById('era-step-heading').textContent = `② Período Histórico — ${countryNames[code]||code}`;
+
+  g.innerHTML = eras.map(era => `
+    <button class="era-card ${!era.available?'locked':''}"
+      ${era.available ? `onclick="selEra('${era.id}',this)"` : 'disabled'}>
+      <div class="era-card-badge ${era.available?'':'locked-badge'}">${era.available?'Disponível':'Em Breve'}</div>
+      <div class="era-card-header">
+        <div class="era-card-icon">${era.icon}</div>
+        <div>
+          <div class="era-card-name">${era.name}</div>
+          <div class="era-card-years">${era.years}</div>
+        </div>
+      </div>
+      <div class="era-card-desc">${era.desc}</div>
+      ${era.available ? `<div style="margin-top:10px;font-size:10px;color:var(--accent);font-family:'IBM Plex Mono',monospace">${era.detail}</div>` : ''}
+    </button>
+  `).join('');
+
+  showSetupStep('step-era');
+}
+
+function selEra(id, btn){
+  document.querySelectorAll('.era-card').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  CURRENT_ERA = id;
+
+  const era = (COUNTRY_ERAS[CURRENT_COUNTRY]||[]).find(e=>e.id===id);
+  if(!era) return;
+
+  // Populate election buttons inline (abaixo das eras)
+  const btnsDiv = document.getElementById('election-buttons-dyn');
+  const zone = document.getElementById('inline-election-zone');
+  document.getElementById('inline-election-heading').textContent = `③ Selecione a Eleição — ${era.name}`;
+  btnsDiv.innerHTML = era.elections.map((yr,i) => `
+    <button class="election-btn" onclick="selElectionAndAdvance(${yr},this)">${era.electionLabels[yr]||('Eleição '+yr)}</button>
+  `).join('');
+  zone.style.display = '';
+  // Scroll suavemente até a zona de eleições
+  setTimeout(()=>{ zone.scrollIntoView({behavior:'smooth',block:'nearest'}); }, 50);
+}
+
+function selElectionAndAdvance(y, btn){
+  document.querySelectorAll('#election-buttons-dyn .election-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  CURRENT_ELECTION = y;
+  G.selectedCandidate = null; G.selectedVice = null;
+  document.getElementById('vice-section').style.display = 'none';
+  document.getElementById('start-btn').disabled = true;
+  document.getElementById('start-hint').textContent = 'Selecione candidato e vice para começar';
+  renderCandidateCards();
+  renderDifficultyGrid();
+  const zone = document.getElementById('inline-config-zone');
+  if(zone){
+    zone.style.display = '';
+    setTimeout(()=>{ zone.scrollIntoView({behavior:'smooth', block:'nearest'}); }, 50);
+  }
+}
+
+// Keep selElection as alias used internally (e.g. back navigation)
+function selElection(y, btn){
+  selElectionAndAdvance(y, btn);
+}
+
 
 function renderDifficultyGrid(){
   const g=document.getElementById('diff-grid');
@@ -2185,7 +2841,11 @@ function startGame(){
 
   const baseMoneys={lula:500e6,bolsonaro:450e6,ciro:120e6,tebet:80e6,soraya:50e6,davila:60e6,kelmon:5e6,pericles:2e6,sofia:1e6,vera:1e6,eymael:1e6,
     bolsonaro18:200e6,haddad18:220e6,ciro18:80e6,alckmin18:150e6,marina18:25e6,amoedo18:30e6,meirelles18:60e6,alvaro18:20e6,daciolo18:5e6,boulos18:10e6,vera18:1e6,eymael18:2e6,goulart18:2e6,
-    dilma14:300e6,aecio14:280e6,marina14:80e6,genro14:8e6,everaldo14:15e6,eduardojorge14:5e6,fidelix14:4e6,zemaria14:1e6,eymael14:2e6,iasi14:1e6,ruicosta14:500000};
+    dilma14:300e6,aecio14:280e6,marina14:80e6,genro14:8e6,everaldo14:15e6,eduardojorge14:5e6,fidelix14:4e6,zemaria14:1e6,eymael14:2e6,iasi14:1e6,ruicosta14:500000,
+    dilma10:320e6,serra10:280e6,marina10:60e6,plinio10:8e6,eymael10:2e6,zemaria10:1e6,fidelix10:3e6,ivan10:500000,ruicosta10:400000,
+    lula06:380e6,alckmin06:300e6,cristovam06:20e6,heloisa06:12e6,rangel06:2e6,eymael06:1.5e6,bivar06:2e6,ruicosta06:400000,
+    lula02:350e6,serra02:280e6,garotinho02:80e6,ciro02:60e6,zemaria02:3e6,ruicosta02:300000,
+    fhc98:400e6,lula98:250e6,ciro98:50e6,eneas98:8e6,ivanfrota98:2e6,sirkis98:3e6,zemaria98:2e6,jdeus98:1e6,eymael98:1e6,therezaruiz98:500000,sergiobueno98:500000,vasconeto98:300000};
   G.money=G.sandbox?1e12:(baseMoneys[cand.id]||10e6)*diff.moneyMult;
   G.popularity=cand.attrs.carisma;
   G.rejection=cand.baseReject;
@@ -2195,6 +2855,15 @@ function startGame(){
   G.financeCooldowns={};
   G.financeLockedKey=null;
   G.thirdCandSurged=null;
+  // Eleições pré-2006 não têm Twitter/Instagram
+  G.activeSocialPlatform = CURRENT_ELECTION<2006 ? 'news' : 'twitter';
+  // Esconder/mostrar botões de plataforma conforme eleição
+  ['btn-twitter','btn-instagram'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display=CURRENT_ELECTION<2006?'none':'';
+  });
+  const btnNews=document.getElementById('btn-news');
+  if(btnNews){ btnNews.className='platform-btn'+(CURRENT_ELECTION<2006?' active':''); }
 
   initializePolls();
   initSocialPosts();
@@ -2233,7 +2902,7 @@ function startGame(){
 function initializePolls(){
   const cands=getCandidates();
   const realResults=getRealResults();
-  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:CURRENT_ELECTION===2014?['dilma14','aecio14']:['lula','bolsonaro'];
+  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:CURRENT_ELECTION===2014?['dilma14','aecio14','marina14']:CURRENT_ELECTION===2010?['dilma10','serra10','marina10']:CURRENT_ELECTION===2006?['lula06','alckmin06']:CURRENT_ELECTION===2002?['lula02','serra02','garotinho02','ciro02']:CURRENT_ELECTION===1998?['fhc98','lula98']:['lula','bolsonaro'];
   G.polls={};G.rejectPolls={};
   const diff=G.diffSettings||DIFFICULTIES[3];
   cands.forEach(c=>{
@@ -2268,6 +2937,10 @@ function initializePolls(){
         let key;
         if(CURRENT_ELECTION===2018) key=c.id==='bolsonaro18'?'bolsonaro':'haddad';
         else if(CURRENT_ELECTION===2014) key=c.id==='dilma14'?'dilma':'aecio';
+        else if(CURRENT_ELECTION===2010) key=c.id==='dilma10'?'dilma10':'serra10';
+        else if(CURRENT_ELECTION===2006) key=c.id==='lula06'?'lula06':'alckmin06';
+        else if(CURRENT_ELECTION===2002) key=c.id; // keys are same as ids in REAL_RESULTS_2002
+        else if(CURRENT_ELECTION===1998) key=c.id; // keys are same as ids in REAL_RESULTS_1998
         else key=c.id==='lula'?'lula':'bolsonaro';
         const realVal=real[key]||dynamicVal;
         const playerNatPct=G.polls[G.player.id]||0.1;
@@ -2391,16 +3064,57 @@ function advanceOneDay(){
 function updatePolls(){
   const diff=G.diffSettings||DIFFICULTIES[3];
   const cands=getCandidates();
+
+  // Compute weighted average poll from state polls (states → national)
+  // This makes state polls influence national results
+  const totalVoters=Object.values(STATES).reduce((s,st)=>s+st.voters,0);
+  const stateWeightedPoll={};
+  cands.forEach(c=>{ stateWeightedPoll[c.id]=0; });
+  Object.keys(G.statePoll).forEach(abbr=>{
+    const st=STATES[abbr];
+    if(!st) return;
+    const w=st.voters/totalVoters;
+    cands.forEach(c=>{
+      stateWeightedPoll[c.id]+=(G.statePoll[abbr][c.id]||0)*w;
+    });
+  });
+
+  // Blend national poll toward state-weighted average (20% pull per tick)
   cands.forEach(c=>{
-    let drift=(Math.random()-0.48)*0.9*diff.eventMild;
+    const stateSignal=stateWeightedPoll[c.id]||0;
+    if(stateSignal>0){
+      G.polls[c.id]=G.polls[c.id]*0.82 + stateSignal*0.18;
+    }
+  });
+
+  cands.forEach(c=>{
+    // Base random drift — ALL candidates can lose AND gain votes
+    let drift=(Math.random()-0.50)*0.9*diff.eventMild;
+
     if(c.id===G.player.id){
+      // Player gets momentum bonus
       drift+=(G.momentum-50)*0.02;
       if(G.investedAreas.digital)drift+=0.2;
       if(G.investedAreas.tv)drift+=0.15;
       if(G.allies.length>0)drift+=G.allies.length*0.08;
+    } else {
+      // AI candidates: organic drift — leaders gain small bonus, trailers lose small
+      const rank=Object.entries(G.polls).sort((a,b)=>b[1]-a[1]).findIndex(e=>e[0]===c.id);
+      const poll=G.polls[c.id]||0;
+      if(rank===0) drift+=0.1*diff.aiAggression; // frontrunner stable/slight gain
+      else if(rank===1) drift+=0.05*diff.aiAggression; // 2nd place also gains slightly
+      else if(rank>=2 && rank<=3) {
+        // 3rd/4th place: can surge naturally, especially if they have high regionBias
+        const maxBias=Math.max(...Object.values(c.regionBias||{1:1}));
+        drift+=0.05*maxBias*diff.aiAggression + (Math.random()<0.2?0.4:0); // occasional burst
+      }
+      else if(rank>=4 && poll<1.5) drift-=0.04; // very minor candidates slowly fade, but less aggressively
+      else if(rank>=4) drift-=0.06; // minor candidates with more votes fade faster
     }
-    // Rejection affects vote
+
+    // Rejection affects vote in round 2
     if(G.round===2 && G.rejectPolls[c.id]>55) drift-=0.3;
+
     G.polls[c.id]=clamp((G.polls[c.id]||0.1)+drift,0.1,75);
   });
   normalizePoll();
@@ -2415,7 +3129,7 @@ function updatePolls(){
       const regionMult=c.regionBias?.[st.region]||1.0;
       const stateTarget=(G.polls[c.id]||0)*regionMult;
       const currentState=G.statePoll[abbr][c.id]||0;
-      const pullToNational=(stateTarget-currentState)*0.25; // strong pull each tick
+      const pullToNational=(stateTarget-currentState)*0.45; // strong pull each tick
       G.statePoll[abbr][c.id]=clamp(currentState+natDiff*0.5+pullToNational+(Math.random()-.5)*0.6,0.05,92);
     });
     let t=Object.values(G.statePoll[abbr]).reduce((a,b)=>a+b,0);
@@ -2425,17 +3139,28 @@ function updatePolls(){
   G.investedAreas={};
 
   // "3º Candidato" event — random outside top-2 gets surge
-  if(G.daysPassed%7===0 && !G.thirdCandSurged && Math.random()<0.04){
+  if(G.daysPassed%7===0 && !G.thirdCandSurged && Math.random()<0.12){
     const top2=Object.entries(G.polls).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>e[0]);
     const candidates=getCandidates().filter(c=>!top2.includes(c.id)&&(G.polls[c.id]||0)>0.4);
     if(candidates.length){
-      const third=candidates[Math.floor(Math.random()*candidates.length)];
-      const boost=3+Math.random()*5;
-      G.polls[third.id]=clamp(G.polls[third.id]+boost,0,40);
+      // Prefer historically strong "3rd candidates" (garotinho02, ciro, marina, heloisa, etc.)
+      const strongThirds=['garotinho02','ciro02','heloisa06','cristovam06','marina10','marina14','ciro18','marina18'];
+      const preferred=candidates.filter(c=>strongThirds.includes(c.id));
+      const pool=preferred.length?preferred:candidates;
+      const third=pool[Math.floor(Math.random()*pool.length)];
+      const boost=8+Math.random()*10; // increased from 4-11 to 8-18
+      G.polls[third.id]=clamp(G.polls[third.id]+boost,0,55);
+      // Also give strong regional boosts
+      const maxBiasRegion=Object.entries(third.regionBias||{}).sort((a,b)=>b[1]-a[1])[0];
+      if(maxBiasRegion){
+        Object.keys(STATES).filter(abbr=>STATES[abbr].region===maxBiasRegion[0]).forEach(abbr=>{
+          if(G.statePoll[abbr]) G.statePoll[abbr][third.id]=clamp((G.statePoll[abbr][third.id]||0)+boost*1.5,0,65);
+        });
+      }
       normalizePoll();
       G.thirdCandSurged=third.id;
-      showToast(`🚀 3º Candidato!`,`${third.shortName} (${third.party}) está explodindo nas redes! +${boost.toFixed(1)}% nas pesquisas.`,'warning',6000);
-      G.events.unshift({type:'warning',icon:'🚀',title:`${third.shortName} vira o "3º candidato"`,desc:`${third.shortName} do ${third.party} ganha impulso inesperado e vira assunto nacional. Mídia passa a cobrir como alternativa real.`,date:fmtDate(G.currentDate),effect:`+${boost.toFixed(1)}% pesquisa nacional`});
+      showToast(`🚀 3º Candidato!`,`${third.shortName} (${third.party}) está explodindo! +${boost.toFixed(1)}% nas pesquisas. Mídia cobre como alternativa real.`,'warning',8000);
+      G.events.unshift({type:'warning',icon:'🚀',title:`${third.shortName} vira o "3º candidato"`,desc:`${third.shortName} do ${third.party} ganha impulso inesperado e vira assunto nacional. Mídia passa a cobrir como alternativa real. Regiões de força disparam.`,date:fmtDate(G.currentDate),effect:`+${boost.toFixed(1)}% pesquisa nacional, regiões fortes +${(boost*1.5).toFixed(1)}%`});
     }
   }
 
@@ -2459,7 +3184,7 @@ function recomputeStatePolls(){
 
   const stateInvestments = G.stateInvestments || {};
   const realResults = getRealResults();
-  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : CURRENT_ELECTION===2014 ? ['dilma14','aecio14'] : ['lula','bolsonaro'];
+  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : CURRENT_ELECTION===2014 ? ['dilma14','aecio14','marina14'] : CURRENT_ELECTION===2010 ? ['dilma10','serra10','marina10'] : CURRENT_ELECTION===2006 ? ['lula06','alckmin06'] : CURRENT_ELECTION===2002 ? ['lula02','serra02','garotinho02','ciro02'] : CURRENT_ELECTION===1998 ? ['fhc98','lula98'] : ['lula','bolsonaro'];
   // How far into the campaign are we? 0=start, 1=election day
   const progress = Math.min(1, (G.daysPassed||0) / (G.totalDays||366));
 
@@ -2496,7 +3221,11 @@ function recomputeStatePolls(){
       if(real && top2ids.includes(c.id)) {
         let realKey;
         if(CURRENT_ELECTION===2018) realKey = c.id==='bolsonaro18' ? 'bolsonaro' : 'haddad';
-        else if(CURRENT_ELECTION===2014) realKey = c.id==='dilma14' ? 'dilma' : 'aecio';
+        else if(CURRENT_ELECTION===2014) realKey = c.id==='dilma14' ? 'dilma' : c.id==='aecio14' ? 'aecio' : 'marina';
+        else if(CURRENT_ELECTION===2010) realKey = c.id==='dilma10' ? 'dilma10' : c.id==='serra10' ? 'serra10' : 'marina10';
+        else if(CURRENT_ELECTION===2006) realKey = c.id==='lula06' ? 'lula06' : 'alckmin06';
+        else if(CURRENT_ELECTION===2002) realKey = c.id; // keys match ids in REAL_RESULTS_2002
+        else if(CURRENT_ELECTION===1998) realKey = c.id; // keys match ids in REAL_RESULTS_1998
         else realKey = c.id===top2ids[0] ? 'lula' : 'bolsonaro';
         const realVal = real[realKey] || dynamicVal;
         let anchorWeight = Math.max(0, 0.5 - progress * 0.5);
@@ -2535,7 +3264,8 @@ function recomputeStatePolls(){
 // AI Actions — multiple candidates act every week, top-2 get extra boosts
 function runAiActions(){
   const diff=G.diffSettings||DIFFICULTIES[3];
-  const aiCands=getCandidates().filter(c=>c.id!==G.player.id && (G.polls[c.id]||0)>0.3);
+  const allCands=getCandidates();
+  const aiCands=allCands.filter(c=>c.id!==G.player.id && (G.polls[c.id]||0)>0.3);
   if(!aiCands.length)return;
 
   // Sort by poll — top candidates act more
@@ -2552,11 +3282,20 @@ function runAiActions(){
     // Top 2 act multiple times
     const numActs=top2ids.includes(ai.id)?Math.ceil(diff.aiAggression*2):1;
     for(let i=0;i<numActs;i++){
-      const act=allActions[Math.floor(Math.random()*allActions.length)];
       // Top 2 get extra boost multiplier
       const topMult=top2ids.includes(ai.id)?1.5:1.0;
       const boost=randRange(0.3,1.2)*diff.aiAggression*topMult;
       G.polls[ai.id]=clamp(G.polls[ai.id]+boost,0.1,70);
+
+      // Zero-sum: when AI gains, competitors (including player) lose proportionally
+      const others=allCands.filter(c=>c.id!==ai.id && (G.polls[c.id]||0)>0.5);
+      if(others.length>0){
+        const totalOthers=others.reduce((s,c)=>s+(G.polls[c.id]||0),0);
+        others.forEach(c=>{
+          const share=(G.polls[c.id]||0)/totalOthers;
+          G.polls[c.id]=clamp((G.polls[c.id]||0)-boost*share,0.1,70);
+        });
+      }
 
       // AI rejection also shifts
       if(Math.random()<0.3){
@@ -2793,6 +3532,14 @@ function renderTimeline(){
     {label:'Início',d:new Date('2013-10-05')},{label:'Fev 14',d:new Date('2014-02-01')},
     {label:'Mai 14',d:new Date('2014-05-01')},{label:'Ago 14',d:new Date('2014-08-01')},
     {label:'1º Turno',d:new Date('2014-10-05')},{label:'2º Turno',d:new Date('2014-10-26')}
+  ]:CURRENT_ELECTION===2010?[
+    {label:'Início',d:new Date('2009-10-03')},{label:'Fev 10',d:new Date('2010-02-01')},
+    {label:'Mai 10',d:new Date('2010-05-01')},{label:'Ago 10',d:new Date('2010-08-01')},
+    {label:'1º Turno',d:new Date('2010-10-03')},{label:'2º Turno',d:new Date('2010-10-31')}
+  ]:CURRENT_ELECTION===2006?[
+    {label:'Início',d:new Date('2005-10-01')},{label:'Fev 06',d:new Date('2006-02-01')},
+    {label:'Mai 06',d:new Date('2006-05-01')},{label:'Ago 06',d:new Date('2006-08-01')},
+    {label:'1º Turno',d:new Date('2006-10-01')},{label:'2º Turno',d:new Date('2006-10-29')}
   ]:[
     {label:'Início',d:new Date('2021-10-02')},{label:'Fev 22',d:new Date('2022-02-01')},
     {label:'Mai 22',d:new Date('2022-05-01')},{label:'Ago 22',d:new Date('2022-08-01')},
@@ -2894,6 +3641,20 @@ function spendEnergy(id){
 }
 
 // ════ CAMPAIGN ACTIONS (balanced, no easy spam) ═════════
+// When player gains `boost` points, distribute that loss proportionally among AI candidates
+// This makes campaigns feel meaningful — player rising = others falling
+function applyPlayerGainToAI(boost){
+  if(!boost||boost<=0)return;
+  const aiCands=getCandidates().filter(c=>c.id!==G.player.id && (G.polls[c.id]||0)>0.5);
+  if(!aiCands.length)return;
+  const totalAI=aiCands.reduce((s,c)=>s+(G.polls[c.id]||0),0);
+  if(totalAI<=0)return;
+  aiCands.forEach(c=>{
+    const share=(G.polls[c.id]||0)/totalAI;
+    G.polls[c.id]=clamp((G.polls[c.id]||0)-boost*share,0.1,70);
+  });
+}
+
 function runCampaignAction(id){
   if(!G.player)return;
   const diff=G.diffSettings||DIFFICULTIES[3];
@@ -2917,6 +3678,7 @@ function runCampaignAction(id){
       doAction('comicio',cost,()=>{
         const boost=(1.8*drFactor)/diff.eventMild;
         G.polls[G.player.id]=clamp(G.polls[G.player.id]+boost,0,70);
+        applyPlayerGainToAI(boost);
         normalizePoll();
         G.popularity=clamp(G.popularity+4*drFactor,0,100);
         G.momentum=clamp(G.momentum+8,0,100);
@@ -2930,6 +3692,7 @@ function runCampaignAction(id){
       doAction('tv',cost,()=>{
         const boost=(1.2*drFactor)/diff.eventMild;
         G.polls[G.player.id]=clamp(G.polls[G.player.id]+boost,0,70);
+        applyPlayerGainToAI(boost);
         normalizePoll();
         G.investedAreas.tv=true;
         // But rejection can also grow with overexposure
@@ -2942,6 +3705,7 @@ function runCampaignAction(id){
       doAction('digital',cost,()=>{
         const boost=(0.9*drFactor)/diff.eventMild;
         G.polls[G.player.id]=clamp(G.polls[G.player.id]+boost,0,70);
+        applyPlayerGainToAI(boost*0.7);
         normalizePoll();
         G.investedAreas.digital=true;
         addDynamicSocialPost();
@@ -2978,6 +3742,7 @@ function runCampaignAction(id){
       doAction('equipe',cost,()=>{
         const boost=0.7*drFactor;
         G.polls[G.player.id]=clamp(G.polls[G.player.id]+boost,0,70);
+        applyPlayerGainToAI(boost*0.5);
         normalizePoll();
         G.popularity=clamp(G.popularity+6,0,100);
         showToast('👥 Reforço!',`Equipe contratada. +${boost.toFixed(1)}% permanente.`,'success');
@@ -2993,6 +3758,7 @@ function runCampaignAction(id){
         const t=topics[Math.floor(Math.random()*topics.length)];
         const boost=0.6*drFactor;
         G.polls[G.player.id]=clamp(G.polls[G.player.id]+boost,0,70);
+        applyPlayerGainToAI(boost*0.5);
         normalizePoll();
         G.momentum=clamp(G.momentum+4,0,100);
         showToast('📋 Proposta!',`Plano de ${t} gera repercussão. +${boost.toFixed(1)}%`,'info');
@@ -3391,6 +4157,224 @@ const CANDIDATE_PROFILES = {
     achievements:['Editor do jornal Causa Operária por décadas','Fundador e líder do PCO','Candidato presidencial em todas as eleições desde 1998','Voz da esquerda trotskista mais radical'],
     controversies:['Menor base eleitoral entre todos os candidatos presidenciais','Partido sem estrutura nem recursos','Polêmicas sobre declarações contra o TSE em 2022','PCO questionou resultados eleitorais sem evidências']
   },
+  /* ─────────────── PERFIS 1998 ─────────────── */
+  fhc98:{
+    fullName:'Fernando Henrique Cardoso',born:'18 de junho de 1931',birthPlace:'Rio de Janeiro, Rio de Janeiro',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/4/47/Fernando_Henrique_Cardoso_%28cropped%29.jpg',
+    party:'PSDB — Partido da Social Democracia Brasileira',ideology:'Centro-Direita / Social-democracia',
+    trajectory:'Sociólogo e professor, exilado durante a ditadura. Senador por São Paulo e idealizador do Plano Real como Ministro da Fazenda de Itamar Franco (1993-1994). Elegeu-se presidente em 1994 já no 1º turno e reelegeu-se em 1998, tornando-se o primeiro presidente a se reeleger na história da Nova República. Seu governo foi marcado pela estabilidade econômica do Plano Real, privatizações polêmicas e a crise cambial de 1999, quando o real foi desvalorizado.',
+    elections:[
+      {year:1994,round:'1º turno',result:'✅ ELEITO (54,3%)'},
+      {year:1998,round:'1º turno',result:'✅ REELEITO (53,1%)'}
+    ],
+    achievements:['Plano Real — fim da hiperinflação','Reeleição histórica no 1º turno','Lei de Responsabilidade Fiscal','Privatizações de estatais','Bolsa Escola (precursor do Bolsa Família)'],
+    controversies:['Crise cambial de 1999 e desvalorização do real','Privatizações consideradas polêmicas (Telebrás etc.)','Emenda constitucional permitindo reeleição','Apagão energético (2001)']
+  },
+  lula98:{
+    fullName:'Luiz Inácio Lula da Silva',born:'27 de outubro de 1945',birthPlace:'Caetés, Pernambuco',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/a0/Lula_sentando_em_uma_cadeira_sorrindo_%28cropped%29.jpg',
+    party:'PT — Partido dos Trabalhadores',ideology:'Esquerda / Social-democracia',
+    trajectory:'Metalúrgico e fundador do PT, Lula disputou a presidência pela terceira vez em 1998. Adotou coligação mais ampla, com Leonel Brizola (PDT) como primeira opção de vice. A eleição ocorreu em contexto de crise financeira internacional (crise asiática e russa), e FHC venceu no 1º turno com 53,1%. Lula obteve 31,7% — seu melhor resultado até então mas ainda insuficiente. Voltaria em 2002 com a estratégia da "Carta ao Povo Brasileiro" para finalmente vencer.',
+    elections:[
+      {year:1989,round:'2º turno',result:'Derrota para Collor (46,7%)'},
+      {year:1994,round:'1º turno',result:'Derrota (27,0%)'},
+      {year:1998,round:'1º turno',result:'Derrota (31,7%)'},
+      {year:2002,round:'2º turno',result:'✅ ELEITO (61,3%)'}
+    ],
+    achievements:['Maior votação da esquerda até então (31,7% em 1998)','Candidato histórico por 4 eleições','Fundador do PT em 1980'],
+    controversies:['Três derrotas consecutivas','Partido visto como muito radical pelo mercado','Desconfiança das classes médias e empresários']
+  },
+  ciro98:{
+    fullName:'Ciro Ferreira Gomes',born:'26 de novembro de 1957',birthPlace:'Sobral, Ceará',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg/500px-Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg',
+    party:'PPS — Partido Popular Socialista',ideology:'Centro-Esquerda / Social-democracia',
+    trajectory:'Político cearense, ex-prefeito de Fortaleza e ex-governador do Ceará. Em 1998 candidatou-se pelo PPS com forte base regional no Nordeste. Ficou em 3º lugar com 10,9%, surpreendendo pela força regional mas sem conseguir expandir o apoio para outras regiões. Voltaria a se candidatar em 2002 com resultado similar.',
+    elections:[
+      {year:1994,round:'1º turno',result:'Derrota (4,4%)'},
+      {year:1998,round:'1º turno',result:'Derrota (10,9%) — 3º lugar'},
+      {year:2002,round:'1º turno',result:'Derrota (11,9%)'}
+    ],
+    achievements:['Governou o Ceará (1991-1994)','Co-participação no Plano Real como Ministro da Fazenda','3º lugar com base regional nordestina'],
+    controversies:['Temperamento explosivo em debates','Dificuldade de expandir além do Nordeste']
+  },
+  eneas98:{
+    fullName:'Enéas Ferreira Carneiro',born:'11 de outubro de 1938',birthPlace:'Piracicaba, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Carneiro_cropped.jpg/500px-Carneiro_cropped.jpg',
+    party:'PRONA — Partido de Reedificação da Ordem Nacional',ideology:'Direita / Nacionalismo',
+    trajectory:'Médico cardiologista e político populista de direita. Ficou famoso pelo slogan "Meu nome é Enéas!" e pelo visual característico com barba longa. Candidatou-se em 1989, 1994 e 1998, crescendo progressivamente. Em 1998 obteve 2,1%, e em 2002 liderou a maior votação individual para deputado federal até então (1,57 milhão de votos). Faleceu em 2008.',
+    elections:[
+      {year:1989,round:'1º turno',result:'Derrota (0,7%)'},
+      {year:1994,round:'1º turno',result:'Derrota (1,6%)'},
+      {year:1998,round:'1º turno',result:'Derrota (2,1%)'},
+      {year:2002,round:'1º turno',result:'Derrota (0,4%)'}
+    ],
+    achievements:['Maior votação para deputado federal em 2002 (1,57 milhão)','Popularidade crescente entre 1989-1998','Símbolo do populismo conservador pré-Bolsonaro'],
+    controversies:['Discurso extremista e xenofóbico','Candidaturas presidenciais com pouco impacto após 1998']
+  },
+  ivanfrota98:{
+    fullName:'Ivan Rodrigues Frota',born:'1944',birthPlace:'Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/pt/f/f7/Foto-Brig.-Ivan-Frota-1.jpg',
+    party:'MOBILIZA — Partido Mobilizador Nacional',ideology:'Centro / Militarismo',
+    trajectory:'Brigadeiro da Força Aérea Brasileira reformado, candidatou-se à presidência em 1998 pelo pequeno partido MOBILIZA, com proposta de modernização nacional e reformas administrativas sob influência da visão militar.',
+    elections:[{year:1998,round:'1º turno',result:'Derrota (<0,5%)'}],
+    achievements:['Brigadeiro da FAB','Candidatura como representante militar reformado'],
+    controversies:['Partido com pouquíssima expressão eleitoral']
+  },
+  sirkis98:{
+    fullName:'Alfredo Sirkis',born:'16 de julho de 1950',birthPlace:'Rio de Janeiro, Rio de Janeiro',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Alfredo_sirkis.JPG/500px-Alfredo_sirkis.JPG',
+    party:'PV — Partido Verde',ideology:'Centro-Esquerda / Ambientalismo / Ecologia política',
+    trajectory:'Ex-guerrilheiro que participou do sequestro do embaixador americano em 1969. Exilado, viveu na Europa e voltou ao Brasil após a anistia. Tornou-se jornalista, escritor e político ecologista. Candidato do PV em 1998, defendia uma agenda ambiental e de reformas democráticas. Deputado federal por vários mandatos. Faleceu em 2020.',
+    elections:[{year:1998,round:'1º turno',result:'Derrota (0,5%)'}],
+    achievements:['Vereador e deputado federal pelo RJ','Líder histórico do Partido Verde','Livro autobiográfico "Os Carbonários" (best-seller)'],
+    controversies:['Passado como guerrilheiro levantado em campanhas políticas']
+  },
+  zemaria98:{
+    fullName:'José Maria de Almeida',born:'29 de março de 1960',birthPlace:'Piracicaba, São Paulo',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    party:'PSTU — Partido Socialista dos Trabalhadores Unificado',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Metalúrgico e dirigente sindical do ABC Paulista, candidatou-se pela primeira vez à presidência em 1998 pelo PSTU, partido trotskista que recusa alianças com o PT por considerá-lo reformista. Voltaria a se candidatar em 2002, 2006, 2010 e 2014.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota (0,6%)'},
+      {year:2002,round:'1º turno',result:'Derrota (0,5%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,5%)'}
+    ],
+    achievements:['Candidato presidencial recorrente por 5 eleições','Voz da esquerda operária radical'],
+    controversies:['Resultados eleitorais muito baixos','Acusado pelo PT de "dividir a esquerda"']
+  },
+  jdeus98:{
+    fullName:'João de Deus Antunes',born:'1940s',birthPlace:'Brasil',
+    photo:'https://i.ytimg.com/vi/TqXqbPRSaE4/mqdefault.jpg',
+    party:'PTdoB — Partido dos Trabalhadores do Brasil',ideology:'Centro-Esquerda',
+    trajectory:'Candidato pelo PTdoB — partido trabalhista de pequena expressão que não deve ser confundido com o PT fundado por Lula. Candidatou-se à presidência em 1998 com proposta trabalhista moderada.',
+    elections:[{year:1998,round:'1º turno',result:'Derrota (<0,2%)'}],
+    achievements:['Representação do trabalhismo moderado'],
+    controversies:['Partido sem expressão eleitoral relevante']
+  },
+  eymael98:{
+    fullName:'José Maria Eymael',born:'6 de fevereiro de 1939',birthPlace:'Lins, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    party:'PSDC — Partido Social Democrata Cristão',ideology:'Centro-Direita / Democracia Cristã',
+    trajectory:'Advogado e político paulista, candidato presidencial recorrente desde 1989. Representante da democracia cristã no Brasil. Em 1998, iniciou sua tradição de candidaturas com resultados muito baixos mas com consistência ao longo das décadas.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota (<0,1%)'},
+      {year:2002,round:'1º turno',result:'Derrota (<0,1%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,02%)'},
+      {year:2022,round:'1º turno',result:'Derrota (0,03%)'}
+    ],
+    achievements:['40+ anos de carreira política','Candidato presidencial mais recorrente do Brasil'],
+    controversies:['Votações sempre ínfimas ao longo das décadas']
+  },
+  therezaruiz98:{
+    fullName:'Thereza Cristina Ruiz',born:'1940s',birthPlace:'São Paulo',
+    photo:'https://admin.cnnbrasil.com.br/wp-content/uploads/sites/12/2022/08/Thereza-Ruiz-PTN.png?w=1320&h=742&crop=0',
+    party:'PTN — Partido Trabalhista Nacional',ideology:'Centro',
+    trajectory:'Candidata do PTN em 1998, foi uma das primeiras mulheres a disputar a presidência da República no Brasil. Sua candidatura foi simbólica, com foco em temas de educação e saúde.',
+    elections:[{year:1998,round:'1º turno',result:'Derrota (<0,2%)'}],
+    achievements:['Pioneira como candidata presidencial feminina no Brasil democrático'],
+    controversies:['Candidatura com pouquíssima visibilidade']
+  },
+  sergiobueno98:{
+    fullName:'Sérgio Bueno',born:'1940s',birthPlace:'Brasil',
+    photo:'https://i.ytimg.com/vi/v5qPG6vIgjY/maxresdefault.jpg',
+    party:'PSC — Partido Social Cristão',ideology:'Direita / Valores cristãos',
+    trajectory:'Candidato do PSC em 1998, representando os valores cristãos e conservadores na disputa presidencial.',
+    elections:[{year:1998,round:'1º turno',result:'Derrota (<0,1%)'}],
+    achievements:['Representação dos valores conservadores cristãos'],
+    controversies:['Partido sem expressão eleitoral relevante']
+  },
+  vasconeto98:{
+    fullName:'Vasco Azevedo Neto',born:'1940s',birthPlace:'Brasil',
+    photo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4NmAcBT-FkJym-rfakw-Zuo5AZa0ut574RQ&s',
+    party:'PSN — Partido da Solidariedade Nacional',ideology:'Centro',
+    trajectory:'Candidato do PSN (Partido da Solidariedade Nacional) em 1998, com proposta de políticas sociais e desenvolvimento nacional.',
+    elections:[{year:1998,round:'1º turno',result:'Derrota (<0,1%)'}],
+    achievements:['Representação política do PSN em 1998'],
+    controversies:['Partido sem expressão eleitoral significativa']
+  },
+  /* ─────────────── PERFIS 2002 ─────────────── */
+  lula02:{
+    fullName:'Luiz Inácio Lula da Silva',born:'27 de outubro de 1945',birthPlace:'Caetés, Pernambuco',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Luiz_In%C3%A1cio_Lula_da_Silva_%28cropped%29.jpg/500px-Luiz_In%C3%A1cio_Lula_da_Silva_%28cropped%29.jpg',
+    party:'PT — Partido dos Trabalhadores',ideology:'Centro-Esquerda / Social-democracia',
+    trajectory:'Nascido em família pobre do sertão nordestino, migrou para São Paulo. Tornou-se torneiro mecânico e líder sindical nos anos 1970, organizando as greves do ABC Paulista que sacudiram a ditadura. Fundou o PT em 1980 e candidatou-se à presidência em 1989, 1994 e 1998 — sempre perdendo. Em 2002, adotou uma estratégia mais moderada, publicou a "Carta ao Povo Brasileiro" prometendo respeitar contratos e convocou o empresário José Alencar (PL) como vice. Venceu com 61,3% no 2º turno, encerrando 40 anos de hegemonia de candidatos conservadores.',
+    elections:[
+      {year:1989,round:'2º turno',result:'Derrota para Collor (46,7%)'},
+      {year:1994,round:'1º turno',result:'Derrota (27,0%)'},
+      {year:1998,round:'1º turno',result:'Derrota (31,7%)'},
+      {year:2002,round:'2º turno',result:'✅ ELEITO (61,3%)'}
+    ],
+    achievements:['Quarta tentativa coroada com vitória histórica','Carta ao Povo Brasileiro — marco de moderação do PT','Aliança com PL e setor empresarial','Maior margem de vitória da Nova República em 2002'],
+    controversies:['Três derrotas consecutivas antes de vencer','Desconfiança do mercado financeiro até a Carta','Acusações de populismo']
+  },
+  serra02:{
+    fullName:'José Serra',born:'19 de março de 1942',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/JoseSerra25464_%28cropped_3x4%29.jpg/500px-JoseSerra25464_%28cropped_3x4%29.jpg',
+    party:'PSDB — Partido da Social Democracia Brasileira',ideology:'Centro-Direita / Social-democracia',
+    trajectory:'Economista paulistano, exilado durante a ditadura. Retornou ao Brasil após a anistia. Deputado federal constituinte, Ministro do Planejamento (1995-1996) e Ministro da Saúde (1998-2002) no governo FHC, onde ficou famoso pela lei dos medicamentos genéricos. Candidato do PSDB para suceder FHC, enfrentou dificuldade por carregar o legado do governo desgastado. No 2º turno, perdeu para Lula com 38,7%.',
+    elections:[
+      {year:2002,round:'2º turno',result:'Derrota para Lula (38,7%)'},
+      {year:2010,round:'2º turno',result:'Derrota para Dilma (43,9%)'}
+    ],
+    achievements:['Ministro da Saúde — lei dos genéricos','Governador de SP (2006-2010)','Senador de São Paulo'],
+    controversies:['Derrota em 2002 e 2010','Peso do legado do governo FHC','Crise econômica de 2002 prejudicou sua candidatura']
+  },
+  garotinho02:{
+    fullName:'Anthony William Garotinho Matheus de Oliveira',born:'5 de novembro de 1960',birthPlace:'Campos dos Goytacazes, Rio de Janeiro',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Deputado_Anthony_Garotinho_entrevistado_em_2011_%28cropped%29.jpg/500px-Deputado_Anthony_Garotinho_entrevistado_em_2011_%28cropped%29.jpg',
+    party:'PSB — Partido Socialista Brasileiro',ideology:'Centro-Esquerda / Populismo evangélico',
+    trajectory:'Locutor de rádio e político fluminense. Foi governador do Rio de Janeiro (1999-2002), cargo que deixou para se candidatar à presidência. Próximo de comunidades evangélicas e do setor popular fluminense, surpreendeu ao chegar em 3º lugar com 17,9% dos votos. Era considerado um nome à esquerda de Serra mas mais moderado que Lula, com forte apelo religioso e popular. No 1º turno ficou à frente de Ciro Gomes.',
+    elections:[
+      {year:2002,round:'1º turno',result:'Derrota (17,9%) — 3º lugar'}
+    ],
+    achievements:['Governador do RJ (1999–2002)','3º lugar nas eleições de 2002 com 17,9%','Grande apelo entre evangélicos e população fluminense'],
+    controversies:['Posterior envolvimento em escândalos de corrupção','Prisão em 2016 em operação policial','Acusações de compra de votos']
+  },
+  ciro02:{
+    fullName:'Ciro Ferreira Gomes',born:'26 de novembro de 1957',birthPlace:'Sobral, Ceará',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg/500px-Ciro_Gomes_Ministro_da_Integra%C3%A7%C3%A3o_%28cropped%29.jpg',
+    party:'PPS — Partido Popular Socialista',ideology:'Centro-Esquerda / Social-democracia',
+    trajectory:'Advogado e político cearense, filho de família tradicional. Foi prefeito de Fortaleza (1989-1990), governador do Ceará (1991-1994) e Ministro da Fazenda no governo Itamar Franco (1994), onde ajudou a lançar o Plano Real. Em 2002, candidatou-se pelo PPS com forte base no Nordeste e Ceará. Ficou em 4º lugar com 12%, mas liderou as pesquisas por meses. Ficou conhecido por seu temperamento explosivo e por ter viajado ao exterior após o 1º turno, recusando-se a apoiar Lula.',
+    elections:[
+      {year:1994,round:'1º turno',result:'Derrota (4,4%)'},
+      {year:1998,round:'1º turno',result:'Derrota (10,9%)'},
+      {year:2002,round:'1º turno',result:'Derrota (11,9%) — 4º lugar'},
+      {year:2018,round:'1º turno',result:'Derrota (12,5%)'},
+      {year:2022,round:'1º turno',result:'Derrota (3,0%)'}
+    ],
+    achievements:['Co-participação no lançamento do Plano Real','Governou o Ceará (1991-1994)','Forte candidatura com base regional sólida'],
+    controversies:['Viagem ao exterior após 1º turno 2002 e recusa em apoiar Lula','Temperamento agressivo em debates','Frases polêmicas sobre adversários']
+  },
+  zemaria02:{
+    fullName:'José Maria de Almeida',born:'29 de março de 1960',birthPlace:'Piracicaba, São Paulo',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    party:'PSTU — Partido Socialista dos Trabalhadores Unificado',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Metalúrgico piracicabano do ABC Paulista, Zé Maria tornou-se dirigente sindical e liderança do PSTU. Candidatou-se à presidência pela primeira vez em 1998 e repetiu em 2002, 2006, 2010 e 2014 — sendo o candidato presidencial mais recorrente da esquerda revolucionária. O PSTU defende a ruptura com o capitalismo e recusa aliança com partidos que aceitam o sistema. Em 2002 obteve 0,5% dos votos.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota (0,6%)'},
+      {year:2002,round:'1º turno',result:'Derrota (0,5%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,5%)'},
+      {year:2010,round:'1º turno',result:'Derrota (0,1%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,1%)'}
+    ],
+    achievements:['Candidato presidencial por 5 eleições consecutivas','Voz da esquerda operária revolucionária','Dirigente sindical combativo'],
+    controversies:['Votações muito baixas por recusa de alianças','PSTU frequentemente atacado pelo PT como "voto perdido"']
+  },
+  ruicosta02:{
+    fullName:'Rui Costa Pimenta',born:'1958',birthPlace:'São Paulo, São Paulo',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    party:'PCO — Partido da Causa Operária',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Jornalista e editor do jornal "Causa Operária", fundador e líder histórico do PCO — um dos menores partidos com registro no Brasil. Defende a revolução operária permanente e recusa qualquer aliança reformista. Candidatou-se à presidência em praticamente todas as eleições desde a redemocratização, obtendo sempre resultados simbólicos próximos a zero.',
+    elections:[
+      {year:2002,round:'1º turno',result:'Derrota (<0,05%)'},
+      {year:2006,round:'1º turno',result:'Derrota (<0,05%)'},
+      {year:2010,round:'1º turno',result:'Derrota (<0,05%)'},
+      {year:2014,round:'1º turno',result:'Derrota (~0,05%)'}
+    ],
+    achievements:['Editor do jornal Causa Operária por décadas','Fundador e líder do PCO','Candidato presidencial em múltiplas eleições'],
+    controversies:['Menor base eleitoral entre todos os candidatos presidenciais','Partido sem estrutura nem recursos']
+  },
   /* ─────────────── PERFIS 2022 ─────────────── */
   lula:{
     fullName:'Luiz Inácio Lula da Silva',born:'27 de outubro de 1945',birthPlace:'Caetés, Pernambuco',
@@ -3528,6 +4512,225 @@ const CANDIDATE_PROFILES = {
     ],
     achievements:['Carreira política de 40+ anos','Candidato presidencial recorrente'],
     controversies:['Votações muito baixas ao longo da história']
+  },
+  /* ─────────────── PERFIS 2010 ─────────────── */
+  dilma10:{
+    fullName:'Dilma Vana Rousseff',born:'14 de dezembro de 1947',birthPlace:'Belo Horizonte, Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/b/bd/Dilma_Rousseff_fevereiro_2011_3-B.jpg',
+    party:'PT — Partido dos Trabalhadores',ideology:'Centro-Esquerda / Social-democracia',
+    trajectory:'Economista e ex-guerrilheira da ditadura militar, presa e torturada de 1970 a 1972. Fez carreira como gestora pública no Rio Grande do Sul. Tornou-se Ministra de Minas e Energia (2003) e depois Ministra-Chefe da Casa Civil (2005-2010) no governo Lula. Candidata oficial de Lula, venceu as eleições de 2010 tornando-se a primeira mulher presidente do Brasil.',
+    elections:[
+      {year:2010,round:'2º turno',result:'✅ ELEITA (56,1%)'},
+      {year:2014,round:'2º turno',result:'✅ REELEITA (51,6%)'}
+    ],
+    achievements:['Primeira mulher eleita presidente do Brasil','PAC 2','Minha Casa Minha Vida','Pré-sal e exploração do petróleo'],
+    controversies:['Impeachment em 2016','Acusações de pedaladas fiscais','Gestão econômica no segundo mandato']
+  },
+  serra10:{
+    fullName:'José Serra',born:'19 de março de 1942',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/9/9b/Jos%C3%A9_Serra_no_Rio.jpg',
+    party:'PSDB — Partido da Social Democracia Brasileira',ideology:'Centro-Direita / Social-democracia',
+    trajectory:'Economista e político paulistano. Exilado durante a ditadura, voltou ao Brasil após a anistia. Deputado federal, Ministro do Planejamento (1995-1996) e Ministro da Saúde (1998-2002) no governo FHC. Candidato presidencial em 2002 (perdeu para Lula) e 2010. Governador de São Paulo (2006-2010), quando se afastou para concorrer. Obteve 43,7% no 1º turno de 2010.',
+    elections:[
+      {year:2002,round:'2º turno',result:'Derrota para Lula (38,7%)'},
+      {year:2010,round:'2º turno',result:'Derrota para Dilma (43,9%)'}
+    ],
+    achievements:['Ministro da Saúde — lei dos genéricos','Governador de SP','Reforma administrativa em SP'],
+    controversies:['Derrota em 2002 e 2010','Associação ao governo FHC com crise econômica']
+  },
+  marina10:{
+    fullName:'Marina Silva',born:'8 de fevereiro de 1958',birthPlace:'Breu Velho, Acre',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/8/8a/MarinaSilva2010_%28cropped%29.jpg',
+    party:'PV — Partido Verde',ideology:'Centro-Esquerda / Ambientalismo',
+    trajectory:'Ex-seringueira do Acre, aprendeu a ler com 16 anos. Senadora pelo PT por três mandatos, foi Ministra do Meio Ambiente de Lula (2003-2008), deixando o cargo por discordâncias ambientais. Em 2010, candidatou-se pelo PV e surpreendeu com 19,3%, avançando muito no Acre e no Sul.',
+    elections:[
+      {year:2010,round:'1º turno',result:'Derrota (19,3%)'},
+      {year:2014,round:'1º turno',result:'Derrota (21,3%)'},
+      {year:2018,round:'1º turno',result:'Derrota (1,0%)'}
+    ],
+    achievements:['Ministra do Meio Ambiente (2003–2008)','Redução do desmatamento da Amazônia','Ícone internacional do ambientalismo'],
+    controversies:['Queda expressiva de 2014 para 2018','Saída do PT e depois do PSB']
+  },
+  plinio10:{
+    fullName:'Plínio de Arruda Sampaio',born:'26 de março de 1930',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Pl%C3%ADnio_Sampaio_2008.jpg/500px-Pl%C3%ADnio_Sampaio_2008.jpg',
+    party:'PSOL — Partido Socialismo e Liberdade',ideology:'Extrema Esquerda / Socialismo',
+    trajectory:'Advogado, procurador e defensor dos direitos humanos. Primeiro candidato presidencial pelo PSOL em 2010, ao lado de Heloísa Helena (candidata em 2006). Obteve 0,87% dos votos. Faleceu em 2014 e se tornou um dos maiores símbolos da esquerda brasileira.',
+    elections:[
+      {year:2010,round:'1º turno',result:'Derrota (0,87%)'}
+    ],
+    achievements:['Defensor dos sem-terra','Advogado dos direitos humanos','Símbolo histórico da esquerda'],
+    controversies:['Candidatura com apoio limitado']
+  },
+  ivan10:{
+    fullName:'Ivan Pinheiro',born:'1955',birthPlace:'Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/f/fc/Ivan_Pinheiro_PCB_-_2014_%28cropped%29.jpg',
+    party:'PCB — Partido Comunista Brasileiro',ideology:'Extrema Esquerda / Comunismo',
+    trajectory:'Político gaúcho e presidente do PCB. Candidatou-se à presidência em 2010 e 2014 pelo PCB. Defende o socialismo científico e a ruptura com o capitalismo.',
+    elections:[
+      {year:2010,round:'1º turno',result:'Derrota (0,04%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,1%)'}
+    ],
+    achievements:['Liderança do PCB','Candidato presidencial recorrente'],
+    controversies:['Base eleitoral mínima']
+  },
+  zemaria10:{
+    fullName:'José Maria de Almeida',born:'1951',birthPlace:'São Paulo, São Paulo',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    party:'PSTU — Partido Socialista dos Trabalhadores Unificado',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Metalúrgico e fundador do PSTU. Candidato presidencial em múltiplas eleições representando a corrente trotskista do movimento operário.',
+    elections:[
+      {year:2002,round:'1º turno',result:'Derrota (0,52%)'},
+      {year:2010,round:'1º turno',result:'Derrota (0,07%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,1%)'}
+    ],
+    achievements:['Fundador do PSTU','Liderança histórica do movimento operário'],
+    controversies:['Votações expressivamente baixas']
+  },
+  fidelix10:{
+    fullName:'José Levy Fidélix da Cruz',born:'1 de agosto de 1950',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/ae/Levy_Fidelix_tv_brasil_%28cropped%29.jpg',
+    party:'PRTB — Partido Renovação Trabalhista Brasileiro',ideology:'Direita',
+    trajectory:'Empresário e apresentador de TV. Fundou o PRTB em 1994. Candidatou-se à presidência em 2006, 2010 e 2014. Ficou tristemente famoso em 2014 por declarações homofóbicas num debate presidencial.',
+    elections:[
+      {year:2006,round:'1º turno',result:'Derrota (0,04%)'},
+      {year:2010,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,43%)'}
+    ],
+    achievements:['Fundador do PRTB','Aumento expressivo em 2014'],
+    controversies:['Declarações homofóbicas no debate de 2014']
+  },
+  ruicosta10:{
+    fullName:'Rui Costa Pimenta',born:'1956',birthPlace:'São Paulo, São Paulo',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    party:'PCO — Partido da Causa Operária',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Jornalista e editor do jornal Causa Operária. Fundador e dirigente do PCO. Candidato presidencial desde 1998. Extremamente crítico ao TSE e ao sistema eleitoral em 2022.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota'},
+      {year:2006,round:'1º turno',result:'Derrota'},
+      {year:2010,round:'1º turno',result:'Derrota'},
+      {year:2014,round:'1º turno',result:'Derrota (0,05%)'},
+      {year:2022,round:'1º turno',result:'Derrota'}
+    ],
+    achievements:['Editor do jornal Causa Operária por décadas','Fundador e líder do PCO'],
+    controversies:['Menor base eleitoral entre todos os candidatos presidenciais']
+  },
+  eymael10:{
+    fullName:'José Maria Eymael',born:'20 de abril de 1933',birthPlace:'Guaratinguetá, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    party:'PSDC — Partido Social Democrata Cristão',ideology:'Centro-Direita / Democracia Cristã',
+    trajectory:'Advogado e político paulista, candidato presidencial recorrente.',
+    elections:[
+      {year:1989,round:'1º turno',result:'Derrota (0,56%)'},
+      {year:2006,round:'1º turno',result:'Derrota'},
+      {year:2010,round:'1º turno',result:'Derrota (0,09%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,02%)'}
+    ],
+    achievements:['Candidato presidencial recorrente'],
+    controversies:['Votações muito baixas']
+  },
+  /* ─────────────── PERFIS 2006 ─────────────── */
+  lula06:{
+    fullName:'Luiz Inácio Lula da Silva',born:'27 de outubro de 1945',birthPlace:'Caetés, Pernambuco',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/0/0d/President_Lula_in_2006_%283%29.jpg',
+    party:'PT — Partido dos Trabalhadores',ideology:'Esquerda / Social-democracia',
+    trajectory:'Presidente em exercício buscando a reeleição. Apesar do escândalo do Mensalão (2005), a economia crescia e o Bolsa Família reduzia a pobreza. Obteve 48,6% no 1º turno e 60,8% no 2º, vencendo Alckmin com larga margem, especialmente forte no Nordeste.',
+    elections:[
+      {year:1989,round:'2º turno',result:'Derrota para Collor (46,7%)'},
+      {year:1994,round:'1º turno',result:'Derrota (27,0%)'},
+      {year:1998,round:'1º turno',result:'Derrota (31,7%)'},
+      {year:2002,round:'2º turno',result:'✅ ELEITO (61,3%)'},
+      {year:2006,round:'2º turno',result:'✅ REELEITO (60,8%)'},
+      {year:2022,round:'2º turno',result:'✅ ELEITO (50,9%)'}
+    ],
+    achievements:['Bolsa Família — 11 milhões de famílias','Crescimento econômico acima de 3%','ProUni','Redução da pobreza extrema'],
+    controversies:['Mensalão (2005) — crise política grave','Gestão do PT contestada pela oposição']
+  },
+  alckmin06:{
+    fullName:'Geraldo José Rodrigues Alckmin Filho',born:'11 de novembro de 1952',birthPlace:'Pindamonhangaba, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/70/Lula_and_Alckmin_%28cropped%29.jpg/500px-Lula_and_Alckmin_%28cropped%29.jpg',
+    party:'PSDB — Partido da Social Democracia Brasileira',ideology:'Centro-Direita / Social-democracia',
+    trajectory:'Governador de São Paulo (2001-2006). Candidatou-se com apoio de vários partidos de centro e direita — a maior coligação da história até então. Obteve 41,6% no 1º turno, forçando Lula ao 2º turno, mas perdeu com 39,2% de votos. Foi surpreendentemente forte no Sudeste e Sul.',
+    elections:[
+      {year:2006,round:'2º turno',result:'Derrota para Lula (39,2%)'},
+      {year:2018,round:'1º turno',result:'Derrota (4,76%)'}
+    ],
+    achievements:['Governador de SP (2001-2006)','Gestão fiscal responsável em SP','Maior coligação da eleição de 2006'],
+    controversies:['Derrota expressiva no 2º turno','Dificuldade de avançar no Nordeste']
+  },
+  cristovam06:{
+    fullName:'Cristovam Buarque',born:'9 de junho de 1944',birthPlace:'Recife, Pernambuco',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/2/29/Foto_oficial_de_Cristovam_Buarque.jpg',
+    party:'PDT — Partido Democrático Trabalhista',ideology:'Centro-Esquerda / Trabalhismo',
+    trajectory:'Economista e professor, ex-governador do DF (1995-1998), onde implementou o Bolsa Escola. Foi Ministro da Educação no 1º governo Lula, mas pediu demissão em 2004 por discordâncias. Candidato do PDT em 2006 com 2,64%, focado na educação como tema central.',
+    elections:[
+      {year:2006,round:'1º turno',result:'Derrota (2,64%)'}
+    ],
+    achievements:['Bolsa Escola — precursor do Bolsa Família','Governador do DF','Ministro da Educação (2003-2004)'],
+    controversies:['Saída do governo Lula','Votação abaixo do esperado em 2006']
+  },
+  heloisa06:{
+    fullName:'Heloísa Helena Lima de Moraes Carvalho',born:'25 de janeiro de 1962',birthPlace:'Maceió, Alagoas',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/9/96/Agenda_Marina_Silva_com_Vereadora_Heloisa_Helena_-_REDE_-_Macei%C3%B3_-_AL_-_31348264202_%28cropped%29.jpg',
+    party:'PSOL — Partido Socialismo e Liberdade',ideology:'Extrema Esquerda / Socialismo',
+    trajectory:'Enfermeira e senadora por Alagoas pelo PT, foi expulsa do partido em 2003 por votar contra a reforma da previdência. Fundou o PSOL em 2004. Candidata presidencial em 2006 com 6,85%, surpreendendo como alternativa à esquerda do PT. Conhecida pela combatividade e eloquência nos debates.',
+    elections:[
+      {year:2006,round:'1º turno',result:'Derrota (6,85%)'}
+    ],
+    achievements:['Fundação do PSOL','Resultado expressivo de 6,85%','Combatividade nos debates'],
+    controversies:['Expulsão do PT em 2003']
+  },
+  rangel06:{
+    fullName:'Ana Maria Rangel',born:'1955',birthPlace:'Rio de Janeiro',
+    photo:'https://www1.folha.uol.com.br/folha/especial/2006/eleicoes/images/20060905-ana230.jpg',
+    party:'PRP — Partido Republicano Progressista',ideology:'Direita / Conservador',
+    trajectory:'Professora e ativista. Foi a primeira mulher candidata à presidência do Brasil em 2006 pelo PRP. Obteve 0,08% dos votos. Uma candidatura histórica, apesar da pouca expressividade eleitoral.',
+    elections:[
+      {year:2006,round:'1º turno',result:'Derrota (0,08%)'}
+    ],
+    achievements:['Primeira mulher candidata à presidência do Brasil'],
+    controversies:['Candidatura sem expressão eleitoral significativa']
+  },
+  eymael06:{
+    fullName:'José Maria Eymael',born:'20 de abril de 1933',birthPlace:'Guaratinguetá, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    party:'PSDC — Partido Social Democrata Cristão',ideology:'Centro-Direita / Democracia Cristã',
+    trajectory:'Advogado democrata cristão, candidato presidencial recorrente.',
+    elections:[
+      {year:1989,round:'1º turno',result:'Derrota (0,56%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2010,round:'1º turno',result:'Derrota'},
+      {year:2014,round:'1º turno',result:'Derrota'},
+      {year:2018,round:'1º turno',result:'Derrota'}
+    ],
+    achievements:['Candidato recorrente por mais de 30 anos'],
+    controversies:['Votações sempre muito baixas']
+  },
+  bivar06:{
+    fullName:'Luciano Bivar',born:'28 de setembro de 1948',birthPlace:'Recife, Pernambuco',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Luciano_Bivar.jpg/500px-Luciano_Bivar.jpg',
+    party:'PSL — Partido Social Liberal',ideology:'Direita / Liberal-conservador',
+    trajectory:'Empresário pernambucano e fundador do PSL. Candidato presidencial em 2006 com 0,06%. Presidiu o PSL por décadas até 2018, quando Bolsonaro ingressou no partido e o transformou na maior sigla do país temporariamente.',
+    elections:[
+      {year:2006,round:'1º turno',result:'Derrota (0,06%)'}
+    ],
+    achievements:['Fundador e presidente histórico do PSL','Papel no crescimento do PSL em 2018'],
+    controversies:['Conflito com Bolsonaro em 2019','Passagem apagada em 2006']
+  },
+  ruicosta06:{
+    fullName:'Rui Costa Pimenta',born:'1956',birthPlace:'São Paulo, São Paulo',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    party:'PCO — Partido da Causa Operária',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Jornalista e editor do jornal Causa Operária. Fundador e dirigente do PCO. Candidato presidencial recorrente.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota'},
+      {year:2006,round:'1º turno',result:'Derrota (0,05%)'},
+      {year:2010,round:'1º turno',result:'Derrota'},
+      {year:2014,round:'1º turno',result:'Derrota (0,05%)'},
+      {year:2022,round:'1º turno',result:'Derrota'}
+    ],
+    achievements:['Candidato presidencial em quase todas as eleições desde 1998'],
+    controversies:['Menor base eleitoral consistente entre todos os candidatos']
   }
 };
 
@@ -3824,13 +5027,172 @@ const VICE_PROFILES = {
     fullName:'Geraldo José Rodrigues Alckmin Filho',born:'11 de novembro de 1952',birthPlace:'Pindamonhangaba, São Paulo',
     photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Geraldo_Alckmin_em_junho_de_2014_%28cropped%29.jpg/500px-Geraldo_Alckmin_em_junho_de_2014_%28cropped%29.jpg',
     party:'PSDB',ideology:'Centro-Direita / Social-democracia',
-    bio:'Governador de São Paulo em 2014 (terceiro mandato), Alckmin era o tucano mais poderoso do estado. Médico e administrador metódico, ficou famoso pelo apelido "Picolé de Chuchu" pela aparente frieza — mas entregava gestão fiscal impecável. Como vice de Aécio traria o peso total do estado de SP, mas poderia criar tensão interna no PSDB por ser também presidenciável.',
+    bio:'Governador de São Paulo em 2014 (terceiro mandato). Como vice de Aécio traria o peso total do estado de SP.',
     strength:'O estado de SP — força máxima',bonus:'SP +5%, SE +4%',
     actions:[
       {id:'vp_alckmin14_sp',label:'Domínio Absoluto em SP',icon:'🏛️',desc:'Alckmin mobiliza toda a máquina estadual de SP',cost:5000000,effect:'SP +6%, SE +3%'},
-      {id:'vp_alckmin14_empresarios',label:'Setor Produtivo',icon:'💼',desc:'Encontro com empresários e indústria paulistana',cost:4000000,effect:'+4% empresários SP, SE +2%'},
-      {id:'vp_alckmin14_mg',label:'Aliança com MG',icon:'✈️',desc:'Governador de SP visita Minas — parceria política',cost:4000000,effect:'MG +4%, SE +2%'},
-      {id:'vp_alckmin14_sul',label:'Tour pelo Sul',icon:'🏔️',desc:'Visita os estados do Sul para ampliar base tucana',cost:4000000,effect:'S +3%, PR +2%'}
+      {id:'vp_alckmin14_mg',label:'Aliança com MG',icon:'✈️',desc:'Governador de SP visita Minas',cost:4000000,effect:'MG +4%, SE +2%'},
+      {id:'vp_alckmin14_sul',label:'Tour pelo Sul',icon:'🏔️',desc:'Visita os estados do Sul',cost:4000000,effect:'S +3%, PR +2%'}
+    ]
+  },
+  /* ─── 2010 VICES — DILMA ─── */
+  temer10:{
+    fullName:'Michel Miguel Elias Temer Lulia',born:'23 de setembro de 1940',birthPlace:'Tietê, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg/500px-Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg',
+    party:'MDB (PMDB)',ideology:'Centro / Centrismo',
+    bio:'Advogado constitucionalista e político paulistano. Presidente da Câmara dos Deputados. Vice-presidente real de Dilma em 2010 e 2014. Tornou-se presidente após o impeachment de Dilma em 2016.',
+    strength:'Sudeste e centro político',bonus:'SP +3%, SE +2%',
+    actions:[
+      {id:'vp_temer10_sp',label:'Articulação em SP',icon:'🏛️',desc:'Temer usa sua rede política paulistana',cost:3000000,effect:'SP +4%, SE +2%'},
+      {id:'vp_temer10_pmdb',label:'Aliança PMDB Nacional',icon:'🤝',desc:'Ativa a máquina do PMDB nos estados',cost:5000000,effect:'+3% nacional'},
+      {id:'vp_temer10_camara',label:'Articulação no Congresso',icon:'📋',desc:'Temer articula apoio de parlamentares',cost:2000000,effect:'+2% centro político'},
+      {id:'vp_temer10_debate',label:'Debate Institucional',icon:'⚖️',desc:'Defende a estabilidade institucional',cost:0,effect:'+1% indecisos'}
+    ]
+  },
+  ciro10_v:{
+    fullName:'Ciro Ferreira Gomes',born:'26 de novembro de 1957',birthPlace:'Sobral, Ceará',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Presidente_Ciro_Gomes.png/500px-Presidente_Ciro_Gomes.png',
+    party:'PSB',ideology:'Centro-Esquerda / Trabalhismo',
+    bio:'Ex-governador do Ceará e ex-ministro da Integração Nacional no governo Lula. Popular no Nordeste, especialmente no Ceará. Como vice de Dilma traria votos nordestinos e reforçaria a base aliada.',
+    strength:'Nordeste, especialmente Ceará',bonus:'CE +4%, NE +2%',
+    actions:[
+      {id:'vp_ciro10_ce',label:'Mobilização no Ceará',icon:'☀️',desc:'Ciro usa sua popularidade cearense',cost:3000000,effect:'CE +5%, NE +2%'},
+      {id:'vp_ciro10_ne',label:'Caravana Nordestina',icon:'✈️',desc:'Tour pelos estados do Nordeste',cost:5000000,effect:'NE +4%'},
+      {id:'vp_ciro10_economia',label:'Debate Econômico',icon:'💰',desc:'Ciro debate política econômica',cost:0,effect:'+2% indecisos'},
+      {id:'vp_ciro10_tv',label:'Entrevista Regional',icon:'📺',desc:'Aparição em emissoras nordestinas',cost:0,effect:'NE +1.5%'}
+    ]
+  },
+  jaques10:{
+    fullName:'Jaques Wagner',born:'8 de outubro de 1951',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg',
+    party:'PT',ideology:'Esquerda / Trabalhismo',
+    bio:'Governador da Bahia por dois mandatos (2007–2014), um dos políticos mais populares do Nordeste. Sua presença na chapa de Dilma traria votos cruciais da Bahia e do Nordeste.',
+    strength:'Nordeste, especialmente Bahia',bonus:'BA +5%, NE +3%',
+    actions:[
+      {id:'vp_jaques10_ba',label:'Mobilização na Bahia',icon:'☀️',desc:'Jaques usa sua enorme popularidade baiana',cost:3000000,effect:'BA +6%, NE +3%'},
+      {id:'vp_jaques10_ne',label:'Caravana Nordestina',icon:'✈️',desc:'Tour pelos estados do Nordeste',cost:6000000,effect:'NE +4%, N +2%'},
+      {id:'vp_jaques10_pt',label:'Ativação da Base PT',icon:'⭐',desc:'Mobiliza militância petista histórica',cost:2000000,effect:'+3% base PT'},
+      {id:'vp_jaques10_tv',label:'Entrevista no Norte/NE',icon:'📺',desc:'Entrevista em emissoras regionais',cost:0,effect:'NE +2%'}
+    ]
+  },
+  /* ─── 2010 VICES — SERRA ─── */
+  indio10:{
+    fullName:'Índio da Costa',born:'1 de novembro de 1971',birthPlace:'Rio de Janeiro, Rio de Janeiro',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Indiodacosta30062010.jpg/500px-Indiodacosta30062010.jpg',
+    party:'Democratas',ideology:'Centro-Direita / Liberal',
+    bio:'Deputado federal pelo Rio de Janeiro e vice-presidente nacional dos Democratas (ex-PFL). Foi vice real de José Serra em 2010. Jovem político com boa aceitação no Sudeste, especialmente no Rio de Janeiro.',
+    strength:'Rio de Janeiro e Sudeste',bonus:'RJ +3%, SE +2%',
+    actions:[
+      {id:'vp_indio10_rj',label:'Mobilização no Rio',icon:'🌊',desc:'Índio usa sua popularidade carioca',cost:4000000,effect:'RJ +5%, SE +2%'},
+      {id:'vp_indio10_dem',label:'Aliança Democratas',icon:'🤝',desc:'Articula apoio dos Democratas nos estados',cost:3000000,effect:'+2% centro-direita'},
+      {id:'vp_indio10_debate',label:'Debate de Propostas',icon:'📋',desc:'Apresenta programa de governo',cost:0,effect:'+1.5% indecisos'},
+      {id:'vp_indio10_se',label:'Tour Sudeste',icon:'✈️',desc:'Visita os estados do Sudeste',cost:4000000,effect:'SE +3%'}
+    ]
+  },
+  aecio10_v:{
+    fullName:'Aécio Neves da Cunha',born:'10 de março de 1960',birthPlace:'Belo Horizonte, Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg',
+    party:'PSDB',ideology:'Centro-Direita / Social-democracia',
+    bio:'Governador de Minas Gerais em 2010 (2º mandato). Ex-presidente da Câmara dos Deputados. Seria uma escolha estratégica de Serra que garantiria MG e ampliaria a base no Sudeste. Em 2014 seria o próprio candidato presidencial do PSDB.',
+    strength:'Minas Gerais — força máxima',bonus:'MG +6%, SE +3%',
+    actions:[
+      {id:'vp_aecio10_mg',label:'Domínio em MG',icon:'⛏️',desc:'Aécio mobiliza toda a máquina mineira',cost:5000000,effect:'MG +7%, SE +3%'},
+      {id:'vp_aecio10_sul',label:'Tour pelo Sul',icon:'🏔️',desc:'Visita os estados sulistas conservadores',cost:4000000,effect:'S +3%, PR +2%'},
+      {id:'vp_aecio10_debate',label:'Debate Econômico',icon:'💰',desc:'Aécio debate economia com profundidade',cost:0,effect:'+2% indecisos, +2% classe média'},
+      {id:'vp_aecio10_se',label:'Encontro Empresarial',icon:'💼',desc:'Reúne empresariado do Sudeste',cost:4000000,effect:'SE +2%, +3% empresários'}
+    ]
+  },
+  /* ─── 2006 VICES — LULA ─── */
+  alencar06:{
+    fullName:'José Alencar Gomes da Silva',born:'17 de outubro de 1931',birthPlace:'Muriaé, Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/Jose_alencar_23_out_2007.jpg/500px-Jose_alencar_23_out_2007.jpg',
+    party:'PRB',ideology:'Centro / Liberal',
+    bio:'Empresário têxtil mineiro e vice-presidente real de Lula em 2003-2010. Exerceu o cargo com dignidade e popularidade, sendo um dos políticos mais respeitados do período. Faleceu em 2011. Sua presença garantia o eleitorado do centro e empresariado brasileiro.',
+    strength:'Minas Gerais e centro político',bonus:'MG +4%, centro +3%',
+    actions:[
+      {id:'vp_alencar06_mg',label:'Mobilização em MG',icon:'⛏️',desc:'Alencar usa sua popularidade mineira',cost:3000000,effect:'MG +5%, SE +2%'},
+      {id:'vp_alencar06_empresarios',label:'Setor Empresarial',icon:'💼',desc:'Articula apoio do setor produtivo',cost:4000000,effect:'+4% empresários nacionais'},
+      {id:'vp_alencar06_nacional',label:'Campanha Nacional',icon:'📺',desc:'Alencar faz campanha em todo o Brasil',cost:3000000,effect:'+2% nacional'},
+      {id:'vp_alencar06_co',label:'Centro-Oeste',icon:'✈️',desc:'Visita ao coração do agronegócio',cost:3000000,effect:'CO +3%, MG +2%'}
+    ]
+  },
+  ciro06_v:{
+    fullName:'Ciro Ferreira Gomes',born:'26 de novembro de 1957',birthPlace:'Sobral, Ceará',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Presidente_Ciro_Gomes.png/500px-Presidente_Ciro_Gomes.png',
+    party:'PSB',ideology:'Centro-Esquerda / Trabalhismo',
+    bio:'Ex-governador do Ceará e ex-ministro de Lula. Um dos políticos mais populares do Nordeste. Como vice de Lula em 2006 reforçaria o domínio no Nordeste e ajudaria a conquistar eleitores centristas.',
+    strength:'Nordeste, especialmente Ceará',bonus:'CE +4%, NE +3%',
+    actions:[
+      {id:'vp_ciro06_ne',label:'Caravana Nordestina',icon:'☀️',desc:'Ciro mobiliza o Nordeste',cost:5000000,effect:'NE +4%, N +2%'},
+      {id:'vp_ciro06_ce',label:'Mobilização no Ceará',icon:'☀️',desc:'Ciro usa sua popularidade cearense',cost:3000000,effect:'CE +5%'},
+      {id:'vp_ciro06_debate',label:'Debate Econômico',icon:'💰',desc:'Ciro debate desenvolvimento nacional',cost:0,effect:'+2% indecisos'},
+      {id:'vp_ciro06_tv',label:'Entrevista Regional NE',icon:'📺',desc:'Aparições em emissoras nordestinas',cost:0,effect:'NE +1.5%'}
+    ]
+  },
+  aldo06:{
+    fullName:'Aldo Rebelo',born:'5 de novembro de 1956',birthPlace:'Pilar, Alagoas',
+    photo:'https://pbs.twimg.com/profile_images/1900909467073490944/BiJZl8M-_400x400.jpg',
+    party:'PCdoB',ideology:'Esquerda / Comunismo',
+    bio:'Deputado federal por São Paulo e liderança histórica do PCdoB. Presidente da Câmara dos Deputados (2005-2007). Habilidoso articulador político, sua presença como vice de Lula solidificaria a aliança com o PCdoB e parte do eleitorado de SP.',
+    strength:'São Paulo e base da esquerda',bonus:'SP +2%, SE +1%',
+    actions:[
+      {id:'vp_aldo06_sp',label:'Mobilização em SP',icon:'⭐',desc:'Aldo usa sua rede petista paulistana',cost:3000000,effect:'SP +3%, SE +2%'},
+      {id:'vp_aldo06_camara',label:'Articulação no Congresso',icon:'🏛️',desc:'Aldo articula apoio parlamentar',cost:2000000,effect:'+2% nacional'},
+      {id:'vp_aldo06_debate',label:'Debate de Propostas',icon:'📋',desc:'Apresenta programa do governo Lula',cost:0,effect:'+1.5% indecisos'},
+      {id:'vp_aldo06_ne',label:'Visita ao Nordeste',icon:'☀️',desc:'Tour pelo Nordeste em apoio a Lula',cost:4000000,effect:'NE +2%, AL +2%'}
+    ]
+  },
+  jaques06_v:{
+    fullName:'Jaques Wagner',born:'8 de outubro de 1951',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg',
+    party:'PT',ideology:'Esquerda / Trabalhismo',
+    bio:'Ex-ministro do governo Lula e candidato ao governo da Bahia em 2006. Fortíssimo na Bahia, seria uma escolha estratégica para garantir o maior estado nordestino.',
+    strength:'Bahia e Nordeste',bonus:'BA +5%, NE +3%',
+    actions:[
+      {id:'vp_jaques06_ba',label:'Mobilização na Bahia',icon:'☀️',desc:'Jaques usa sua popularidade baiana',cost:3000000,effect:'BA +6%, NE +3%'},
+      {id:'vp_jaques06_ne',label:'Caravana Nordestina',icon:'✈️',desc:'Tour pelos estados do Nordeste',cost:5000000,effect:'NE +4%'},
+      {id:'vp_jaques06_pt',label:'Base do PT',icon:'⭐',desc:'Mobiliza militância petista',cost:2000000,effect:'+2% base PT'},
+      {id:'vp_jaques06_tv',label:'Entrevista Regional',icon:'📺',desc:'Aparição em emissoras nordestinas',cost:0,effect:'NE +1.5%'}
+    ]
+  },
+  /* ─── 2006 VICES — ALCKMIN ─── */
+  josejorge06:{
+    fullName:'José Jorge de Vasconcelos Lima',born:'4 de outubro de 1948',birthPlace:'Caruaru, Pernambuco',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Jos%C3%A9_Jorge_03.jpg/960px-Jos%C3%A9_Jorge_03.jpg',
+    party:'PFL',ideology:'Centro-Direita / Liberal',
+    bio:'Senador de Pernambuco pelo PFL (hoje Democratas). Vice real de Alckmin em 2006. Sua presença na chapa atrairia o eleitorado nordestino de centro-direita, especialmente em Pernambuco.',
+    strength:'Nordeste, especialmente Pernambuco',bonus:'PE +4%, NE +2%',
+    actions:[
+      {id:'vp_jj06_pe',label:'Mobilização em PE',icon:'🏛️',desc:'José Jorge usa sua força em Pernambuco',cost:3000000,effect:'PE +5%, NE +2%'},
+      {id:'vp_jj06_ne',label:'Tour Nordeste',icon:'✈️',desc:'Campanha pelo Nordeste de centro-direita',cost:5000000,effect:'NE +3%'},
+      {id:'vp_jj06_pfl',label:'Aliança PFL',icon:'🤝',desc:'Ativa a máquina do PFL nos estados',cost:4000000,effect:'+2% centro-direita nacional'},
+      {id:'vp_jj06_debate',label:'Debate Desenvolvimento NE',icon:'💰',desc:'Debate propostas para o Nordeste',cost:0,effect:'NE +1.5%, +1% indecisos'}
+    ]
+  },
+  tasso06:{
+    fullName:'Tasso Ribeiro Jereissati',born:'10 de dezembro de 1950',birthPlace:'Fortaleza, Ceará',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Senadores_da_56%C2%AA_Legislatura_%2846293124934%29.jpg/500px-Senadores_da_56%C2%AA_Legislatura_%2846293124934%29.jpg',
+    party:'PSDB',ideology:'Centro-Direita / Social-democracia',
+    bio:'Ex-governador do Ceará por três mandatos (1987-1990, 1995-1998, 1999-2002). Modernizou o Ceará e é um dos políticos mais populares do Nordeste. Como vice de Alckmin seria uma escolha estratégica brilhante para penetrar no Nordeste dominado por Lula.',
+    strength:'Nordeste, especialmente Ceará',bonus:'CE +5%, NE +3%',
+    actions:[
+      {id:'vp_tasso06_ce',label:'Domínio no Ceará',icon:'☀️',desc:'Tasso usa sua popularidade histórica no CE',cost:3000000,effect:'CE +6%, NE +3%'},
+      {id:'vp_tasso06_ne',label:'Tour Nordeste Tucano',icon:'✈️',desc:'Campanha nos estados nordestinos com Alckmin',cost:6000000,effect:'NE +4%'},
+      {id:'vp_tasso06_debate',label:'Debate Desenvolvimento',icon:'💰',desc:'Tasso apresenta o modelo cearense de desenvolvimento',cost:0,effect:'NE +2%, +1.5% indecisos'},
+      {id:'vp_tasso06_tv',label:'Entrevista Regional',icon:'📺',desc:'Aparição em emissoras nordestinas',cost:0,effect:'NE +1.5%'}
+    ]
+  },
+  aecio06_v:{
+    fullName:'Aécio Neves da Cunha',born:'10 de março de 1960',birthPlace:'Belo Horizonte, Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg',
+    party:'PSDB',ideology:'Centro-Direita / Social-democracia',
+    bio:'Presidente da Câmara dos Deputados em 2006 e candidato ao governo de MG. Neto de Tancredo Neves, é figura histórica do PSDB mineiro. Como vice de Alckmin garantiria Minas Gerais — estado essencial para qualquer candidatura presidencial.',
+    strength:'Minas Gerais — força máxima',bonus:'MG +6%, SE +3%',
+    actions:[
+      {id:'vp_aecio06_mg',label:'Domínio em MG',icon:'⛏️',desc:'Aécio mobiliza toda a máquina mineira',cost:5000000,effect:'MG +7%, SE +3%'},
+      {id:'vp_aecio06_sul',label:'Tour pelo Sul',icon:'🏔️',desc:'Visita os estados sulistas conservadores',cost:4000000,effect:'S +3%, PR +2%'},
+      {id:'vp_aecio06_debate',label:'Debate Econômico',icon:'💰',desc:'Aécio debate economia com profundidade',cost:0,effect:'+2% indecisos'},
+      {id:'vp_aecio06_se',label:'Encontro Empresarial',icon:'💼',desc:'Reúne empresariado do Sudeste',cost:4000000,effect:'SE +2%, +3% empresários'}
     ]
   }
 };
@@ -3928,10 +5290,10 @@ function executeViceAction(actionId, action){
   if(actionId.includes('mt')||actionId.includes('agro')||actionId.includes('tc')){['MT','MS','GO','DF'].forEach(s=>{if(G.statePoll[s])G.statePoll[s][G.player.id]=clamp(G.statePoll[s][G.player.id]+2,0,85);});boost=1.0;regions.push('Centro-Oeste');}
   if(actionId.includes('rj')||actionId.includes('bn')){if(G.statePoll['RJ'])G.statePoll['RJ'][G.player.id]=clamp(G.statePoll['RJ'][G.player.id]+4,0,85);boost=1.0;regions.push('Rio de Janeiro');}
   if(actionId.includes('pa')||actionId.includes('am')){['PA','AM','AC','AP','RO','RR','TO'].forEach(s=>{if(G.statePoll[s])G.statePoll[s][G.player.id]=clamp(G.statePoll[s][G.player.id]+2.5,0,85);});boost=1.0;regions.push('Norte');}
-  if(actionId.includes('media')||actionId.includes('tv')||actionId.includes('cnn')||actionId.includes('jovem')){G.polls[G.player.id]=clamp(G.polls[G.player.id]+0.8,0,70);normalizePoll();boost=0.8;}
-  if(actionId.includes('business')||actionId.includes('empresarios')){G.money+=15000000;G.polls[G.player.id]=clamp(G.polls[G.player.id]+0.6,0,70);normalizePoll();boost=0.6;}
-  if(actionId.includes('mil')){G.polls[G.player.id]=clamp(G.polls[G.player.id]+0.5,0,70);normalizePoll();boost=0.5;}
-  if(actionId.includes('youth')||actionId.includes('jovens')){G.polls[G.player.id]=clamp(G.polls[G.player.id]+1.0,0,70);normalizePoll();boost=1.0;}
+  if(actionId.includes('media')||actionId.includes('tv')||actionId.includes('cnn')||actionId.includes('jovem')){G.polls[G.player.id]=clamp(G.polls[G.player.id]+0.8,0,70);applyPlayerGainToAI(0.8);normalizePoll();boost=0.8;}
+  if(actionId.includes('business')||actionId.includes('empresarios')){G.money+=15000000;G.polls[G.player.id]=clamp(G.polls[G.player.id]+0.6,0,70);applyPlayerGainToAI(0.6);normalizePoll();boost=0.6;}
+  if(actionId.includes('mil')){G.polls[G.player.id]=clamp(G.polls[G.player.id]+0.5,0,70);applyPlayerGainToAI(0.5);normalizePoll();boost=0.5;}
+  if(actionId.includes('youth')||actionId.includes('jovens')){G.polls[G.player.id]=clamp(G.polls[G.player.id]+1.0,0,70);applyPlayerGainToAI(1.0);normalizePoll();boost=1.0;}
 
   // Normalize state polls
   Object.keys(G.statePoll).forEach(s=>{let t=Object.values(G.statePoll[s]).reduce((a,b)=>a+b,0);if(t>0)Object.keys(G.statePoll[s]).forEach(k=>G.statePoll[s][k]=G.statePoll[s][k]/t*100);});
@@ -6235,6 +7597,12 @@ function restartGame(){
   document.getElementById('sandbox-check').checked=false;
   document.getElementById('sandbox-badge-top').style.display='none';
   showScreen('intro-screen');
+  const _iz=document.getElementById('inline-election-zone');
+  const _iz2=document.getElementById('inline-config-zone');
+  if(_iz) _iz.style.display='none';
+  if(_iz2) _iz2.style.display='none';
+  document.querySelectorAll('.era-card').forEach(c=>c.classList.remove('active'));
+  showSetupStep('step-country');
 }
 
 // ════════════════════════════════════════════════════════
@@ -6328,8 +7696,8 @@ document.addEventListener('DOMContentLoaded',()=>{
     const el=e.target.closest('button:not(:disabled),a,.candidate-card,.vice-card,.invest-card,.nav-btn,.speed-btn,.alliance-btn,.event-choice-btn,.interview-choice,.diff-btn,.agenda-slot,.post-action-card');
     if(el&&!el.disabled)playSFX('click');
   },{passive:true});
-  renderDifficultyGrid();
-  renderCandidateCards();
+  // Start on country selection step
+  showSetupStep('step-country');
 });
 </script>
 </body>
