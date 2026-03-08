@@ -528,6 +528,47 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .alliance-btn{padding:5px 12px;background:var(--bg4);border:1px solid var(--border2);border-radius:4px;color:var(--text);cursor:pointer;font-size:10px;transition:all .2s;font-family:'IBM Plex Sans',sans-serif}
 .alliance-btn:hover{border-color:var(--accent);color:var(--accent)}.alliance-btn.allied{background:rgba(46,204,113,.1);border-color:var(--green);color:var(--green);cursor:default}
 
+/* ── COALITION TAB ── */
+.coalition-grid{display:grid;grid-template-columns:1fr 320px;gap:14px}
+.party-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:10px;transition:border-color .2s}
+.party-card:hover{border-color:var(--border2)}
+.party-card.in-coalition{border-color:var(--green);background:rgba(46,204,113,.04)}
+.party-card.incompatible{opacity:.45;filter:grayscale(.6)}
+.party-logo{width:34px;height:34px;border-radius:6px;object-fit:contain;background:var(--bg4);padding:3px;flex-shrink:0}
+.party-name{font-size:12px;font-weight:700;color:var(--text)}
+.party-ideology-tag{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;letter-spacing:.5px}
+.party-seats{font-size:10px;color:var(--text3);font-family:'IBM Plex Mono',monospace}
+.party-benefit{font-size:10px;color:var(--green)}
+.coalition-btn{padding:5px 12px;border-radius:5px;font-size:10px;cursor:pointer;border:1px solid var(--border2);background:var(--bg4);color:var(--text);transition:all .2s;font-family:'IBM Plex Sans',sans-serif;white-space:nowrap}
+.coalition-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.coalition-btn.remove-btn:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+.coalition-btn:disabled{opacity:.4;cursor:default}
+.coalition-summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px;position:sticky;top:10px}
+.coalition-seat-bar{height:22px;border-radius:6px;overflow:hidden;background:var(--bg3);display:flex;margin:10px 0;border:1px solid var(--border)}
+.coalition-seat-segment{height:100%;transition:width .6s;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.coalition-member-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:12px;font-size:10px;font-weight:600;border:1px solid;margin:3px 2px}
+.coalition-divider{border:none;border-top:1px solid var(--border);margin:12px 0}
+
+/* ── ATTACK TAB ── */
+.attack-grid{display:grid;grid-template-columns:1fr 300px;gap:14px}
+.attack-target-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.attack-target-card:hover{border-color:var(--red);background:rgba(230,57,70,.04)}
+.attack-target-card.selected{border-color:var(--red);background:rgba(230,57,70,.07);box-shadow:0 0 0 1px var(--red)}
+.attack-type-card{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .2s;display:flex;gap:12px;align-items:flex-start}
+.attack-type-card:hover{border-color:var(--orange)}
+.attack-type-card.selected-type{border-color:var(--orange);background:rgba(243,156,18,.06)}
+.attack-risk-bar{height:6px;border-radius:3px;background:var(--bg4);overflow:hidden;margin-top:4px}
+.attack-risk-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--orange),var(--red))}
+.attack-execute-btn{width:100%;padding:14px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;font-family:'IBM Plex Sans',sans-serif}
+.attack-execute-btn:disabled{background:var(--bg4);color:var(--text3);cursor:default}
+.attack-execute-btn:not(:disabled){background:linear-gradient(135deg,var(--red),#c0392b);color:#fff;box-shadow:0 4px 14px rgba(230,57,70,.4)}
+.attack-execute-btn:not(:disabled):hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(230,57,70,.55)}
+.attack-history-item{padding:9px 12px;border-radius:7px;margin-bottom:6px;font-size:11px;border-left:3px solid}
+.attack-history-item.success{background:rgba(46,204,113,.06);border-color:var(--green)}
+.attack-history-item.backfire{background:rgba(230,57,70,.06);border-color:var(--red)}
+.attack-history-item.neutral{background:var(--bg3);border-color:var(--text3)}
+@media(max-width:900px){.coalition-grid,.attack-grid{grid-template-columns:1fr}}
+
 /* ── DEMOGRAPHICS ─────────────────────────────────────── */
 .demo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
 .demo-group{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
@@ -797,6 +838,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
         <button class="nav-btn" onclick="showTab('polls',this)"><span class="icon">📊</span>Pesquisas</button>
         <button class="nav-btn" onclick="showTab('social',this)"><span class="icon">📱</span>Redes Sociais</button>
         <button class="nav-btn" onclick="showTab('strategy',this)"><span class="icon">🤝</span>Estratégia</button>
+        <button class="nav-btn" onclick="showTab('coalition',this)"><span class="icon">🏛️</span>Coligação</button>
+        <button class="nav-btn" onclick="showTab('attack',this)"><span class="icon">⚔️</span>Ataques</button>
         <button class="nav-btn" onclick="showTab('interview',this)"><span class="icon">🎙️</span>Entrevista</button>
         <button class="nav-btn" onclick="showTab('profiles',this)"><span class="icon">👤</span>Candidatos</button>
         <button class="nav-btn" onclick="showTab('vice',this)"><span class="icon">🤝</span>Vice</button>
@@ -934,6 +977,18 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
         <div class="finance-summary" id="finance-summary"></div>
         <div class="card" style="margin-bottom:14px"><div class="card-title">Arrecadação</div><div class="invest-grid" id="invest-grid"></div></div>
         <div class="card"><div class="card-title">Histórico</div><div id="finance-history"></div></div>
+      </div>
+
+      <!-- COALITION -->
+      <div class="tab-panel" id="tab-coalition">
+        <div style="margin-bottom:16px"><div class="panel-title">Coligação Política</div><div class="panel-subtitle">Gerencie os partidos aliados e negocie apoio</div></div>
+        <div id="coalition-content"></div>
+      </div>
+
+      <!-- ATTACK -->
+      <div class="tab-panel" id="tab-attack">
+        <div style="margin-bottom:16px"><div class="panel-title">Ataques Políticos</div><div class="panel-subtitle">Críticas, denúncias e ofensivas contra adversários</div></div>
+        <div id="attack-content"></div>
       </div>
 
       <!-- RESULTS -->
@@ -1560,6 +1615,8 @@ function showTab(id,btn){
   if(id==='profiles')renderProfilesTab();
   if(id==='vice')renderViceTab();
   if(id==='demographics')renderDemographicsTab();
+  if(id==='coalition')renderCoalitionTab();
+  if(id==='attack')renderAttackTab();
 }
 
 // ════════════════════════════════════════════════════════
@@ -1852,6 +1909,7 @@ function advanceOneDay(){
     });
   }
   tickCD(); // per-state action cooldowns
+  tickAttackCooldowns(); // attack cooldowns
   // Finance cooldowns
   if(!G.financeCooldowns)G.financeCooldowns={};
   Object.keys(G.financeCooldowns).forEach(k=>{if(G.financeCooldowns[k]>0)G.financeCooldowns[k]--;});
@@ -4791,8 +4849,446 @@ function setMsg(id){
 }
 
 // ════════════════════════════════════════════════════════
-// ELECTION ROUNDS
+// COALITION TAB
 // ════════════════════════════════════════════════════════
+const COALITION_PARTIES = [
+  {id:'pcdobBR',name:'PCdoB',fullName:'Partido Comunista do Brasil',ideology:'Esquerda',ideologyColor:'#e63946',seats:6,tvTime:1.2,fuelBonus:3000000,pollBonus:{NE:2.5,N:1.5},compat:['lula','ciro','pericles','sofia'],regionLabel:'Nordeste +2.5%'},
+  {id:'psolBR',name:'PSOL',fullName:'Partido Socialismo e Liberdade',ideology:'Esquerda',ideologyColor:'#9b59b6',seats:12,tvTime:1.8,fuelBonus:2000000,pollBonus:{NE:1.5,SE:1},compat:['lula','ciro','pericles','sofia','tebet'],regionLabel:'Jovens +2%'},
+  {id:'psbBR',name:'PSB',fullName:'Partido Socialista Brasileiro',ideology:'Centro-Esq.',ideologyColor:'#e67e22',seats:14,tvTime:2.1,fuelBonus:5000000,pollBonus:{NE:3,N:1},compat:['lula','ciro','tebet'],regionLabel:'Nordeste +3%'},
+  {id:'redbr',name:'Republicanos',fullName:'Republicanos',ideology:'Centro-Dir.',ideologyColor:'#3498db',seats:41,tvTime:3.5,fuelBonus:8000000,pollBonus:{SE:2,CO:2},compat:['bolsonaro','soraya','davila'],regionLabel:'Evangélicos +3%'},
+  {id:'ppBR',name:'PP',fullName:'Progressistas',ideology:'Centro-Dir.',ideologyColor:'#2ecc71',seats:47,tvTime:3.8,fuelBonus:7000000,pollBonus:{CO:3,S:2},compat:['bolsonaro','tebet','soraya','davila'],regionLabel:'Agro +2.5%'},
+  {id:'psdBR',name:'PSD',fullName:'Partido Social Democrático',ideology:'Centro',ideologyColor:'#f39c12',seats:42,tvTime:3.6,fuelBonus:10000000,pollBonus:{SE:1.5,CO:1,S:1},compat:['lula','bolsonaro','tebet','davila'],regionLabel:'Nacional +1.5%'},
+  {id:'psdbBR',name:'PSDB',fullName:'Partido da Social Democracia Brasileira',ideology:'Centro',ideologyColor:'#00b4d8',seats:13,tvTime:1.9,fuelBonus:6000000,pollBonus:{SP:4,SE:2},compat:['tebet','davila','ciro'],regionLabel:'São Paulo +4%'},
+  {id:'mdbBR',name:'MDB',fullName:'Movimento Democrático Brasileiro',ideology:'Centro',ideologyColor:'#1abc9c',seats:42,tvTime:3.6,fuelBonus:9000000,pollBonus:{SE:2,S:1.5},compat:['tebet','ciro','lula','davila'],regionLabel:'Nacional +2%'},
+  {id:'solidBR',name:'Solidariedade',fullName:'Solidariedade',ideology:'Centro',ideologyColor:'#e74c3c',seats:13,tvTime:1.8,fuelBonus:3000000,pollBonus:{NE:2,SE:1},compat:['lula','ciro','*'],regionLabel:'Sindicatos +2%'},
+  {id:'patriotaBR',name:'Patriota',fullName:'Patriota',ideology:'Direita',ideologyColor:'#27ae60',seats:4,tvTime:0.8,fuelBonus:2500000,pollBonus:{CO:2,S:1.5},compat:['bolsonaro','davila','soraya','*'],regionLabel:'Conserv. +2%'},
+  {id:'avanteBR',name:'Avante',fullName:'Avante',ideology:'Centro',ideologyColor:'#f1c40f',seats:7,tvTime:1.1,fuelBonus:2000000,pollBonus:{NE:1.5,N:1},compat:['*'],regionLabel:'Interior +1%'},
+  {id:'unionBR',name:'União Brasil',fullName:'União Brasil',ideology:'Centro-Dir.',ideologyColor:'#2980b9',seats:59,tvTime:5.2,fuelBonus:15000000,pollBonus:{NE:2,SE:2,CO:2},compat:['bolsonaro','soraya','davila','*'],regionLabel:'Nacional +2%'},
+  {id:'pmnBR',name:'PMN',fullName:'Partido da Mobilização Nacional',ideology:'Centro',ideologyColor:'#8e44ad',seats:2,tvTime:0.4,fuelBonus:800000,pollBonus:{SE:0.5},compat:['*'],regionLabel:'Sudeste +0.5%'},
+  {id:'agirBR',name:'AGIR',fullName:'AGIR',ideology:'Centro',ideologyColor:'#16a085',seats:2,tvTime:0.4,fuelBonus:700000,pollBonus:{NE:1},compat:['*'],regionLabel:'Nordeste +1%'},
+  {id:'pvBR',name:'PV',fullName:'Partido Verde',ideology:'Centro-Esq.',ideologyColor:'#27ae60',seats:4,tvTime:0.7,fuelBonus:1500000,pollBonus:{SE:1.5,S:1},compat:['lula','ciro','tebet','*'],regionLabel:'Meio Ambiente +1.5%'},
+  {id:'cidadaniaBR',name:'Cidadania',fullName:'Cidadania',ideology:'Centro',ideologyColor:'#e67e22',seats:7,tvTime:1.1,fuelBonus:3000000,pollBonus:{SE:1.5,S:1.5},compat:['tebet','ciro','*'],regionLabel:'Sudeste/Sul +1.5%'},
+];
+
+// Negotiate cost scales with party size
+function coalitionNegotiateCost(p){ return Math.round(p.seats * 280000 + p.fuelBonus * 0.4); }
+// Annual TV time in minutes that party contributes
+function coalitionTvBonus(p){ return p.tvTime; }
+
+function isPartyCompatible(p){
+  return p.compat.includes('*') || p.compat.includes(G.player?.id) ||
+    // 2018 variants
+    p.compat.some(id=>G.player?.id?.startsWith(id));
+}
+
+function renderCoalitionTab(){
+  const el = document.getElementById('coalition-content');
+  if(!el) return;
+  if(!G.coalition) G.coalition = {parties:[], totalSeats:0, fuelBonus:0};
+  const coalition = G.coalition;
+  const inCoalition = id => coalition.parties.includes(id);
+  const totalSeats = COALITION_PARTIES.filter(p=>inCoalition(p.id)).reduce((s,p)=>s+p.seats,0);
+  const playerParty = getCandidates().find(c=>c.id===G.player?.id);
+  const playerSeats = 1; // base
+  const totalWithPlayer = totalSeats + playerSeats;
+  const maxSeats = 513; // Câmara
+
+  // Seat bar segments
+  const membersInCoalition = COALITION_PARTIES.filter(p=>inCoalition(p.id));
+  const segmentColors = ['#00d4ff','#2ecc71','#f39c12','#9b59b6','#e74c3c','#3498db','#1abc9c','#e67e22','#27ae60','#8e44ad'];
+
+  el.innerHTML = `
+  <div class="coalition-grid">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">Partidos Disponíveis</div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:10px">Negocie apoio com partidos compatíveis com sua candidatura. Incompatíveis ficam acinzentados.</div>
+        <div id="coalition-party-list"></div>
+      </div>
+    </div>
+    <div>
+      <div class="coalition-summary-card">
+        <div class="card-title" style="margin-bottom:12px">📋 Sua Coligação</div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">CADEIRAS NA CÂMARA</div>
+        <div style="font-size:22px;font-weight:700;color:var(--accent);font-family:'IBM Plex Mono',monospace">${totalWithPlayer} <span style="font-size:11px;color:var(--text3)">/ ${maxSeats}</span></div>
+        <div class="coalition-seat-bar" style="margin-top:8px">
+          ${membersInCoalition.length===0
+            ? `<div class="coalition-seat-segment" style="width:${(1/maxSeats*100).toFixed(1)}%;background:var(--accent)"></div>`
+            : membersInCoalition.map((p,i)=>`<div class="coalition-seat-segment" title="${p.name}: ${p.seats} cadeiras" style="width:${(p.seats/maxSeats*100).toFixed(1)}%;background:${segmentColors[i%segmentColors.length]};min-width:${p.seats>5?'0':'4px'}"></div>`).join('')
+          }
+        </div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:8px">Membros: <strong style="color:var(--text)">${membersInCoalition.length+1} partido${membersInCoalition.length!==0?'s':''}</strong></div>
+        <hr class="coalition-divider">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:6px">PARTIDOS NA COLIGAÇÃO</div>
+        <div style="margin-bottom:10px">
+          <div class="coalition-member-chip" style="color:${playerParty?.partyColor||'var(--accent)'};border-color:${playerParty?.partyColor||'var(--accent)'}88;background:${playerParty?.partyColor||'var(--accent)'}11">
+            ${playerParty?.party||'Seu partido'} <span style="opacity:.6">(titular)</span>
+          </div>
+          ${membersInCoalition.map((p,i)=>`<div class="coalition-member-chip" style="color:${segmentColors[i%segmentColors.length]};border-color:${segmentColors[i%segmentColors.length]}66;background:${segmentColors[i%segmentColors.length]}11">${p.name}</div>`).join('')}
+          ${membersInCoalition.length===0?'<div style="font-size:10px;color:var(--text3);font-style:italic">Nenhum partido aliado ainda.</div>':''}
+        </div>
+        <hr class="coalition-divider">
+        <div style="font-size:10px;color:var(--text3);margin-bottom:4px">BÔNUS ATIVOS</div>
+        ${membersInCoalition.length===0
+          ? '<div style="font-size:10px;color:var(--text3);font-style:italic">Sem bônus ainda.</div>'
+          : membersInCoalition.map(p=>`<div style="font-size:10px;margin-bottom:3px;color:var(--green)">✓ ${p.name}: ${p.regionLabel}</div>`).join('')
+        }
+        <hr class="coalition-divider">
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3);margin-bottom:3px">
+          <span>Fundo Extra (total)</span>
+          <span style="color:var(--gold);font-family:'IBM Plex Mono',monospace">${fmtMoney(membersInCoalition.reduce((s,p)=>s+p.fuelBonus,0))}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text3)">
+          <span>Tempo de TV extra</span>
+          <span style="color:var(--accent);font-family:'IBM Plex Mono',monospace">+${membersInCoalition.reduce((s,p)=>s+p.tvTime,0).toFixed(1)} min/dia</span>
+        </div>
+      </div>
+      ${G.attackHistory && G.attackHistory.length>0?`
+      <div class="card" style="margin-top:14px">
+        <div class="card-title">Histórico de Negociações</div>
+        <div id="coalition-history">${(G.coalition.history||[]).map(h=>`<div class="attack-history-item success"><strong>${h.party}</strong> — ${h.date}<br><span style="color:var(--green)">${h.effect}</span></div>`).join('')}</div>
+      </div>`:''}
+    </div>
+  </div>`;
+
+  // Render party list
+  const listEl = document.getElementById('coalition-party-list');
+  if(!listEl) return;
+  listEl.innerHTML = COALITION_PARTIES.map(p=>{
+    const compat = isPartyCompatible(p);
+    const already = inCoalition(p.id);
+    const cost = coalitionNegotiateCost(p);
+    const canAfford = G.sandbox || G.money >= cost;
+    return `<div class="party-card ${already?'in-coalition':''} ${!compat?'incompatible':''}">
+      <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+        <div style="width:34px;height:34px;border-radius:7px;background:${p.ideologyColor}22;border:1px solid ${p.ideologyColor}44;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:${p.ideologyColor};flex-shrink:0">${p.name.slice(0,2)}</div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+            <span class="party-name">${p.name}</span>
+            <span class="party-ideology-tag" style="background:${p.ideologyColor}22;color:${p.ideologyColor};border:1px solid ${p.ideologyColor}44">${p.ideology}</span>
+            ${!compat?'<span style="font-size:9px;color:var(--red);font-weight:600">INCOMPATÍVEL</span>':''}
+          </div>
+          <div style="display:flex;gap:12px;margin-top:3px;flex-wrap:wrap">
+            <span class="party-seats">🏛️ ${p.seats} cadeiras</span>
+            <span class="party-benefit">📺 +${p.tvTime}min TV</span>
+            <span style="font-size:10px;color:var(--gold)">💰 +${fmtMoney(p.fuelBonus)}</span>
+          </div>
+          <div class="party-benefit" style="margin-top:2px">📊 ${p.regionLabel}</div>
+        </div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div style="font-size:10px;color:var(--gold);font-family:'IBM Plex Mono',monospace;margin-bottom:5px">${already?'—':fmtMoney(cost)}</div>
+        ${already
+          ? `<button class="coalition-btn remove-btn" onclick="coalitionRemove('${p.id}')">✕ Remover</button>`
+          : `<button class="coalition-btn" onclick="coalitionNegotiate('${p.id}')" ${!compat||!canAfford?'disabled title="'+(!compat?'Incompatível com sua candidatura':'Fundos insuficientes')+'"':''}>Negociar</button>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function coalitionNegotiate(pid){
+  const p = COALITION_PARTIES.find(x=>x.id===pid);
+  if(!p) return;
+  const cost = coalitionNegotiateCost(p);
+  if(!G.sandbox && G.money < cost){ showToast('💸','Fundos insuficientes.','error'); return; }
+  showModal(`🏛️ Negociar com ${p.name}`,
+    `Incorporar <strong>${p.name}</strong> (${p.fullName}) à sua coligação custará <strong>${fmtMoney(cost)}</strong>.<br><br>` +
+    `Benefícios: ${p.seats} cadeiras · ${p.regionLabel} · +${fmtMoney(p.fuelBonus)} de fundo<br><br>` +
+    `${!isPartyCompatible(p)?'<span style="color:var(--red)">⚠️ Este partido tem incompatibilidade ideológica com sua candidatura.</span>':''}`,
+    ()=>{
+      if(!G.sandbox) G.money -= cost;
+      if(!G.coalition) G.coalition={parties:[],history:[]};
+      if(!G.coalition.history) G.coalition.history=[];
+      G.coalition.parties.push(pid);
+      // Apply poll bonus immediately
+      const regionMap = {NE:'NE',SE:'SE',S:'S',CO:'CO',N:'N',SP:'SP'};
+      Object.entries(p.pollBonus||{}).forEach(([reg,bonus])=>{
+        Object.entries(STATES).forEach(([abbr,st])=>{
+          if(st.region===reg || abbr===reg){
+            G.statePoll[abbr][G.player.id]=clamp((G.statePoll[abbr][G.player.id]||0)+bonus,0,85);
+            let t=Object.values(G.statePoll[abbr]).reduce((a,b)=>a+b,0);
+            Object.keys(G.statePoll[abbr]).forEach(k=>G.statePoll[abbr][k]=G.statePoll[abbr][k]/t*100);
+          }
+        });
+      });
+      // Fund bonus
+      if(!G.sandbox) G.money += p.fuelBonus;
+      G.coalition.history.unshift({party:p.name, date:fmtDate(G.currentDate), effect:`${p.regionLabel} · Fundo +${fmtMoney(p.fuelBonus)}`});
+      G.financeHistory.unshift({date:fmtDate(G.currentDate),desc:`Coligação: ${p.name}`,value:p.fuelBonus-cost});
+      showToast(`🏛️ Coligação!`,`${p.name} agora faz parte da sua coligação!`,'success');
+      updateTopBar(); colorizeMap(); renderCoalitionTab();
+    }
+  );
+}
+
+function coalitionRemove(pid){
+  const p = COALITION_PARTIES.find(x=>x.id===pid);
+  if(!p||!G.coalition) return;
+  showModal(`❌ Remover ${p.name}`,`Tem certeza que deseja retirar <strong>${p.name}</strong> da coligação? Os bônus de pesquisa serão revertidos.`,()=>{
+    G.coalition.parties = G.coalition.parties.filter(x=>x!==pid);
+    // Revert poll bonus (partial)
+    Object.entries(p.pollBonus||{}).forEach(([reg,bonus])=>{
+      Object.entries(STATES).forEach(([abbr,st])=>{
+        if(st.region===reg || abbr===reg){
+          G.statePoll[abbr][G.player.id]=clamp((G.statePoll[abbr][G.player.id]||0)-bonus*0.7,0,85);
+          let t=Object.values(G.statePoll[abbr]).reduce((a,b)=>a+b,0);
+          Object.keys(G.statePoll[abbr]).forEach(k=>G.statePoll[abbr][k]=G.statePoll[abbr][k]/t*100);
+        }
+      });
+    });
+    showToast(`🏛️ Saiu da coligação`,`${p.name} foi removido.`,'warning');
+    updateTopBar(); colorizeMap(); renderCoalitionTab();
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// ATTACK TAB
+// ════════════════════════════════════════════════════════
+const ATTACK_TYPES = [
+  {id:'gaffe',icon:'🎙️',name:'Explorar Gafe',desc:'Use uma declaração polêmica do adversário contra ele nas redes e mídia.',cost:1500000,energyCost:15,cooldown:7,
+   successChance:0.72, targetLoss:[-3,-5], playerLoss:[0,0], backfireLoss:[2,4],
+   riskLabel:'Baixo', riskPct:28, effect:'Queda nas pesquisas do alvo. Nenhum custo se bem-sucedido.'},
+  {id:'policy',icon:'📋',name:'Crítica de Proposta',desc:'Desmonte publicamente uma proposta do adversário com dados e debate técnico.',cost:2000000,energyCost:10,cooldown:5,
+   successChance:0.78, targetLoss:[-2,-4], playerLoss:[0.5,1.5], backfireLoss:[1,3],
+   riskLabel:'Muito Baixo', riskPct:22, effect:'Alvo perde credibilidade. Você pode ganhar imagem técnica.'},
+  {id:'corruption',icon:'🔍',name:'Denúncia de Corrupção',desc:'Lance denúncia grave com ou sem evidências. Alto impacto, alto risco.',cost:5000000,energyCost:25,cooldown:21,
+   successChance:0.48, targetLoss:[-6,-12], playerLoss:[1,2], backfireLoss:[4,8],
+   riskLabel:'Alto', riskPct:52, effect:'Pode devastar o adversário — ou explodir na sua cara.'},
+  {id:'negative_ad',icon:'📺',name:'Anúncio Negativo (TV)',desc:'Compre espaço na TV para veicular campanha negativa contra o adversário.',cost:8000000,energyCost:20,cooldown:14,
+   successChance:0.65, targetLoss:[-4,-7], playerLoss:[1,2], backfireLoss:[2,4],
+   riskLabel:'Médio', riskPct:35, effect:'Alto alcance. Pode também aumentar sua rejeição.'},
+  {id:'social_attack',icon:'📱',name:'Campanha Viral Negativa',desc:'Mobilize base nas redes sociais para pressão coordenada contra o adversário.',cost:1000000,energyCost:20,cooldown:10,
+   successChance:0.60, targetLoss:[-3,-6], playerLoss:[0.5,1], backfireLoss:[1,3],
+   riskLabel:'Médio', riskPct:40, effect:'Viralizar pode surpreender — para o bem ou o mal.'},
+  {id:'debate_attack',icon:'🎙️',name:'Emboscada no Debate',desc:'Reserve energia para atacar diretamente no próximo debate ao vivo.',cost:0,energyCost:30,cooldown:18,
+   successChance:0.55, targetLoss:[-5,-9], playerLoss:[1,2], backfireLoss:[3,6],
+   riskLabel:'Alto', riskPct:45, effect:'Momento dramático. O país inteiro vê. Pode sair vilão ou herói.'},
+];
+
+let _attackTarget = null;
+let _attackType = null;
+
+function renderAttackTab(){
+  const el = document.getElementById('attack-content');
+  if(!el) return;
+  if(!G.attackHistory) G.attackHistory=[];
+  if(!G.attackCooldowns) G.attackCooldowns={};
+
+  const rivals = getCandidates().filter(c=>c.id!==G.player?.id && (G.polls[c.id]||0)>0.5)
+    .sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0));
+
+  el.innerHTML = `
+  <div class="attack-grid">
+    <div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">1. Escolha o Alvo</div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:10px">Selecione o candidato que deseja atacar.</div>
+        <div id="attack-target-list">
+          ${rivals.map(c=>`
+          <div class="attack-target-card ${_attackTarget===c.id?'selected':''}" onclick="selectAttackTarget('${c.id}')">
+            <div style="display:flex;align-items:center;gap:10px">
+              <img src="${c.photo}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid ${c.partyColor}" onerror="this.style.display='none'">
+              <div style="flex:1">
+                <div style="font-size:12px;font-weight:700;color:${c.partyColor}">${c.shortName}</div>
+                <div style="font-size:10px;color:var(--text3)">${c.party} · ${c.ideology}</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:13px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--text)">${(G.polls[c.id]||0).toFixed(1)}%</div>
+                <div style="font-size:9px;color:var(--red)">Rej. ${(G.rejectPolls[c.id]||0).toFixed(0)}%</div>
+              </div>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">2. Escolha o Tipo de Ataque</div>
+        <div style="font-size:10px;color:var(--text3);margin-bottom:10px">Cada ataque tem diferentes riscos e recompensas.</div>
+        <div id="attack-type-list">
+          ${ATTACK_TYPES.map(a=>{
+            const cd = G.attackCooldowns[a.id]||0;
+            const onCd = cd>0;
+            return`<div class="attack-type-card ${_attackType===a.id?'selected-type':''} ${onCd?'incompatible':''}" onclick="${onCd?'':` selectAttackType('${a.id}')`}">
+              <div style="font-size:22px;flex-shrink:0">${a.icon}</div>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px">
+                  <span style="font-size:12px;font-weight:700">${a.name}</span>
+                  <span style="font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(243,156,18,.15);color:var(--orange);font-weight:600">Risco ${a.riskLabel}</span>
+                  ${onCd?`<span style="font-size:9px;color:var(--red)">⏳ ${cd}d</span>`:''}
+                </div>
+                <div style="font-size:10px;color:var(--text3);margin-bottom:4px">${a.desc}</div>
+                <div class="attack-risk-bar"><div class="attack-risk-fill" style="width:${a.riskPct}%"></div></div>
+                <div style="display:flex;gap:10px;margin-top:5px;flex-wrap:wrap">
+                  <span style="font-size:9px;color:var(--gold)">${a.cost>0?fmtMoney(a.cost):'Gratuito'}</span>
+                  <span style="font-size:9px;color:var(--orange)">⚡ ${a.energyCost}</span>
+                  <span style="font-size:9px;color:var(--text3)">CD: ${a.cooldown}d</span>
+                </div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="coalition-summary-card">
+        <div class="card-title" style="margin-bottom:12px">⚔️ Resumo do Ataque</div>
+        <div id="attack-preview">
+          <div style="color:var(--text3);font-size:11px;text-align:center;padding:20px 0">Selecione um alvo e tipo de ataque.</div>
+        </div>
+        <button id="attack-execute-btn" class="attack-execute-btn" style="margin-top:14px" disabled onclick="executeAttack()">
+          ⚔️ Lançar Ataque
+        </button>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="card-title">Histórico de Ataques</div>
+        <div id="attack-history-list">
+          ${G.attackHistory.length===0
+            ? '<div style="font-size:10px;color:var(--text3);font-style:italic;padding:8px 0">Nenhum ataque lançado ainda.</div>'
+            : G.attackHistory.slice(0,12).map(h=>`
+              <div class="attack-history-item ${h.outcome}">
+                <div style="display:flex;justify-content:space-between;margin-bottom:2px">
+                  <strong>${h.attackName}</strong>
+                  <span style="font-size:9px;color:var(--text3)">${h.date}</span>
+                </div>
+                <div>vs <span style="color:var(--red)">${h.targetName}</span></div>
+                <div style="font-size:10px;margin-top:2px;color:${h.outcome==='success'?'var(--green)':h.outcome==='backfire'?'var(--red)':'var(--text3)'}">${h.resultDesc}</div>
+              </div>`).join('')
+          }
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  updateAttackPreview();
+}
+
+function selectAttackTarget(id){
+  _attackTarget = id;
+  renderAttackTab();
+}
+function selectAttackType(id){
+  _attackType = id;
+  renderAttackTab();
+}
+
+function updateAttackPreview(){
+  const prev = document.getElementById('attack-preview');
+  const btn = document.getElementById('attack-execute-btn');
+  if(!prev||!btn) return;
+  if(!_attackTarget || !_attackType){
+    prev.innerHTML='<div style="color:var(--text3);font-size:11px;text-align:center;padding:20px 0">Selecione um alvo e tipo de ataque.</div>';
+    btn.disabled=true; return;
+  }
+  const atk = ATTACK_TYPES.find(a=>a.id===_attackType);
+  const target = getCandidates().find(c=>c.id===_attackTarget);
+  if(!atk||!target){ btn.disabled=true; return; }
+  const canAfford = G.sandbox || G.money>=atk.cost;
+  const hasEnergy = (G.energy||0)>=atk.energyCost;
+  const onCd = (G.attackCooldowns[atk.id]||0)>0;
+  const canExecute = canAfford && hasEnergy && !onCd;
+
+  prev.innerHTML=`
+    <div style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);margin-bottom:4px">ALVO</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <img src="${target.photo}" style="width:30px;height:30px;border-radius:50%;object-fit:cover;border:2px solid ${target.partyColor}" onerror="this.style.display='none'">
+        <span style="font-weight:700;color:${target.partyColor}">${target.shortName}</span>
+        <span style="font-size:11px;color:var(--text);font-family:'IBM Plex Mono',monospace">${(G.polls[target.id]||0).toFixed(1)}%</span>
+      </div>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:4px">TIPO</div>
+    <div style="font-size:12px;font-weight:700;margin-bottom:8px">${atk.icon} ${atk.name}</div>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px">${atk.effect}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:10px;margin-bottom:10px">
+      <div style="background:rgba(46,204,113,.08);border:1px solid var(--green)33;border-radius:6px;padding:6px;text-align:center">
+        <div style="color:var(--green);font-weight:700">Se funcionar</div>
+        <div style="font-family:'IBM Plex Mono',monospace;margin-top:2px;color:var(--red)">${target.shortName}: ${atk.targetLoss[0]}% a ${atk.targetLoss[1]}%</div>
+      </div>
+      <div style="background:rgba(230,57,70,.08);border:1px solid var(--red)33;border-radius:6px;padding:6px;text-align:center">
+        <div style="color:var(--red);font-weight:700">Se sair pela culatra</div>
+        <div style="font-family:'IBM Plex Mono',monospace;margin-top:2px;color:var(--red)">Você: +${atk.backfireLoss[0]}% a +${atk.backfireLoss[1]}% rejeição</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;font-size:10px;flex-wrap:wrap">
+      <span style="${canAfford?'color:var(--gold)':'color:var(--red)'}">💰 ${atk.cost>0?fmtMoney(atk.cost):'Gratuito'}</span>
+      <span style="${hasEnergy?'color:var(--orange)':'color:var(--red)'}">⚡ ${atk.energyCost} energia</span>
+      <span style="color:var(--accent)">Sucesso: ~${Math.round(atk.successChance*100)}%</span>
+    </div>
+    ${!canAfford?'<div style="color:var(--red);font-size:10px;margin-top:6px">⚠️ Fundos insuficientes</div>':''}
+    ${!hasEnergy?'<div style="color:var(--red);font-size:10px;margin-top:2px">⚠️ Energia insuficiente</div>':''}
+    ${onCd?`<div style="color:var(--red);font-size:10px;margin-top:2px">⏳ Em cooldown: ${G.attackCooldowns[atk.id]} dias</div>`:''}
+  `;
+  btn.disabled = !canExecute;
+}
+
+function executeAttack(){
+  if(!_attackTarget||!_attackType) return;
+  const atk = ATTACK_TYPES.find(a=>a.id===_attackType);
+  const target = getCandidates().find(c=>c.id===_attackTarget);
+  if(!atk||!target) return;
+  if(!G.sandbox && G.money<atk.cost){ showToast('💸','Fundos insuficientes.','error'); return; }
+  if((G.energy||0)<atk.energyCost){ showToast('⚡','Energia insuficiente.','error'); return; }
+  if((G.attackCooldowns[atk.id]||0)>0){ showToast('⏳','Ataque em cooldown.','error'); return; }
+
+  if(!G.sandbox) G.money -= atk.cost;
+  G.energy = clamp((G.energy||0)-atk.energyCost,0,100);
+  G.attackCooldowns[atk.id] = atk.cooldown;
+
+  const roll = Math.random();
+  let outcome, resultDesc, icon;
+
+  if(roll < atk.successChance){
+    // SUCCESS
+    outcome='success'; icon='✅';
+    const targetDrop = randRange(atk.targetLoss[0], atk.targetLoss[1]);
+    const playerGain = randRange(atk.playerLoss[0]*-1, atk.playerLoss[1]*-1) * -1; // slight drop possible
+    G.polls[target.id] = clamp((G.polls[target.id]||0) + targetDrop, 0.1, 70);
+    G.rejectPolls[target.id] = clamp((G.rejectPolls[target.id]||0) + Math.abs(targetDrop)*0.5, 0, 90);
+    G.polls[G.player.id] = clamp((G.polls[G.player.id]||0) - Math.max(0,playerGain*0.5), 0.5, 70);
+    normalizePoll();
+    resultDesc = `${target.shortName} perdeu ${Math.abs(targetDrop).toFixed(1)}% nas pesquisas.`;
+    showToast(`${icon} Ataque Bem-Sucedido!`, resultDesc, 'success', 5000);
+    G.momentum = clamp(G.momentum+5,0,100);
+  } else if(roll < atk.successChance + (1-atk.successChance)*0.5){
+    // NEUTRAL / FIZZLED
+    outcome='neutral'; icon='😐';
+    resultDesc = 'O ataque não causou impacto significativo. Passou batido.';
+    showToast(`😐 Sem Impacto`, resultDesc, 'warning', 4000);
+  } else {
+    // BACKFIRE
+    outcome='backfire'; icon='💥';
+    const rejGain = randRange(atk.backfireLoss[0], atk.backfireLoss[1]);
+    const pollDrop = rejGain * 0.4;
+    G.rejectPolls[G.player.id] = clamp((G.rejectPolls[G.player.id]||0)+rejGain,0,90);
+    G.polls[G.player.id] = clamp((G.polls[G.player.id]||0)-pollDrop,0.5,70);
+    normalizePoll();
+    resultDesc = `Saiu pela culatra! Sua rejeição subiu ${rejGain.toFixed(1)}% e a mídia virou contra você.`;
+    showToast(`💥 Ataque Falhou!`, resultDesc, 'error', 6000);
+    G.momentum = clamp(G.momentum-8,0,100);
+  }
+
+  if(!G.attackHistory) G.attackHistory=[];
+  G.attackHistory.unshift({
+    attackName: atk.name, targetName: target.shortName,
+    date: fmtDate(G.currentDate), outcome, resultDesc, icon
+  });
+  G.events.unshift({
+    type: outcome==='success'?'positive':outcome==='backfire'?'negative':'neutral',
+    icon, title:`${atk.icon} ${atk.name} — vs ${target.shortName}`,
+    desc: resultDesc, date: fmtDate(G.currentDate),
+    effect: outcome==='success'?`${target.shortName} -${Math.abs(atk.targetLoss[0]).toFixed(1)}% ~${Math.abs(atk.targetLoss[1]).toFixed(1)}%`:`Rejeiçao ${outcome==='backfire'?'+'+atk.backfireLoss[0]+'%':'0%'}`
+  });
+
+  updateTopBar();
+  _attackType = null; // reset type after attack, keep target
+  renderAttackTab();
+}
+
+// Tick attack cooldowns each game day
+function tickAttackCooldowns(){
+  if(!G.attackCooldowns) return;
+  Object.keys(G.attackCooldowns).forEach(k=>{ if(G.attackCooldowns[k]>0) G.attackCooldowns[k]--; });
+}
 function checkPhaseTransitions(){
   if(G.phase==='campaign'&&G.currentDate>=G.firstRoundDate){G.phase='firstround';conductFirstRound();}
   else if(G.phase==='secondround_campaign'&&G.currentDate>=G.secondRoundDate){G.phase='secondround';conductSecondRound();}
@@ -4977,7 +5473,7 @@ function restartGame(){
   if(G.timer)clearInterval(G.timer);
   getScheduledDebates().forEach(d=>delete d.triggered);
   const dates=getElectionDates();
-  G={selectedCandidate:null,selectedVice:null,player:null,vice:null,difficulty:G.difficulty||'medium',sandbox:false,currentDate:new Date(dates.start),gameStartDate:new Date(dates.start),firstRoundDate:new Date(dates.first),secondRoundDate:new Date(dates.second),paused:false,speed:1,phase:'campaign',round:1,timer:null,daysPassed:0,totalDays:dates.totalDays,money:0,popularity:0,rejection:0,momentum:50,energy:100,energyRegen:0,polls:{},statePoll:{},historicalPolls:[],rejectPolls:{},events:[],allies:[],focusedState:null,financeHistory:[],debateState:null,secondRoundCandidates:[],secondRoundActive:false,investedAreas:{},aiLastAction:{},agendaSlots:{},activeSocialPlatform:'twitter',socialPosts:[],interviewCooldown:0,scandals:[],viceCooldowns:{},viceHistory:[],actionCount:{},financeCooldowns:{},financeLockedKey:null,thirdCandSurged:null,stateInvestments:{},campaignActions:{comicio:{cooldown:0,maxCooldown:20},tv:{cooldown:0,maxCooldown:25},digital:{cooldown:0,maxCooldown:15},viagem:{cooldown:0,maxCooldown:30},equipe:{cooldown:0,maxCooldown:40},proposta:{cooldown:0,maxCooldown:20},jantar:{cooldown:0,maxCooldown:25}}};
+  G={selectedCandidate:null,selectedVice:null,player:null,vice:null,difficulty:G.difficulty||'medium',sandbox:false,currentDate:new Date(dates.start),gameStartDate:new Date(dates.start),firstRoundDate:new Date(dates.first),secondRoundDate:new Date(dates.second),paused:false,speed:1,phase:'campaign',round:1,timer:null,daysPassed:0,totalDays:dates.totalDays,money:0,popularity:0,rejection:0,momentum:50,energy:100,energyRegen:0,polls:{},statePoll:{},historicalPolls:[],rejectPolls:{},events:[],allies:[],focusedState:null,financeHistory:[],debateState:null,secondRoundCandidates:[],secondRoundActive:false,investedAreas:{},aiLastAction:{},agendaSlots:{},activeSocialPlatform:'twitter',socialPosts:[],interviewCooldown:0,scandals:[],viceCooldowns:{},viceHistory:[],actionCount:{},financeCooldowns:{},financeLockedKey:null,thirdCandSurged:null,stateInvestments:{},campaignActions:{comicio:{cooldown:0,maxCooldown:20},tv:{cooldown:0,maxCooldown:25},digital:{cooldown:0,maxCooldown:15},viagem:{cooldown:0,maxCooldown:30},equipe:{cooldown:0,maxCooldown:40},proposta:{cooldown:0,maxCooldown:20},jantar:{cooldown:0,maxCooldown:25}},coalition:{parties:[],totalSeats:0,fuelBonus:0},attackCooldowns:{},attackHistory:[]};
   // Re-enable speed buttons
   document.querySelectorAll('.speed-btn').forEach((b,i)=>{b.disabled=false;b.style.opacity='';b.title='';b.classList.remove('active');if(i===0)b.classList.add('active');});
   mapLoaded=false;
