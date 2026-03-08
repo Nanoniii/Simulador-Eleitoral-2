@@ -30,7 +30,8 @@
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
-@media(max-width:768px){html,body{overflow:auto}}
+/* Mobile: body scrolls normally; game-screen is still fixed */
+@media(max-width:768px){html,body{height:auto;overflow-x:hidden;overflow-y:auto}}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
 /* ══════════════════════════════════════════════════════
@@ -43,26 +44,34 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 /* ── TOPBAR MOBILE ─────────────────────────────────── */
 @media(max-width:768px){
 
-  /* INTRO */
-  #intro-screen{overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column;align-items:center}
-  .intro-content{padding:16px 12px 40px;width:100%}
-  .game-title{font-size:clamp(28px,9vw,52px)}
+  /* INTRO — position/overflow controlado pelo bloco .screen abaixo */
+  #intro-screen{flex-direction:column;align-items:center}
+  .intro-content{padding:20px 14px 80px;width:100%}
+  .game-title{font-size:clamp(32px,10vw,56px)}
   .game-subtitle{font-size:10px;letter-spacing:2px}
+  .election-buttons{gap:8px;margin-bottom:28px}
+  .election-btn{padding:10px 16px;font-size:12px}
   .diff-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .diff-btn{padding:10px 6px}
-  .diff-icon{font-size:18px}
-  .diff-name{font-size:10px}
-  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:8px}
-  .candidate-card{padding:10px 8px}
-  .candidate-photo{width:54px;height:54px;margin-bottom:7px}
-  .candidate-name{font-size:11px}
-  .candidate-party{font-size:9px;padding:1px 6px}
-  .vice-grid{gap:8px;justify-content:center}
-  .vice-card{width:calc(50% - 8px);max-width:150px;padding:10px}
-  .vice-photo{width:46px;height:46px}
-  .sandbox-toggle{padding:10px 14px;gap:8px}
-  .start-btn{padding:14px 40px;font-size:18px}
+  .diff-btn{padding:12px 6px}
+  .diff-icon{font-size:20px}
+  .diff-name{font-size:11px}
+  .diff-desc{font-size:9px}
+  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .candidate-card{padding:14px 10px;border-radius:10px}
+  .candidate-photo{width:64px;height:64px;margin-bottom:8px}
+  .candidate-name{font-size:12px}
+  .candidate-party{font-size:9px;padding:2px 6px}
+  .candidate-ideology{font-size:9px}
+  .vice-grid{gap:10px;justify-content:center}
+  .vice-card{width:calc(50% - 10px);max-width:160px;padding:12px}
+  .vice-photo{width:52px;height:52px}
+  .vice-name{font-size:12px}
+  .sandbox-toggle{padding:12px 14px;gap:10px;border-radius:10px}
+  .sandbox-label{font-size:13px}
+  .sandbox-desc{font-size:11px}
+  .start-btn{padding:16px 48px;font-size:20px;width:100%;max-width:320px}
   .diff-section{max-width:100%}
+  .section-heading{margin-bottom:14px}
 
   /* ── GAME SCREEN: arquitetura fixa ── */
   #game-screen{
@@ -76,9 +85,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   /* TOPBAR: compacto, linha única, scroll horizontal nas stats */
   .topbar{
     flex-shrink:0;
-    height:52px;
-    min-height:52px;
-    max-height:52px;
+    height:56px;
+    min-height:56px;
+    max-height:56px;
     padding:0 10px;
     gap:8px;
     display:flex;
@@ -86,6 +95,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     overflow:hidden;
     z-index:200;
     box-shadow:0 2px 12px rgba(0,0,0,.6);
+    background:var(--bg2);
   }
   .topbar-candidate{
     display:flex;align-items:center;gap:6px;
@@ -93,8 +103,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     padding-right:8px;
     border-right:1px solid var(--border);
   }
-  .topbar-photo{width:28px;height:28px;flex-shrink:0}
-  .topbar-name{font-size:11px;white-space:nowrap}
+  .topbar-photo{width:32px;height:32px;flex-shrink:0}
+  .topbar-name{font-size:11px;white-space:nowrap;max-width:70px;overflow:hidden;text-overflow:ellipsis}
   .topbar-party{display:none}
   .topbar-stats{
     display:flex;gap:10px;flex:1;
@@ -102,16 +112,16 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     scrollbar-width:none;align-items:center;
   }
   .topbar-stats::-webkit-scrollbar{display:none}
-  .topbar-stats>div{flex-shrink:0;text-align:center}
-  .topbar-stat-label{font-size:7px;letter-spacing:1px}
-  .topbar-stat-value{font-size:13px}
+  .topbar-stats>div{flex-shrink:0;text-align:center;min-width:40px}
+  .topbar-stat-label{font-size:7px;letter-spacing:1px;color:var(--text3)}
+  .topbar-stat-value{font-size:13px;font-weight:700}
   .momentum-bar{display:none}
   .topbar-right{
     display:flex;align-items:center;gap:4px;
     flex-shrink:0;margin-left:auto;
   }
-  .speed-btn{padding:3px 7px;font-size:10px}
-  .pause-btn{padding:4px 8px;font-size:11px}
+  .speed-btn{padding:4px 8px;font-size:10px;min-height:32px;min-width:32px}
+  .pause-btn{padding:5px 10px;font-size:10px;min-height:32px}
   #sandbox-badge-top{display:none!important}
 
   /* ── GAME BODY: ocupa tudo entre topbar e bottom nav ── */
@@ -131,121 +141,245 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     -webkit-overflow-scrolling:touch;
     overscroll-behavior:contain;
     min-height:0;
-    /* padding bottom = altura do nav (58px) + folga */
-    padding-bottom:66px;
+    padding-bottom:72px;
   }
   .tab-panel{
-    padding:12px 12px 8px;
+    padding:14px 12px 10px;
     animation:fadeInUp .2s ease;
   }
   .tab-panel.active{display:block}
+  .panel-title{font-size:22px;letter-spacing:1px}
+  .panel-subtitle{font-size:9px}
+  .card{padding:14px;border-radius:8px}
 
   /* ── BOTTOM NAV (sidebar vira nav bar) ── */
   .sidebar{
     position:fixed;
     bottom:0; left:0; right:0;
-    height:58px;
-    min-height:58px;
+    height:62px;
+    min-height:62px;
     background:var(--bg2);
-    border-top:1px solid var(--border);
+    border-top:2px solid var(--border2);
     border-right:none;
     width:100%;
-    flex-direction:row;
+    display:flex !important;
+    flex-direction:row !important;
     flex-shrink:0;
     z-index:300;
-    box-shadow:0 -2px 16px rgba(0,0,0,.5);
+    box-shadow:0 -4px 20px rgba(0,0,0,.6);
+    overflow:hidden;
   }
   .sidebar-nav{
-    flex-direction:row;
-    padding:4px 2px;
+    display:flex !important;
+    flex-direction:row !important;
+    padding:4px 4px;
     gap:0;
     overflow-x:auto;
+    overflow-y:hidden;
     -webkit-overflow-scrolling:touch;
     scrollbar-width:none;
-    white-space:nowrap;
     width:100%;
     height:100%;
     align-items:center;
+    flex-wrap:nowrap;
   }
   .sidebar-nav::-webkit-scrollbar{display:none}
   .nav-btn{
-    flex-direction:column;
-    padding:4px 8px;
+    display:flex !important;
+    flex-direction:column !important;
+    width:auto !important;
+    padding:4px 6px;
     font-size:9px;
     gap:2px;
     align-items:center;
-    min-width:52px;
+    min-width:54px;
     border-radius:8px;
-    height:50px;
+    height:54px;
     justify-content:center;
     flex-shrink:0;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    text-align:center;
   }
-  .nav-btn .icon{font-size:17px;width:auto;margin:0;line-height:1}
-  .nav-btn.active{background:rgba(0,212,255,.12);color:var(--accent)}
+  .nav-btn .icon{font-size:18px;width:auto;margin:0;line-height:1}
+  .nav-btn.active{background:rgba(0,212,255,.15);color:var(--accent)}
   .sidebar-bottom{display:none}
 
-  /* ── CONTEÚDO DAS TABS ── */
+  /* ── MENU "MAIS" MOBILE ── */
+  /* Esconde os botões extras no nav — aparecem só no painel */
+  .nav-btn.nav-extra{ display:none !important; }
 
-  /* Campanha */
-  .campaign-actions{grid-template-columns:repeat(2,1fr);gap:8px}
-  .action-btn{padding:10px 8px}
-  .action-icon{font-size:20px;margin-bottom:4px}
+  /* Botão "⋯ Mais" */
+  .nav-more-btn{
+    display:flex !important;
+    flex-direction:column !important;
+    width:auto !important;
+    padding:4px 6px;
+    font-size:9px;
+    gap:2px;
+    align-items:center;
+    min-width:54px;
+    border-radius:8px;
+    height:54px;
+    justify-content:center;
+    flex-shrink:0;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    text-align:center;
+    background:transparent;
+    border:none;
+    color:var(--text2);
+    cursor:pointer;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:500;
+    transition:all var(--t);
+  }
+  .nav-more-btn.has-active{
+    background:rgba(0,212,255,.15);
+    color:var(--accent);
+  }
+  .nav-more-btn .icon{font-size:18px;width:auto;margin:0;line-height:1}
+
+  /* Painel flutuante "Mais" */
+  #nav-more-panel{
+    display:none;
+    position:fixed;
+    bottom:66px;
+    left:0; right:0;
+    background:var(--bg2);
+    border-top:2px solid var(--border2);
+    border-radius:16px 16px 0 0;
+    z-index:500;
+    padding:12px 10px 10px;
+    box-shadow:0 -8px 32px rgba(0,0,0,.7);
+    max-height:60vh;
+    overflow-y:auto;
+  }
+  #nav-more-panel.open{ display:block; }
+  #nav-more-panel .more-title{
+    font-size:10px;letter-spacing:2px;color:var(--text3);
+    text-transform:uppercase;text-align:center;
+    margin-bottom:10px;font-family:'IBM Plex Mono',monospace;
+  }
+  #nav-more-panel .more-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:6px;
+  }
+  #nav-more-panel .more-item{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+    padding:8px 4px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    background:var(--bg3);
+    cursor:pointer;
+    font-size:9px;
+    color:var(--text2);
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-weight:500;
+    transition:all .15s;
+  }
+  #nav-more-panel .more-item.active{
+    border-color:var(--accent);
+    background:rgba(0,212,255,.12);
+    color:var(--accent);
+  }
+  #nav-more-panel .more-item .more-icon{ font-size:20px; }
+
+  /* Overlay p/ fechar o painel */
+  #nav-more-overlay{
+    display:none;
+    position:fixed;inset:0;
+    z-index:499;
+    background:rgba(0,0,0,.4);
+  }
+  #nav-more-overlay.open{ display:block; }
+
+  /* ── CAMPANHA ── */
+  .campaign-actions{grid-template-columns:repeat(2,1fr);gap:10px}
+  .action-btn{padding:12px 8px;border-radius:8px;min-height:80px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  .action-icon{font-size:22px;margin-bottom:6px}
   .action-title{font-size:11px}
   .action-desc{font-size:9px}
+  .action-btn .cooldown-bar{height:3px;margin-top:4px;border-radius:2px}
   .grid-2,.grid-3{grid-template-columns:1fr;gap:10px}
-  .card{padding:12px}
+  .round-banner{padding:10px 12px}
+  .round-banner-text{font-size:15px}
 
-  /* Agenda */
-  .agenda-grid{grid-template-columns:repeat(4,1fr);gap:4px}
-  .agenda-slot{padding:5px;min-height:54px;font-size:9px}
+  /* ── AGENDA ── */
+  .agenda-grid{grid-template-columns:repeat(4,1fr);gap:5px}
+  .agenda-slot{padding:6px 4px;min-height:58px;font-size:9px;border-radius:6px;touch-action:manipulation}
 
-  /* Debates */
-  .debate-stage{min-height:90px;padding:10px}
-  .debate-photo-sm{width:34px;height:34px}
-  .debate-cand-name{font-size:8px;max-width:52px}
-  .debate-options{grid-template-columns:1fr}
-  .debate-speech-bubble{margin:8px;font-size:11px}
+  /* ── DEBATES ── */
+  .debate-stage{min-height:80px;padding:10px;border-radius:8px}
+  .debate-photo-sm{width:36px;height:36px}
+  .debate-cand-name{font-size:8px;max-width:54px}
+  .debate-options{grid-template-columns:1fr;gap:8px}
+  .debate-speech-bubble{margin:8px;font-size:11px;border-radius:8px;padding:12px}
+  .debate-option-btn{min-height:52px;touch-action:manipulation;padding:10px 12px}
 
-  /* Estados / Mapa */
-  .states-layout{grid-template-columns:1fr!important;height:auto!important;gap:8px}
-  .map-container{height:280px!important;min-height:240px!important;max-height:280px}
+  /* ── ESTADOS / MAPA ── */
+  .states-layout{grid-template-columns:1fr!important;height:auto!important;gap:10px}
+  .map-container{height:260px!important;min-height:220px!important;max-height:260px;border-radius:8px}
   #brazil-map{width:100%!important;height:100%!important}
-  .state-info-panel{max-height:none;overflow:visible}
+  .state-info-panel{max-height:none;overflow:visible;border-radius:8px}
+  .state-list-item{padding:8px 10px;touch-action:manipulation}
+  .invest-card{padding:10px;touch-action:manipulation;min-height:56px}
 
-  /* Pesquisas */
+  /* ── PESQUISAS ── */
   .polls-grid{grid-template-columns:1fr;gap:10px}
-  .chart-container{height:200px!important}
+  .chart-container{height:180px!important}
+  .poll-table-header,.poll-table-row{grid-template-columns:1fr 60px 50px;padding:8px 10px;font-size:10px}
+  .poll-cand-name{font-size:11px}
+  .poll-table-row .poll-bar-fill{border-radius:2px}
 
-  /* Finanças */
+  /* ── FINANÇAS ── */
   .finance-summary{grid-template-columns:repeat(3,1fr);gap:6px}
-  .finance-card{padding:10px 8px}
+  .finance-card{padding:10px 8px;border-radius:8px}
   .finance-card-label{font-size:9px}
   .finance-card-value{font-size:14px}
+  .alliance-btn{min-height:52px;touch-action:manipulation;font-size:12px}
 
-  /* Resultados */
-  .results-row{grid-template-columns:24px 1fr 65px 50px;font-size:11px;padding:9px 10px;gap:6px}
+  /* ── RESULTADOS ── */
+  .results-row{grid-template-columns:24px 1fr 60px 48px;font-size:11px;padding:10px 10px;gap:6px}
+  .results-cand-name{font-size:12px}
   .results-pct{font-size:13px}
-  .post-election-actions{grid-template-columns:1fr}
-  #map-fallback{grid-template-columns:repeat(4,1fr);gap:3px}
-  .results-screen-inner{padding:14px 10px}
-  .poll-table-header,.poll-table-row{grid-template-columns:1fr 60px 50px;padding:7px 10px}
-  .poll-cand-name{font-size:10px}
+  .results-votes{font-size:12px}
+  .post-election-actions{grid-template-columns:1fr;gap:10px}
+  .post-action-card{padding:18px;touch-action:manipulation}
+  #map-fallback{grid-template-columns:repeat(4,1fr);gap:4px}
+  .results-screen-inner{padding:14px 12px}
+  .results-title{font-size:36px;letter-spacing:4px}
 
-  /* Estratégia */
-  .strategy-grid{grid-template-columns:1fr}
+  /* ── ESTRATÉGIA ── */
+  .strategy-grid{grid-template-columns:1fr;gap:10px}
 
-  /* Social */
+  /* ── SOCIAL ── */
   #tab-social .social-feed{max-height:none}
-  .platform-tabs{gap:4px}
-  .platform-btn{padding:6px 10px;font-size:11px}
+  .platform-tabs{gap:6px;flex-wrap:wrap}
+  .platform-btn{padding:8px 12px;font-size:11px;min-height:40px;touch-action:manipulation;border-radius:6px}
+  .social-post{padding:12px;border-radius:8px}
+  .social-post-action-btn{min-height:40px;touch-action:manipulation}
+
+  /* ── PERFIS ── */
+  .profiles-cand-card{padding:10px;border-radius:8px;touch-action:manipulation}
+  .profiles-photo{width:46px;height:46px}
+
+  /* ── VICE TAB ── */
+  .vice-action-btn{min-height:52px;touch-action:manipulation;font-size:12px}
 
   /* ── POPUPS / BOTTOM SHEETS ── */
   .event-popup-overlay{align-items:flex-end!important;padding:0!important}
   .event-popup{
     width:100%!important;max-width:100%!important;
     border-radius:20px 20px 0 0!important;
-    padding:8px 16px 36px!important;
-    max-height:85vh!important;
+    padding:6px 16px env(safe-area-inset-bottom, 24px)!important;
+    max-height:90vh!important;
     overflow-y:auto!important;
     -webkit-overflow-scrolling:touch!important;
     animation:slideUp .28s cubic-bezier(.22,.61,.36,1)!important;
@@ -253,65 +387,141 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   .interview-popup{
     width:100%!important;max-width:100%!important;
     border-radius:20px 20px 0 0!important;
-    padding:8px 16px 36px!important;
-    max-height:88vh!important;
+    padding:6px 16px env(safe-area-inset-bottom, 24px)!important;
+    max-height:92vh!important;
     overflow-y:auto!important;
     -webkit-overflow-scrolling:touch!important;
     animation:slideUp .28s cubic-bezier(.22,.61,.36,1)!important;
   }
   .event-popup::before,.interview-popup::before{
-    content:'';display:block;width:40px;height:4px;
+    content:'';display:block;width:44px;height:4px;
     background:var(--border2);border-radius:2px;
-    margin:8px auto 14px;
+    margin:10px auto 16px;
   }
-  .event-popup-icon{font-size:34px;margin-bottom:6px}
-  .event-popup-title{font-size:22px;margin-bottom:6px}
-  .event-popup-desc{font-size:12px;margin-bottom:14px;line-height:1.5}
+  .event-popup-icon{font-size:38px;margin-bottom:8px}
+  .event-popup-title{font-size:24px;margin-bottom:8px}
+  .event-popup-desc{font-size:13px;margin-bottom:16px;line-height:1.6}
   .event-choice-btn{
-    padding:13px 14px;font-size:12px;
-    min-height:52px;touch-action:manipulation;
+    padding:14px 16px;font-size:13px;
+    min-height:56px;touch-action:manipulation;
+    border-radius:10px;
   }
   .interview-choice{
-    padding:13px 14px;font-size:12px;
-    min-height:52px;touch-action:manipulation;
+    padding:14px 16px;font-size:13px;
+    min-height:56px;touch-action:manipulation;
+    border-radius:10px;
   }
   /* Modal bottom sheet */
   .modal-overlay{align-items:flex-end!important;padding:0!important}
   .modal-box{
     width:100%!important;max-width:100%!important;
     border-radius:20px 20px 0 0!important;
-    padding:8px 16px 36px!important;
+    padding:6px 18px env(safe-area-inset-bottom, 28px)!important;
     animation:slideUp .28s cubic-bezier(.22,.61,.36,1)!important;
   }
   .modal-box::before{
-    content:'';display:block;width:40px;height:4px;
+    content:'';display:block;width:44px;height:4px;
     background:var(--border2);border-radius:2px;
-    margin:8px auto 14px;
+    margin:10px auto 16px;
   }
-  .modal-actions{flex-direction:column;gap:8px}
+  .modal-title{font-size:20px}
+  .modal-text{font-size:13px;line-height:1.6}
+  .modal-actions{flex-direction:column;gap:10px;margin-top:16px}
   .modal-actions .btn-primary,.modal-actions .btn-secondary,.modal-actions .btn-danger{
-    width:100%;text-align:center;padding:14px;font-size:13px;min-height:52px;
+    width:100%;text-align:center;padding:16px;font-size:14px;min-height:54px;border-radius:10px;
   }
 
   /* Toast */
-  #toast-container{top:60px;right:8px;left:8px;z-index:9999}
-  .toast{max-width:100%}
+  #toast-container{top:62px;right:8px;left:8px;z-index:9999}
+  .toast{max-width:100%;font-size:12px;padding:10px 14px;border-radius:8px}
+  .toast-title{font-size:12px}.toast-msg{font-size:11px}
+
+  /* Timelime */
+  .timeline{padding:6px 0}
+  .timeline-point{min-width:60px}
+  .timeline-label{font-size:7px}
+
+  /* Attr grid */
+  .attr-grid{grid-template-columns:1fr 1fr;gap:6px}
+  .attr-item{padding:8px}
 }
 
 /* ── 480px e menor ── */
 @media(max-width:480px){
-  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:6px}
-  .agenda-grid{grid-template-columns:repeat(3,1fr)}
-  .campaign-actions{grid-template-columns:1fr}
+  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .agenda-grid{grid-template-columns:repeat(3,1fr);gap:5px}
+  .campaign-actions{grid-template-columns:repeat(2,1fr);gap:8px}
   #map-fallback{grid-template-columns:repeat(3,1fr)}
   .topbar-stats>div:nth-child(n+5){display:none}
-  .finance-summary{grid-template-columns:1fr 1fr}
+  .finance-summary{grid-template-columns:repeat(3,1fr)}
   .diff-grid{grid-template-columns:repeat(2,1fr)}
-  .vice-card{width:calc(50% - 4px)}
-  .nav-btn{min-width:44px;padding:4px 5px;font-size:8px}
+  .vice-card{width:calc(50% - 5px)}
+  .nav-btn{min-width:48px;padding:4px 4px;font-size:8px}
+  .nav-btn .icon{font-size:17px}
+  .election-btn{padding:9px 12px;font-size:11px}
+  .candidate-photo{width:58px;height:58px}
+  .candidate-card{padding:12px 8px}
+  .topbar-name{max-width:60px}
+  .start-btn{font-size:18px;padding:14px 32px}
+}
+
+/* ── 360px (small phones) ── */
+@media(max-width:360px){
+  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:6px}
+  .candidate-photo{width:52px;height:52px}
+  .nav-btn{min-width:42px;font-size:7px;padding:4px 3px}
   .nav-btn .icon{font-size:16px}
+  .topbar{height:50px;min-height:50px;max-height:50px}
+  .topbar-photo{width:28px;height:28px}
+  .sidebar{height:58px;min-height:58px}
+  .campaign-actions{grid-template-columns:1fr 1fr}
+  .action-btn{min-height:72px}
 }
 .screen{position:fixed;inset:0;display:none;overflow:hidden}.screen.active{display:flex}
+@media(max-width:768px){
+  /* Intro: sai do fixed, vira bloco normal que o body scrolla */
+  #intro-screen{
+    position:relative !important;
+    inset:auto !important;
+    width:100% !important;
+    min-height:100svh !important;
+    overflow:visible !important;
+    display:none !important;
+    z-index:1;
+  }
+  #intro-screen.active{
+    display:flex !important;
+    flex-direction:column;
+    align-items:center;
+  }
+  /* Game screen fica fixed por CIMA do intro */
+  #game-screen{
+    position:fixed !important;
+    inset:0 !important;
+    overflow:hidden !important;
+    z-index:10 !important;
+    display:none !important;
+  }
+  #game-screen.active{
+    display:flex !important;
+  }
+  /* Results screen também precisa scrollar */
+  #results-screen{
+    position:relative !important;
+    inset:auto !important;
+    width:100% !important;
+    min-height:100svh !important;
+    overflow-y:auto !important;
+    display:none !important;
+    z-index:1;
+  }
+  #results-screen.active{
+    display:flex !important;
+    flex-direction:column;
+  }
+  /* Impede que intro-bg/grid cubram game-screen */
+  .intro-bg, .intro-grid{z-index:0 !important;}
+}
 
 /* ── INTRO ─────────────────────────────────────────── */
 #intro-screen{background:linear-gradient(135deg,#050810,#0a1020 50%,#050810);flex-direction:column;align-items:center;overflow-y:auto}
@@ -755,7 +965,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <div class="election-buttons">
         <button class="election-btn active" onclick="selElection(2022,this)">🗳️ Eleição 2022</button>
         <button class="election-btn" onclick="selElection(2018,this)">🗳️ Eleição 2018</button>
-        <button class="election-btn wip" title="Em Desenvolvimento">🗳️ Eleição 2014</button>
+        <button class="election-btn" onclick="selElection(2014,this)">🗳️ Eleição 2014</button>
         <button class="election-btn wip" title="Em Desenvolvimento">🗳️ Eleição 2010</button>
       </div>
     </div>
@@ -833,20 +1043,23 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <div class="sidebar-nav">
         <button class="nav-btn active" onclick="showTab('campaign',this)"><span class="icon">📢</span>Campanha</button>
         <button class="nav-btn" onclick="showTab('agenda',this)"><span class="icon">📅</span>Agenda</button>
-        <button class="nav-btn" onclick="showTab('debates',this)"><span class="icon">🎙️</span>Debates</button>
-        <button class="nav-btn" onclick="showTab('states',this)"><span class="icon">🗺️</span>Estados</button>
         <button class="nav-btn" onclick="showTab('polls',this)"><span class="icon">📊</span>Pesquisas</button>
-        <button class="nav-btn" onclick="showTab('social',this)"><span class="icon">📱</span>Redes Sociais</button>
-        <button class="nav-btn" onclick="showTab('strategy',this)"><span class="icon">🤝</span>Estratégia</button>
-        <button class="nav-btn" onclick="showTab('coalition',this)"><span class="icon">🏛️</span>Coligação</button>
-        <button class="nav-btn" onclick="showTab('attack',this)"><span class="icon">⚔️</span>Ataques</button>
-        <button class="nav-btn" onclick="showTab('interview',this)"><span class="icon">🎙️</span>Entrevista</button>
-        <button class="nav-btn" onclick="showTab('profiles',this)"><span class="icon">👤</span>Candidatos</button>
-        <button class="nav-btn" onclick="showTab('vice',this)"><span class="icon">🤝</span>Vice</button>
-        <button class="nav-btn" onclick="showTab('demographics',this)"><span class="icon">👥</span>Demografias</button>
+        <button class="nav-btn" onclick="showTab('states',this)"><span class="icon">🗺️</span>Estados</button>
         <button class="nav-btn" onclick="showTab('events',this)"><span class="icon">📰</span>Eventos</button>
-        <button class="nav-btn" onclick="showTab('finances',this)"><span class="icon">💰</span>Finanças</button>
-        <button class="nav-btn" id="results-nav-btn" onclick="showTab('results',this)"><span class="icon">🏆</span>Resultados</button>
+        <!-- Extras: visíveis no desktop, escondidos no mobile (aparecem no painel ⋯) -->
+        <button class="nav-btn nav-extra" onclick="showTab('debates',this)"><span class="icon">🎙️</span>Debates</button>
+        <button class="nav-btn nav-extra" onclick="showTab('social',this)"><span class="icon">📱</span>Redes Sociais</button>
+        <button class="nav-btn nav-extra" onclick="showTab('strategy',this)"><span class="icon">🤝</span>Estratégia</button>
+        <button class="nav-btn nav-extra" onclick="showTab('coalition',this)"><span class="icon">🏛️</span>Coligação</button>
+        <button class="nav-btn nav-extra" onclick="showTab('attack',this)"><span class="icon">⚔️</span>Ataques</button>
+        <button class="nav-btn nav-extra" onclick="showTab('interview',this)"><span class="icon">🎙️</span>Entrevista</button>
+        <button class="nav-btn nav-extra" onclick="showTab('profiles',this)"><span class="icon">👤</span>Candidatos</button>
+        <button class="nav-btn nav-extra" onclick="showTab('vice',this)"><span class="icon">🤝</span>Vice</button>
+        <button class="nav-btn nav-extra" onclick="showTab('demographics',this)"><span class="icon">👥</span>Demografias</button>
+        <button class="nav-btn nav-extra" onclick="showTab('finances',this)"><span class="icon">💰</span>Finanças</button>
+        <button class="nav-btn nav-extra" id="results-nav-btn" onclick="showTab('results',this)"><span class="icon">🏆</span>Resultados</button>
+        <!-- Botão ⋯ — só no mobile via JS -->
+        <button class="nav-more-btn" id="nav-more-btn" onclick="toggleMoreMenu()" style="display:none"><span class="icon">⋯</span>Mais</button>
       </div>
       <div class="sidebar-bottom">
         <div class="poll-mini-label">PESQUISA ATUAL</div>
@@ -999,6 +1212,26 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 
     </div>
   </div>
+
+  <!-- MOBILE MORE MENU -->
+  <div id="nav-more-overlay" onclick="closeMoreMenu()"></div>
+  <div id="nav-more-panel">
+    <div class="more-title">⚙ Todas as Seções</div>
+    <div class="more-grid">
+      <div class="more-item" onclick="moreTabClick('debates',this)"><span class="more-icon">🎙️</span>Debates</div>
+      <div class="more-item" onclick="moreTabClick('social',this)"><span class="more-icon">📱</span>Redes</div>
+      <div class="more-item" onclick="moreTabClick('strategy',this)"><span class="more-icon">🤝</span>Estratégia</div>
+      <div class="more-item" onclick="moreTabClick('coalition',this)"><span class="more-icon">🏛️</span>Coligação</div>
+      <div class="more-item" onclick="moreTabClick('attack',this)"><span class="more-icon">⚔️</span>Ataques</div>
+      <div class="more-item" onclick="moreTabClick('interview',this)"><span class="more-icon">🎤</span>Entrevista</div>
+      <div class="more-item" onclick="moreTabClick('profiles',this)"><span class="more-icon">👤</span>Candidatos</div>
+      <div class="more-item" onclick="moreTabClick('vice',this)"><span class="more-icon">🤝</span>Vice</div>
+      <div class="more-item" onclick="moreTabClick('demographics',this)"><span class="more-icon">👥</span>Demografias</div>
+      <div class="more-item" onclick="moreTabClick('finances',this)"><span class="more-icon">💰</span>Finanças</div>
+      <div class="more-item" onclick="moreTabClick('results',this)"><span class="more-icon">🏆</span>Resultados</div>
+    </div>
+  </div>
+
 </div>
 
 <!-- FINAL RESULTS SCREEN -->
@@ -1120,7 +1353,7 @@ const PARTY_LOGOS = {
   'PSD':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/PSD_Brazil_logo.svg/1280px-PSD_Brazil_logo.svg.png',
   'PSB':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Logo_of_the_Brazilian_Socialist_Party_%28wordmark_color%29.svg/1920px-Logo_of_the_Brazilian_Socialist_Party_%28wordmark_color%29.svg.png',
   'PCdoB':'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/PCdoB_logo.svg/1920px-PCdoB_logo.svg.png',
-  'PRTB':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/PRTB-LOGO-04-1024x393.png/250px-PRTB-LOGO-04-1024x393.png',
+  'PRTB':'https://upload.wikimedia.org/wikipedia/commons/7/76/PRTB-LOGO-04-1024x393.png',
   'PRD':'https://upload.wikimedia.org/wikipedia/commons/5/54/Logomarca_Partido_Renova%C3%A7%C3%A3o_Democr%C3%A1tica.png',
   'Cidadania':'https://upload.wikimedia.org/wikipedia/commons/d/d7/Logo_do_Cidadania_23.png',
   'Solidariedade':'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Logomarca_do_Partido_Solidariedade.png/1920px-Logomarca_do_Partido_Solidariedade.png',
@@ -1130,10 +1363,11 @@ const PARTY_LOGOS = {
   'AGIR':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Logotipo_do_partido_Agir.svg/1920px-Logotipo_do_partido_Agir.svg.png',
   'Democrata':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Logomarca_O_Democrata_35.png/250px-Logomarca_O_Democrata_35.png',
   'Mobiliza':'https://upload.wikimedia.org/wikipedia/commons/7/7f/Logomarca_Partido_Mobiliza.png',
-  'PCO':'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Logo_PCO_Institucional.svg/250px-Logo_PCO_Institucional.svg.png',
+  'PCO':'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Logo_PCO_Institucional.svg/1280px-Logo_PCO_Institucional.svg.png',
   'Missão':'https://upload.wikimedia.org/wikipedia/pt/thumb/4/47/MISS%C3%83O_logo.png/250px-MISS%C3%83O_logo.png',
   'PSL':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Partido_Social_Liberal_logo.svg/250px-Partido_Social_Liberal_logo.svg.png',
   'PSC':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/PSC_logo%28cortado%29.png/250px-PSC_logo%28cortado%29.png',
+  'PSDC':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Logomarca_Democracia_Crist%C3%A3.png/250px-Logomarca_Democracia_Crist%C3%A3.png',
 };
 
 // ════════════════════════════════════════════════════════
@@ -1236,9 +1470,118 @@ const CANDIDATES_2018 = [
 
 const VICES_2018 = {
   mourao18:{ id:'mourao18', name:'Hamilton Mourão', party:'PRTB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Hamilton_Mour%C3%A3o.jpg/500px-Hamilton_Mour%C3%A3o.jpg', region:'Sul', pop:52, exp:70, align:88, bonus:{S:4,RS:3}, desc:'General, vice real de Bolsonaro em 2018' },
-  moro18:{ id:'moro18', name:'Sérgio Moro', party:'PODEMOS', photo:'https://upload.wikimedia.org/wikipedia/commons/a/a8/Senador_da_Rep%C3%BAblica_S%C3%A9rgio_Moro.jpg', region:'Sul', pop:72, exp:68, align:80, bonus:{S:5,SE:3,PR:4}, desc:'Juiz federal da Lava Jato, símbolo do anti-corrupção. Altíssima popularidade no Sul e Sudeste.' },
+  moro18:{ id:'moro18', name:'Sérgio Moro', party:'PSL', photo:'https://upload.wikimedia.org/wikipedia/commons/a/a8/Senador_da_Rep%C3%BAblica_S%C3%A9rgio_Moro.jpg', region:'Sul', pop:72, exp:68, align:80, bonus:{S:5,SE:3,PR:4}, desc:'Juiz federal da Lava Jato, símbolo do anti-corrupção. Altíssima popularidade no Sul e Sudeste.' },
   orleans18:{ id:'orleans18', name:'Luiz Philippe de Orleans e Bragança', party:'PSL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Deputado_Luiz_Philippe_de_Orleans_e_Bragan%C3%A7a_%28cropped%29.jpg/500px-Deputado_Luiz_Philippe_de_Orleans_e_Bragan%C3%A7a_%28cropped%29.jpg', region:'Sudeste', pop:40, exp:45, align:90, bonus:{SE:2}, desc:'Deputado, descendente da família imperial' },
   janaina18:{ id:'janaina18', name:'Janaina Paschoal', party:'PSL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/2022-02-14_Sess%C3%A3o_de_Debate_Tem%C3%A1tico_-_Efici%C3%AAncia_do_Passaporte_Sanit%C3%A1rio_no_enfrentamento_%C3%A0_Pandemia_da_COVID-19%2C_03_%28Jana%C3%ADna_Paschoal%29.jpg/500px-2022-02-14_Sess%C3%A3o_de_Debate_Tem%C3%A1tico_-_Efici%C3%AAncia_do_Passaporte_Sanit%C3%A1rio_no_enfrentamento_%C3%A0_Pandemia_da_COVID-19%2C_03_%28Jana%C3%ADna_Paschoal%29.jpg', region:'São Paulo', pop:60, exp:62, align:85, bonus:{SP:4}, desc:'Professora e procuradora, autora do impeachment de Dilma' },
+};
+
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATES 2014
+// ════════════════════════════════════════════════════════
+const CANDIDATES_2014 = [
+  { id:'dilma14', name:'Dilma Vana Rousseff', shortName:'Dilma', party:'PT', partyColor:'#e53935', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Dilma_Rousseff_2011_%28cropped%29.jpg/120px-Dilma_Rousseff_2011_%28cropped%29.jpg',
+    baseVote:41, baseReject:42, attrs:{carisma:60,experiencia:88,rejeicao:42,apoioPartidario:82,arrecadacao:70},
+    regionBias:{N:1.0,NE:1.6,CO:0.85,SE:0.9,S:0.75},
+    vices:['temer14','jaques14'],
+    debateStrengths:['programas_sociais','economia','saude','educacao'],
+    description:'Presidenta em busca da reeleição, ex-guerrilheira e economista' },
+  { id:'aecio14', name:'Aécio Neves da Cunha', shortName:'Aécio', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg',
+    baseVote:33, baseReject:38, attrs:{carisma:70,experiencia:82,rejeicao:38,apoioPartidario:72,arrecadacao:68},
+    regionBias:{N:0.85,NE:0.7,CO:1.2,SE:1.2,S:1.3},
+    vices:['aloysio14','serra14','alckmin14'],
+    debateStrengths:['economia','corrupcao','privatizacoes','seguranca'],
+    description:'Senador e ex-governador de Minas Gerais, candidato do PSDB' },
+  { id:'marina14', name:'Marina Silva', shortName:'Marina Silva', party:'PSB', partyColor:'#00897b', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://s2.glbimg.com/mtJ74Olt5R6pYJznNVoIF14VFo0=/e.glbimg.com/og/ed/f/original/2014/09/30/marina.jpg',
+    baseVote:21, baseReject:28, attrs:{carisma:78,experiencia:75,rejeicao:28,apoioPartidario:55,arrecadacao:42},
+    regionBias:{N:1.1,NE:1.1,CO:0.9,SE:1.0,S:0.95},
+    vices:[{id:'beto14',name:'Beto Albuquerque',region:'Sul',party:'PSB',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Beto_Albuquerque_2018_%28cropped%29.jpg/500px-Beto_Albuquerque_2018_%28cropped%29.jpg',pop:55,exp:70,align:85,bonus:{S:3,RS:2},desc:'Deputado federal gaúcho, vice real de Marina Silva em 2014'}],
+    debateStrengths:['meio_ambiente','educacao','saude','corrupcao'],
+    description:'Ex-ministra do Meio Ambiente, candidata do PSB após morte de Eduardo Campos' },
+  { id:'genro14', name:'Luciana Genro', shortName:'Luciana Genro', party:'PSOL', partyColor:'#9c27b0', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Luciana_Genro%2C_2015_%28cropped%29.jpg/500px-Luciana_Genro%2C_2015_%28cropped%29.jpg',
+    baseVote:1.55, baseReject:22, attrs:{carisma:65,experiencia:55,rejeicao:22,apoioPartidario:50,arrecadacao:12},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.1,S:1.3},
+    vices:[{id:'jorgepaz14',name:'Jorge Paz',region:'Sul',party:'PSOL',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:25,exp:35,align:95,bonus:{RS:1},desc:'Professor gaúcho, vice real de Luciana Genro em 2014'}],
+    debateStrengths:['programas_sociais','educacao','saude','meio_ambiente'],
+    description:'Filha do governador Tarso Genro, candidata do PSOL' },
+  { id:'everaldo14', name:'Everaldo Dias Pereira', shortName:'Pastor Everaldo', party:'PSC', partyColor:'#2e7d32', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Everaldo_Dias_Pereira.jpg/500px-Everaldo_Dias_Pereira.jpg',
+    baseVote:0.75, baseReject:20, attrs:{carisma:58,experiencia:50,rejeicao:20,apoioPartidario:45,arrecadacao:18},
+    regionBias:{N:1.0,NE:0.9,CO:1.1,SE:1.1,S:0.9},
+    vices:[{id:'gadelha14',name:'Leonardo Gadelha',region:'Nordeste',party:'PSC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:28,exp:40,align:88,bonus:{PB:1},desc:'Deputado federal da Paraíba, vice real de Pastor Everaldo em 2014'}],
+    debateStrengths:['religiao','valores','seguranca'],
+    description:'Presidente do PSC, líder da Assembleia de Deus, defensor dos valores cristãos' },
+  { id:'eduardojorge14', name:'Eduardo Jorge Martins', shortName:'Eduardo Jorge', party:'PV', partyColor:'#388e3c', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Eduardo_Jorge_em_22_de_agosto_de_2018_%28cropped%29.jpg/500px-Eduardo_Jorge_em_22_de_agosto_de_2018_%28cropped%29.jpg',
+    baseVote:0.61, baseReject:14, attrs:{carisma:55,experiencia:65,rejeicao:14,apoioPartidario:38,arrecadacao:10},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.2,S:1.0},
+    vices:[{id:'celiasacramento14',name:'Célia Sacramento',region:'Nordeste',party:'PV',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:30,exp:45,align:88,bonus:{BA:1},desc:'Vice-prefeita de Salvador, vice real de Eduardo Jorge em 2014'}],
+    debateStrengths:['meio_ambiente','saude','educacao'],
+    description:'Médico sanitarista e ex-deputado federal, criador do SUS, candidato do PV' },
+  { id:'fidelix14', name:'José Levy Fidélix da Cruz', shortName:'Levy Fidélix', party:'PRTB', partyColor:'#795548', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/ae/Levy_Fidelix_tv_brasil_%28cropped%29.jpg',
+    baseVote:0.43, baseReject:30, attrs:{carisma:45,experiencia:50,rejeicao:30,apoioPartidario:28,arrecadacao:8},
+    regionBias:{N:0.7,NE:0.7,CO:0.9,SE:1.2,S:1.0},
+    vices:[{id:'josealves14',name:'José Alves de Oliveira',region:'Sudeste',party:'PRTB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:20,exp:40,align:90,bonus:{},desc:'Militar reformado, vice real de Levy Fidélix em 2014'}],
+    debateStrengths:['seguranca','valores','economia'],
+    description:'Fundador do PRTB, empresário e apresentador de TV, terceira candidatura' },
+  { id:'zemaria14', name:'José Maria de Almeida', shortName:'Zé Maria', party:'PSTU', partyColor:'#b71c1c', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    baseVote:0.1, baseReject:16, attrs:{carisma:50,experiencia:52,rejeicao:16,apoioPartidario:34,arrecadacao:5},
+    regionBias:{N:0.7,NE:0.9,CO:0.7,SE:1.1,S:1.0},
+    vices:[{id:'claudiadurans14',name:'Cláudia Durans',region:'Nordeste',party:'PSTU',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:22,exp:32,align:96,bonus:{},desc:'Servidora pública, vice real de Zé Maria em 2014'}],
+    debateStrengths:['programas_sociais','economia','saude'],
+    description:'Metalúrgico e fundador do PSTU, quarta candidatura presidencial' },
+  { id:'eymael14', name:'José Maria Eymael', shortName:'Eymael', party:'PSDC', partyColor:'#33691e', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    baseVote:0.07, baseReject:12, attrs:{carisma:38,experiencia:68,rejeicao:12,apoioPartidario:26,arrecadacao:6},
+    regionBias:{N:0.6,NE:0.6,CO:0.8,SE:1.2,S:1.2},
+    vices:[{id:'robertolopes14',name:'Roberto Lopes',region:'Norte',party:'PSDC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:92,bonus:{},desc:'Presidente do PSDC em Roraima, vice real de Eymael em 2014'}],
+    debateStrengths:['religiao','valores','educacao'],
+    description:'Advogado, fundador do PSDC, democrata cristão, quarta candidatura' },
+  { id:'iasi14', name:'Mauro Iasi', shortName:'Mauro Iasi', party:'PCB', partyColor:'#c62828', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Mauro_Iasi_no_Senado.png/500px-Mauro_Iasi_no_Senado.png',
+    baseVote:0.1, baseReject:15, attrs:{carisma:45,experiencia:55,rejeicao:15,apoioPartidario:30,arrecadacao:4},
+    regionBias:{N:0.6,NE:0.7,CO:0.7,SE:1.2,S:1.0},
+    vices:[{id:'andresantos14',name:'André Santos',region:'Sudeste',party:'PCB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:30,align:97,bonus:{},desc:'Militante do PCB, vice de Mauro Iasi em 2014'}],
+    debateStrengths:['programas_sociais','economia','saude'],
+    description:'Professor universitário, presidente do PCB, marxista clássico' },
+  { id:'ruicosta14', name:'Rui Costa Pimenta', shortName:'Rui Costa Pimenta', party:'PCO', partyColor:'#880e4f', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    baseVote:0.05, baseReject:14, attrs:{carisma:42,experiencia:58,rejeicao:14,apoioPartidario:25,arrecadacao:3},
+    regionBias:{N:0.5,NE:0.6,CO:0.6,SE:1.3,S:1.1},
+    vices:[{id:'ricardomachado14',name:'Ricardo Machado',region:'Sudeste',party:'PCO',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:15,exp:28,align:98,bonus:{},desc:'Bancário e militante do PCO, vice real de Rui Costa Pimenta em 2014'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Jornalista e editor do jornal Causa Operária, quarta candidatura presidencial' }
+];
+
+const VICES_2014 = {
+  temer14:{ id:'temer14', name:'Michel Temer', party:'MDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg/500px-Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg', region:'Sudeste', pop:50, exp:80, align:78, bonus:{SP:3,SE:2}, desc:'Vice-presidente em exercício, presidente da Câmara, PMDB de São Paulo' },
+  jaques14:{ id:'jaques14', name:'Jaques Wagner', party:'PT', photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg', region:'Nordeste', pop:65, exp:78, align:95, bonus:{BA:4,NE:2}, desc:'Ex-governador da Bahia, muito popular no Nordeste' },
+  aloysio14:{ id:'aloysio14', name:'Aloysio Nunes Ferreira', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/e/ed/Foto_oficial_de_Aloysio_Nunes_%28cropped%29.jpg', region:'Sudeste', pop:55, exp:75, align:88, bonus:{SP:3,SE:2}, desc:'Senador de São Paulo, vice real de Aécio em 2014' },
+  serra14:{ id:'serra14', name:'José Serra', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Senador_Jos%C3%A9_Serra_-_foto_oficial_2.jpg/500px-Senador_Jos%C3%A9_Serra_-_foto_oficial_2.jpg', region:'Sudeste', pop:62, exp:88, align:82, bonus:{SP:4,SE:3}, desc:'Ex-governador de SP e ex-candidato a presidente, experiência nacional' },
+  alckmin14:{ id:'alckmin14', name:'Geraldo Alckmin', party:'PSDB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Geraldo_Alckmin_em_junho_de_2014_%28cropped%29.jpg/500px-Geraldo_Alckmin_em_junho_de_2014_%28cropped%29.jpg', region:'Sudeste', pop:60, exp:85, align:85, bonus:{SP:5,SE:3}, desc:'Governador de São Paulo, fortíssimo no Sudeste' }
+};
+
+// Real 2014 first-round results by state (Dilma %, Aécio %, Marina %)
+const REAL_RESULTS_2014 = {
+  AC:{dilma:49.1,aecio:28.6,marina:17.5}, AL:{dilma:57.5,aecio:21.4,marina:16.0},
+  AM:{dilma:40.7,aecio:35.2,marina:18.5}, AP:{dilma:43.2,aecio:30.0,marina:21.0},
+  BA:{dilma:68.4,aecio:14.3,marina:13.5}, CE:{dilma:66.3,aecio:16.0,marina:13.5},
+  DF:{dilma:30.6,aecio:42.0,marina:20.5}, ES:{dilma:35.8,aecio:43.5,marina:16.0},
+  GO:{dilma:34.2,aecio:43.0,marina:17.5}, MA:{dilma:61.0,aecio:15.0,marina:19.0},
+  MG:{dilma:45.0,aecio:40.0,marina:11.5}, MS:{dilma:35.5,aecio:44.5,marina:15.5},
+  MT:{dilma:36.0,aecio:44.0,marina:15.0}, PA:{dilma:47.5,aecio:28.0,marina:19.0},
+  PB:{dilma:58.5,aecio:20.5,marina:16.5}, PE:{dilma:61.5,aecio:18.5,marina:15.0},
+  PI:{dilma:64.0,aecio:16.0,marina:16.0}, PR:{dilma:34.5,aecio:42.5,marina:18.0},
+  RJ:{dilma:37.5,aecio:36.0,marina:22.0}, RN:{dilma:60.0,aecio:19.0,marina:16.5},
+  RO:{dilma:38.5,aecio:42.0,marina:15.0}, RR:{dilma:36.0,aecio:42.5,marina:16.0},
+  RS:{dilma:44.0,aecio:36.5,marina:15.0}, SC:{dilma:30.5,aecio:48.0,marina:16.5},
+  SE:{dilma:60.5,aecio:20.0,marina:15.5}, SP:{dilma:32.5,aecio:45.0,marina:17.5},
+  TO:{dilma:41.5,aecio:36.0,marina:17.5}
 };
 
 // Real 2018 first-round results by state (Bolsonaro %, Haddad %)
@@ -1344,7 +1687,13 @@ const SCHEDULED_DEBATES_2018 = [
   {date:'2018-10-26',name:'Debate Globo 2º Turno',participants:'top2',round:2}
 ];
 let SCHEDULED_DEBATES = SCHEDULED_DEBATES_2022;
-function getScheduledDebates(){ return CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:SCHEDULED_DEBATES_2022; }
+const SCHEDULED_DEBATES_2014 = [
+  {date:'2014-08-26',name:'Debate Band',participants:'todos',round:1},
+  {date:'2014-09-09',name:'Debate SBT/Record',participants:'todos',round:1},
+  {date:'2014-09-26',name:'Debate Globo',participants:'top6',round:1},
+  {date:'2014-10-24',name:'Debate Globo 2º Turno',participants:'top2',round:2}
+];
+function getScheduledDebates(){ return CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:CURRENT_ELECTION===2014?SCHEDULED_DEBATES_2014:SCHEDULED_DEBATES_2022; }
 
 // Enhanced random events with choices
 const RANDOM_EVENTS = [
@@ -1594,6 +1943,17 @@ function closeModal(){document.getElementById('modal-overlay').classList.remove(
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  // Mobile: lock body scroll during game, allow scroll on intro/results
+  if(window.innerWidth<=768){
+    if(id==='game-screen'){
+      document.body.style.overflow='hidden';
+      document.documentElement.style.overflow='hidden';
+    } else {
+      document.body.style.overflow='';
+      document.documentElement.style.overflow='';
+      window.scrollTo(0,0);
+    }
+  }
 }
 
 function showTab(id,btn){
@@ -1617,6 +1977,57 @@ function showTab(id,btn){
   if(id==='demographics')renderDemographicsTab();
   if(id==='coalition')renderCoalitionTab();
   if(id==='attack')renderAttackTab();
+  // Atualiza estado do botão ⋯ no mobile
+  updateMoreBtnState(id);
+}
+
+// ── MOBILE MORE MENU ──────────────────────────────────────
+const MORE_TABS = ['debates','social','strategy','coalition','attack','interview','profiles','vice','demographics','finances','results'];
+
+function initMobileMoreBtn(){
+  if(window.innerWidth > 768) return;
+  const btn = document.getElementById('nav-more-btn');
+  if(btn) btn.style.display = '';  // deixa o CSS mobile mostrar
+}
+
+function toggleMoreMenu(){
+  const panel = document.getElementById('nav-more-panel');
+  const overlay = document.getElementById('nav-more-overlay');
+  const isOpen = panel.classList.contains('open');
+  if(isOpen){ closeMoreMenu(); }
+  else {
+    panel.classList.add('open');
+    overlay.classList.add('open');
+    updateMorePanelActive();
+  }
+}
+
+function closeMoreMenu(){
+  document.getElementById('nav-more-panel')?.classList.remove('open');
+  document.getElementById('nav-more-overlay')?.classList.remove('open');
+}
+
+function moreTabClick(id, el){
+  closeMoreMenu();
+  // Encontra o nav-btn extra correspondente para passar como btn
+  const extraBtn = document.querySelector(`.nav-btn.nav-extra[onclick*="'${id}'"]`);
+  showTab(id, extraBtn);
+}
+
+function updateMoreBtnState(activeId){
+  if(window.innerWidth > 768) return;
+  const btn = document.getElementById('nav-more-btn');
+  if(!btn) return;
+  btn.classList.toggle('has-active', MORE_TABS.includes(activeId));
+  updateMorePanelActive();
+}
+
+function updateMorePanelActive(){
+  const currentTab = document.querySelector('.tab-panel.active')?.id?.replace('tab-','');
+  document.querySelectorAll('#nav-more-panel .more-item').forEach(item => {
+    const tabId = item.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    item.classList.toggle('active', tabId === currentTab);
+  });
 }
 
 // ════════════════════════════════════════════════════════
@@ -1624,11 +2035,12 @@ function showTab(id,btn){
 // ════════════════════════════════════════════════════════
 let CURRENT_ELECTION = 2022;
 
-function getCandidates(){ return CURRENT_ELECTION===2018?CANDIDATES_2018:CANDIDATES_2022; }
-function getVices(){ return CURRENT_ELECTION===2018?VICES_2018:VICES_2022; }
-function getRealResults(){ return CURRENT_ELECTION===2018?REAL_RESULTS_2018:REAL_RESULTS_2022; }
+function getCandidates(){ return CURRENT_ELECTION===2018?CANDIDATES_2018:CURRENT_ELECTION===2014?CANDIDATES_2014:CANDIDATES_2022; }
+function getVices(){ return CURRENT_ELECTION===2018?VICES_2018:CURRENT_ELECTION===2014?VICES_2014:VICES_2022; }
+function getRealResults(){ return CURRENT_ELECTION===2018?REAL_RESULTS_2018:CURRENT_ELECTION===2014?REAL_RESULTS_2014:REAL_RESULTS_2022; }
 function getElectionDates(){
   if(CURRENT_ELECTION===2018) return {start:'2017-10-07',first:'2018-10-07',second:'2018-10-28',totalDays:366};
+  if(CURRENT_ELECTION===2014) return {start:'2013-10-05',first:'2014-10-05',second:'2014-10-26',totalDays:366};
   return {start:'2021-10-02',first:'2022-10-02',second:'2022-10-30',totalDays:366};
 }
 
@@ -1711,8 +2123,14 @@ function renderViceCards(cid){
     else if(cid==='bolsonaro') list=['braganetto','terezacristina','mourao'].map(id=>vices[id]);
     else list=(cand.vices||[]).filter(v=>typeof v==='object');
   } else {
-    if(cid==='bolsonaro18') list=['mourao18','moro18','orleans18','janaina18'].map(id=>vices[id]);
-    else list=(cand.vices||[]).filter(v=>typeof v==='object');
+    // Para qualquer eleição: se o array de vices contém strings, busca no objeto vices; senão usa inline
+    const rawVices = cand.vices || [];
+    const hasStringIds = rawVices.some(v => typeof v === 'string');
+    if(hasStringIds){
+      list = rawVices.map(id => vices[id]).filter(Boolean);
+    } else {
+      list = rawVices.filter(v => typeof v === 'object');
+    }
   }
 
   list.forEach(v=>{
@@ -1758,7 +2176,8 @@ function startGame(){
   G.totalDays=dates.totalDays;
 
   const baseMoneys={lula:500e6,bolsonaro:450e6,ciro:120e6,tebet:80e6,soraya:50e6,davila:60e6,kelmon:5e6,pericles:2e6,sofia:1e6,vera:1e6,eymael:1e6,
-    bolsonaro18:200e6,haddad18:220e6,ciro18:80e6,alckmin18:150e6,marina18:25e6,amoedo18:30e6,meirelles18:60e6,alvaro18:20e6,daciolo18:5e6,boulos18:10e6,vera18:1e6,eymael18:2e6,goulart18:2e6};
+    bolsonaro18:200e6,haddad18:220e6,ciro18:80e6,alckmin18:150e6,marina18:25e6,amoedo18:30e6,meirelles18:60e6,alvaro18:20e6,daciolo18:5e6,boulos18:10e6,vera18:1e6,eymael18:2e6,goulart18:2e6,
+    dilma14:300e6,aecio14:280e6,marina14:80e6,genro14:8e6,everaldo14:15e6,eduardojorge14:5e6,fidelix14:4e6,zemaria14:1e6,eymael14:2e6,iasi14:1e6,ruicosta14:500000};
   G.money=G.sandbox?1e12:(baseMoneys[cand.id]||10e6)*diff.moneyMult;
   G.popularity=cand.attrs.carisma;
   G.rejection=cand.baseReject;
@@ -1798,6 +2217,7 @@ function startGame(){
   })();
 
   showScreen('game-screen');
+  initMobileMoreBtn();
   startGameLoop();
   showToast('🎉 Campanha Iniciada!',`${cand.shortName} (${cand.party}) começa a campanha — Dificuldade: ${diff.name}`,'success');
 }
@@ -1805,7 +2225,7 @@ function startGame(){
 function initializePolls(){
   const cands=getCandidates();
   const realResults=getRealResults();
-  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:['lula','bolsonaro'];
+  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:CURRENT_ELECTION===2014?['dilma14','aecio14']:['lula','bolsonaro'];
   G.polls={};G.rejectPolls={};
   const diff=G.diffSettings||DIFFICULTIES[3];
   cands.forEach(c=>{
@@ -1837,7 +2257,10 @@ function initializePolls(){
       // For top-2 historical candidates, anchor heavily to real results at game start
       // BUT: reduce anchor proportionally based on player's national poll share
       if(real && top2ids.includes(c.id)){
-        const key=c.id===top2ids[0]?(CURRENT_ELECTION===2018?'bolsonaro':'lula'):(CURRENT_ELECTION===2018?'haddad':'bolsonaro');
+        let key;
+        if(CURRENT_ELECTION===2018) key=c.id==='bolsonaro18'?'bolsonaro':'haddad';
+        else if(CURRENT_ELECTION===2014) key=c.id==='dilma14'?'dilma':'aecio';
+        else key=c.id==='lula'?'lula':'bolsonaro';
         const realVal=real[key]||dynamicVal;
         const playerNatPct=G.polls[G.player.id]||0.1;
         // If player leads this candidate by even 1pt, start unlocking states aggressively
@@ -2023,7 +2446,7 @@ function recomputeStatePolls(){
   const cands = getCandidates();
   const stateInvestments = G.stateInvestments || {};
   const realResults = getRealResults();
-  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : ['lula','bolsonaro'];
+  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : CURRENT_ELECTION===2014 ? ['dilma14','aecio14'] : ['lula','bolsonaro'];
   // How far into the campaign are we? 0=start, 1=election day
   const progress = Math.min(1, (G.daysPassed||0) / (G.totalDays||366));
 
@@ -2052,9 +2475,10 @@ function recomputeStatePolls(){
       // BUT: reduce anchor weight proportionally when the player is leading nationally.
       // If player leads by X points, loosen the historical anchor so the map reflects reality.
       if(real && top2ids.includes(c.id)) {
-        const realKey = c.id === top2ids[0]
-          ? (CURRENT_ELECTION===2018 ? 'bolsonaro' : 'lula')
-          : (CURRENT_ELECTION===2018 ? 'haddad' : 'bolsonaro');
+        let realKey;
+        if(CURRENT_ELECTION===2018) realKey = c.id==='bolsonaro18' ? 'bolsonaro' : 'haddad';
+        else if(CURRENT_ELECTION===2014) realKey = c.id==='dilma14' ? 'dilma' : 'aecio';
+        else realKey = c.id===top2ids[0] ? 'lula' : 'bolsonaro';
         const realVal = real[realKey] || dynamicVal;
         // anchor weight: starts at 0.5 max, and dissolves fast when player leads
         let anchorWeight = Math.max(0, 0.5 - progress * 0.5);
@@ -2346,6 +2770,10 @@ function renderTimeline(){
     {label:'Início',d:new Date('2017-10-07')},{label:'Jan 18',d:new Date('2018-01-01')},
     {label:'Mai 18',d:new Date('2018-05-01')},{label:'Ago 18',d:new Date('2018-08-01')},
     {label:'1º Turno',d:new Date('2018-10-07')},{label:'2º Turno',d:new Date('2018-10-28')}
+  ]:CURRENT_ELECTION===2014?[
+    {label:'Início',d:new Date('2013-10-05')},{label:'Fev 14',d:new Date('2014-02-01')},
+    {label:'Mai 14',d:new Date('2014-05-01')},{label:'Ago 14',d:new Date('2014-08-01')},
+    {label:'1º Turno',d:new Date('2014-10-05')},{label:'2º Turno',d:new Date('2014-10-26')}
   ]:[
     {label:'Início',d:new Date('2021-10-02')},{label:'Fev 22',d:new Date('2022-02-01')},
     {label:'Mai 22',d:new Date('2022-05-01')},{label:'Ago 22',d:new Date('2022-08-01')},
@@ -2800,6 +3228,150 @@ const CANDIDATE_PROFILES = {
     achievements:['Representação do legado de João Goulart','Herdeiro do trabalhismo clássico'],
     controversies:['Candidatura sem expressão eleitoral','Partido pequeno extinto em 2019','Sombra do legado do pai difícil de superar']
   },
+  /* ─────────────── PERFIS 2014 ─────────────── */
+  dilma14:{
+    fullName:'Dilma Vana Rousseff',born:'14 de dezembro de 1947',birthPlace:'Belo Horizonte, Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Dilma_Rousseff_2011_%28cropped%29.jpg/120px-Dilma_Rousseff_2011_%28cropped%29.jpg',
+    party:'PT — Partido dos Trabalhadores',ideology:'Centro-Esquerda / Social-democracia',
+    trajectory:'Filha de um imigrante búlgaro, Dilma tornou-se guerrilheira de esquerda durante a ditadura militar, sendo presa e torturada entre 1970 e 1972. Após a redemocratização, fez carreira como tecnocrata e política no Rio Grande do Sul. Tornou-se ministra de Minas e Energia (2003) e depois ministra-chefe da Casa Civil (2005) de Lula, sendo chamada de "mãe do PAC". Eleita presidenta em 2010, foi a primeira mulher a ocupar a Presidência da República do Brasil. Em 2014, reelegeu-se no 2º turno com 51,64%, derrotando Aécio Neves numa das disputas mais acirradas da história do país. Sofreu impeachment em 2016.',
+    elections:[
+      {year:2010,round:'2º turno',result:'✅ ELEITA (56,05%)'},
+      {year:2014,round:'2º turno',result:'✅ REELEITA (51,64%)'}
+    ],
+    achievements:['Primeira presidenta mulher do Brasil','PAC — Programa de Aceleração do Crescimento','Minha Casa Minha Vida — 3,7 mi de moradias','Pré-sal e royalties do petróleo','Bolsa Família ampliado','Plano Brasil Maior — reindustrialização'],
+    controversies:['Impeachment em 2016 — "pedaladas fiscais"','Crise econômica a partir de 2015','Protestos de junho de 2013','Escândalos da Petrobras — operação Lava Jato','Acusações de manipulação das contas públicas']
+  },
+  aecio14:{
+    fullName:'Aécio Neves da Cunha',born:'10 de março de 1960',birthPlace:'Belo Horizonte, Minas Gerais',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg/120px-A%C3%A9cio_Neves_em_23_de_outubro_de_2014-2_%28cropped_2%29.jpg',
+    party:'PSDB — Partido da Social Democracia Brasileira',ideology:'Centro-Direita / Social-democracia',
+    trajectory:'Neto do ex-presidente Juscelino Kubitschek, Aécio iniciou carreira como deputado federal aos 26 anos. Foi governador de Minas Gerais por dois mandatos (2003–2010), período em que o estado viveu crescimento econômico e o governo foi reconhecido como modelo de gestão. Eleito senador em 2010, candidatou-se à presidência em 2014 pela primeira vez, chegando ao 2º turno com 33,6% e perdendo por margem estreita para Dilma. Ficou conhecido pelo slogan "Acelera, Brasil" e pela proposta de retomada do crescimento via ajuste fiscal.',
+    elections:[
+      {year:2014,round:'2º turno',result:'Derrota para Dilma (48,36%)'}
+    ],
+    achievements:['Governador de MG — 2 mandatos de crescimento','Gestão fiscal premiada internacionalmente','Resultado histórico de 48,4% no 2º turno','Herdeiro político de Tancredo Neves e JK'],
+    controversies:['Derrotas nos questionamentos do resultado eleitoral','Investigado na Lava Jato','Gravação pedindo dinheiro a Joesley Batista (2017)','Afastamento do Senado em 2017']
+  },
+  marina14:{
+    fullName:'Marina Silva',born:'8 de fevereiro de 1958',birthPlace:'Breu Velho, Acre',
+    photo:'https://s2.glbimg.com/mtJ74Olt5R6pYJznNVoIF14VFo0=/e.glbimg.com/og/ed/f/original/2014/09/30/marina.jpg',
+    party:'PSB — Partido Socialista Brasileiro',ideology:'Centro-Esquerda / Ambientalismo / Evangelismo',
+    trajectory:'Filha de seringueiros, aprendeu a ler aos 16 anos. Tornouse senadora pelo Acre pelo PT e ministra do Meio Ambiente de Lula (2003–2008), cargo que deixou por discordâncias. Em 2010 obteve 19,3% pela PV. Em 2014, ingressou no PSB para disputar como vice de Eduardo Campos, que morreu em queda de avião em agosto de 2014. Marina assumiu a candidatura de última hora e, em uma semana, empatou nas pesquisas com Dilma. Obteve 21,3%, o melhor resultado de sua carreira. Em 2018, decepcionou com apenas 1%.',
+    elections:[
+      {year:2010,round:'1º turno',result:'Derrota (19,3%)'},
+      {year:2014,round:'1º turno',result:'Derrota (21,3%)'},
+      {year:2018,round:'1º turno',result:'Derrota (1,0%)'}
+    ],
+    achievements:['Ministra do Meio Ambiente — Redução de 70% do desmatamento','Senadora pelo Acre por 3 mandatos','Votação histórica de 21,3% em 2014','Ministra do Meio Ambiente no governo Lula 3'],
+    controversies:['Queda expressiva de 21% para 1% entre 2014 e 2018','Acusações de contradições no programa econômico','Abandono do PSB após 2014','Entrada tardia na candidatura de 2014 gerou confusão no PSB']
+  },
+  genro14:{
+    fullName:'Luciana Genro',born:'5 de março de 1972',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Luciana_Genro%2C_2015_%28cropped%29.jpg/500px-Luciana_Genro%2C_2015_%28cropped%29.jpg',
+    party:'PSOL — Partido Socialismo e Liberdade',ideology:'Extrema Esquerda / Socialismo',
+    trajectory:'Filha do ex-governador gaúcho Tarso Genro, Luciana é advogada e política de esquerda desde a adolescência. Foi deputada federal pelo PT, mas deixou o partido em 2003 por se opor à política econômica do governo Lula. Ajudou a fundar o PSOL em 2004. Em 2014, candidatou-se à presidência com um programa radical de esquerda, crítico tanto ao PT quanto ao PSDB, obtendo 1,55% dos votos — o melhor resultado do PSOL até então. Hoje é vereadora em Porto Alegre.',
+    elections:[
+      {year:2014,round:'1º turno',result:'Derrota (1,55%)'}
+    ],
+    achievements:['Melhor resultado do PSOL até 2014','Deputada federal por vários mandatos','Fundadora do PSOL em 2004','Líder referencial da esquerda radical jovem'],
+    controversies:['Candidatura considerada divisiva pela esquerda','Rejeição de alianças com PT','Base eleitoral restrita ao Sul e grandes centros']
+  },
+  everaldo14:{
+    fullName:'Everaldo Dias Pereira',born:'24 de agosto de 1963',birthPlace:'Maceió, Alagoas',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Everaldo_Dias_Pereira.jpg/500px-Everaldo_Dias_Pereira.jpg',
+    party:'PSC — Partido Social Cristão',ideology:'Direita / Conservadorismo Cristão',
+    trajectory:'Pastor da Assembleia de Deus, empresário e presidente do PSC. Everaldo é o arquétipo do candidato evangélico na política brasileira — defende família tradicional, combate às drogas e à corrupção com pano de fundo religioso. Em 2014, obteve 0,75%, superando expectativas iniciais com forte mobilização das igrejas pentecostais. É uma das principais lideranças da bancada evangélica no Brasil.',
+    elections:[
+      {year:2014,round:'1º turno',result:'Derrota (0,75%)'}
+    ],
+    achievements:['Presidente do PSC por décadas','Referência do movimento evangélico político','Mobilização expressiva das igrejas pentecostais','Desempenho acima do esperado em 2014'],
+    controversies:['Preso em 2020 — suspeita de propina na Operação Tris in Idem','Candidatura vista como marketing da bancada evangélica','Propostas consideradas discriminatórias por grupos LGBTQIA+']
+  },
+  eduardojorge14:{
+    fullName:'Eduardo Jorge Martins Alves Sobrinho',born:'23 de setembro de 1947',birthPlace:'Juazeiro, Bahia',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Eduardo_Jorge_em_22_de_agosto_de_2018_%28cropped%29.jpg/500px-Eduardo_Jorge_em_22_de_agosto_de_2018_%28cropped%29.jpg',
+    party:'PV — Partido Verde',ideology:'Centro-Esquerda / Ambientalismo / Saúde Pública',
+    trajectory:'Médico sanitarista paulistano, Eduardo Jorge foi um dos criadores intelectuais do SUS — Sistema Único de Saúde — durante a Constituinte de 1988. Deputado federal por vários mandatos, é um dos maiores especialistas em saúde pública do Brasil. Candidatou-se à presidência pelo PV em 2014, obtendo 0,61%, e novamente em 2018. Sua candidatura é mais de divulgação programática do que de ambição eleitoral.',
+    elections:[
+      {year:2014,round:'1º turno',result:'Derrota (0,61%)'},
+      {year:2018,round:'1º turno',result:'Derrota (0,07%)'}
+    ],
+    achievements:['Co-criador intelectual do SUS','Deputado federal por múltiplos mandatos','Referência nacional em saúde pública','Candidatura como plataforma programática de saúde'],
+    controversies:['Votações muito baixas','Partido sem estrutura eleitoral competitiva','Candidatura vista como simbólica, sem ambição real de vencer']
+  },
+  fidelix14:{
+    fullName:'José Levy Fidélix da Cruz',born:'6 de fevereiro de 1950',birthPlace:'Tambaú, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/ae/Levy_Fidelix_tv_brasil_%28cropped%29.jpg',
+    party:'PRTB — Partido Renovação Trabalhista Brasileiro',ideology:'Direita / Trabalhismo / Conservadorismo',
+    trajectory:'Empresário do setor de transportes e comunicações, locutor de rádio e político paulistano. Fundou o PRTB e candidatou-se à presidência em 2006, 2010, 2014 e 2018. Em 2014, ficou famoso pelo debate presidencial da Band quando fez declarações homofóbicas ao vivo, afirmando que pessoas LGBT "não se reproduzem". A declaração causou enorme repercussão e viralizou. Obteve 0,43% dos votos.',
+    elections:[
+      {year:2006,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2010,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,43%)'},
+      {year:2018,round:'1º turno',result:'Derrota (0,05%)'}
+    ],
+    achievements:['Fundador e presidente histórico do PRTB','Quadruplicou votação entre 2010 e 2014 (embora irrisória)','Empresário bem-sucedido no setor de transportes'],
+    controversies:['Declarações homofóbicas no debate de 2014 — "não se reproduzem"','Único candidato condenado por LGBTfobia em debate presidencial','Candidaturas vistas como autopromoção','Propostas sem programa de governo consistente']
+  },
+  zemaria14:{
+    fullName:'José Maria de Almeida',born:'15 de novembro de 1953',birthPlace:'Piracicaba, São Paulo',
+    photo:'https://www.pstu.org.br/wp-content/uploads/zemaria.jpg',
+    party:'PSTU — Partido Socialista dos Trabalhadores Unificado',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Metalúrgico piracicabano, Zé Maria trabalhou nas indústrias do ABC Paulista. Tornou-se dirigente sindical e depois liderança do PSTU. Candidatou-se à presidência em 1998, 2002, 2006, 2010 e 2014 — sendo o candidato presidencial recorrente mais representativo da esquerda revolucionária brasileira. O PSTU defende a ruptura com o capitalismo e recusa qualquer aliança com partidos que aceitem o sistema. Em 2014 obteve 0,1%.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota (0,3%)'},
+      {year:2002,round:'1º turno',result:'Derrota (0,5%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,1%)'},
+      {year:2010,round:'1º turno',result:'Derrota (0,1%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,1%)'}
+    ],
+    achievements:['Cinco candidaturas presidenciais — recorde','Liderança histórica do movimento operário','Representação consistente da esquerda trotskista','Mobilização de trabalhadores industriais'],
+    controversies:['Votações sistematicamente baixas apesar de histórico amplo','Recusa de alianças isolou o PSTU da esquerda mais ampla','Base eleitoral restrita ao proletariado industrial organizado']
+  },
+  eymael14:{
+    fullName:'José Maria Eymael',born:'20 de abril de 1933',birthPlace:'Guaratinguetá, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    party:'PSDC — Partido Social Democrata Cristão',ideology:'Centro-Direita / Democracia Cristã',
+    trajectory:'Advogado e político paulistano nascido em 1933, candidato presidencial recorrente desde 1989. Eymael representa a tradição da democracia cristã europeia no Brasil, com propostas baseadas na doutrina social da Igreja Católica. Em 2014, foi a quarta candidatura presidencial do democrata cristão, obtendo resultados quase simbólicos. Ficou famoso pelo jingle presidencial de 1989 — "Ei-ma-el, Ei-ma-el" — considerado o mais memorável da história eleitoral brasileira.',
+    elections:[
+      {year:1989,round:'1º turno',result:'Derrota (0,56%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2010,round:'1º turno',result:'Derrota (0,08%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,02%)'},
+      {year:2018,round:'1º turno',result:'Derrota (0,01%)'},
+      {year:2022,round:'1º turno',result:'Derrota (0,03%)'}
+    ],
+    achievements:['Carreira política de 60+ anos','Seis candidaturas presidenciais','Jingle presidencial de 1989 mais memorável da história','Deputado federal e liderança histórica da DC'],
+    controversies:['Votações irrisórias em todas as eleições','Partido sem estrutura eleitoral relevante','Candidaturas vistas como capricho de um político senil']
+  },
+  iasi14:{
+    fullName:'Mauro Luis Iasi',born:'1962',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Mauro_Iasi_no_Senado.png/500px-Mauro_Iasi_no_Senado.png',
+    party:'PCB — Partido Comunista Brasileiro',ideology:'Extrema Esquerda / Marxismo-Leninismo',
+    trajectory:'Professor universitário e filósofo marxista, Mauro Iasi é um dos mais respeitados intelectuais da esquerda brasileira. Doutor em Sociologia pela USP, autor de diversas obras sobre marxismo, consciência de classe e Estado capitalista. Presidente do PCB — partido fundado em 1922 e que foi uma das maiores forças políticas do Brasil antes da ditadura. Em 2014, candidatou-se à presidência como plataforma para divulgar o projeto comunista, obtendo resultado irrelevante eleitoralmente mas com repercussão intelectual.',
+    elections:[
+      {year:2014,round:'1º turno',result:'Derrota (~0,1%)'}
+    ],
+    achievements:['Presidente do PCB — partido histórico fundado em 1922','Professor doutor em Sociologia pela USP','Autor de obras marxistas de referência no Brasil','Candidatura como plataforma intelectual e política'],
+    controversies:['Partido sem expressão eleitoral relevante há décadas','PCB raramente supera 0,1% em eleições','Candidatura vista como puramente simbólica']
+  },
+  ruicosta14:{
+    fullName:'Rui Costa Pimenta',born:'1958',birthPlace:'São Paulo, São Paulo',
+    photo:'https://i0.wp.com/pagina13.org.br/wp-content/uploads/2024/04/RUI-COSTA-PIMENTA.png?w=590&ssl=1',
+    party:'PCO — Partido da Causa Operária',ideology:'Extrema Esquerda / Trotskismo',
+    trajectory:'Jornalista e editor do jornal "Causa Operária", fundador e líder histórico do PCO. O PCO é um dos menores partidos com registro no Brasil, defendendo uma linha trotskista ainda mais radical que o PSTU — incluindo a revolução permanente e a oposição total ao "reformismo" do PT, PSOL e PSTU. Rui Costa Pimenta candidata-se à presidência em praticamente todas as eleições desde a redemocratização, obtendo sempre resultados simbólicos. Ficou conhecido em 2022 por declarações que geraram polêmica sobre o TSE e as eleições.',
+    elections:[
+      {year:1998,round:'1º turno',result:'Derrota'},
+      {year:2002,round:'1º turno',result:'Derrota'},
+      {year:2006,round:'1º turno',result:'Derrota'},
+      {year:2010,round:'1º turno',result:'Derrota'},
+      {year:2014,round:'1º turno',result:'Derrota (~0,05%)'},
+      {year:2018,round:'1º turno',result:'Derrota'},
+      {year:2022,round:'1º turno',result:'Derrota'}
+    ],
+    achievements:['Editor do jornal Causa Operária por décadas','Fundador e líder do PCO','Candidato presidencial em todas as eleições desde 1998','Voz da esquerda trotskista mais radical'],
+    controversies:['Menor base eleitoral entre todos os candidatos presidenciais','Partido sem estrutura nem recursos','Polêmicas sobre declarações contra o TSE em 2022','PCO questionou resultados eleitorais sem evidências']
+  },
   /* ─────────────── PERFIS 2022 ─────────────── */
   lula:{
     fullName:'Luiz Inácio Lula da Silva',born:'27 de outubro de 1945',birthPlace:'Caetés, Pernambuco',
@@ -3016,6 +3588,7 @@ function renderProfilesTab(){
 // VICE PRESIDENT TAB
 // ════════════════════════════════════════════════════════
 const VICE_PROFILES = {
+  /* ─── 2022 VICES ─── */
   alckmin:{
     fullName:'Geraldo José Rodrigues Alckmin Filho',born:'11 de novembro de 1952',birthPlace:'Pindamonhangaba, São Paulo',
     photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Alckmin_2024.jpg/500px-Alckmin_2024.jpg',
@@ -3092,6 +3665,153 @@ const VICE_PROFILES = {
       {id:'vp_mourao_mil',label:'Veteranos e Militares',icon:'🎖️',desc:'Articula ex-militares e reservistas',cost:2000000,effect:'+3% militares, +2% conservadores'},
       {id:'vp_mourao_agro',label:'Agro do Sul',icon:'🌾',desc:'Defende agronegócio sulista',cost:3000000,effect:'RS +3%, PR +2%, ruralistas +2%'},
       {id:'vp_mourao_media',label:'CNN / Jovem Pan',icon:'📡',desc:'Mourão em entrevista nacional',cost:0,effect:'+1.5% direita nacional'}
+    ]
+  },
+  /* ─── 2018 VICES — BOLSONARO ─── */
+  mourao18:{
+    fullName:'Hamilton Mourão Ferreira',born:'28 de julho de 1952',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Hamilton_Mour%C3%A3o.jpg/500px-Hamilton_Mour%C3%A3o.jpg',
+    party:'PRTB',ideology:'Direita / Militar',
+    bio:'General do Exército e vice real de Bolsonaro em 2018. Veterano de 40 anos no Exército, ficou conhecido por críticas ao STF e ao sistema político. Tornou-se vice-presidente (2019–2022), marcando posições por vezes independentes de Bolsonaro. Hoje é senador pelo RS.',
+    strength:'Sul e forças armadas',bonus:'S +4%, RS +3%, militares +5%',
+    actions:[
+      {id:'vp_mourao18_sul',label:'Tour pelo Sul',icon:'🏔️',desc:'Mourão mobiliza o eleitorado sulista conservador',cost:4000000,effect:'RS +5%, SC +4%, PR +3%'},
+      {id:'vp_mourao18_mil',label:'Militares e Reservistas',icon:'🎖️',desc:'Articula ex-militares e familiares de militares',cost:2000000,effect:'+4% militares nacional'},
+      {id:'vp_mourao18_debate',label:'Debate Segurança Nacional',icon:'🛡️',desc:'Defende pauta de defesa e ordem',cost:0,effect:'+2% conservadores'},
+      {id:'vp_mourao18_agro',label:'Agro do Pampa',icon:'🌾',desc:'Visita produtores rurais do Sul',cost:3000000,effect:'RS +3%, PR +2%'}
+    ]
+  },
+  moro18:{
+    fullName:'Sérgio Fernando Moro',born:'1 de agosto de 1972',birthPlace:'Maringá, Paraná',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/a8/Senador_da_Rep%C3%BAblica_S%C3%A9rgio_Moro.jpg',
+    party:'PSL',ideology:'Centro-Direita / Anticorrupção',
+    bio:'Juiz federal paranaense que se tornou o símbolo máximo do combate à corrupção no Brasil ao conduzir a Operação Lava Jato a partir de 2014. Condenou Lula e dezenas de empresários e políticos. Seria o vice de Bolsonaro neste cenário — seria uma combinação explosiva de ordem e anticorrupção. Na realidade, tornou-se Ministro da Justiça em 2019, saindo em atrito com Bolsonaro em 2020.',
+    strength:'Sul, Sudeste e classe média',bonus:'S +5%, SE +3%, PR +4%',
+    actions:[
+      {id:'vp_moro_pr',label:'Mobilização no Paraná',icon:'⚖️',desc:'Moro mobiliza sua base natal',cost:3000000,effect:'PR +6%, S +3%'},
+      {id:'vp_moro_anticorr',label:'Debate Anticorrupção',icon:'🔍',desc:'Moro faz discurso anticorrupção nacional',cost:0,effect:'+3% indecisos, +4% classe média'},
+      {id:'vp_moro_se',label:'Tour Sudeste',icon:'✈️',desc:'Visita São Paulo e Rio em eventos jurídicos',cost:5000000,effect:'SE +4%, SP +3%'},
+      {id:'vp_moro_tv',label:'Entrevista JN',icon:'📺',desc:'Aparição no Jornal Nacional — alto impacto',cost:0,effect:'+2.5% nacional'}
+    ]
+  },
+  orleans18:{
+    fullName:'Luiz Philippe de Orléans-Bragança',born:'7 de junho de 1974',birthPlace:'Versalhes, França',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Deputado_Luiz_Philippe_de_Orleans_e_Bragan%C3%A7a_%28cropped%29.jpg/500px-Deputado_Luiz_Philippe_de_Orleans_e_Bragan%C3%A7a_%28cropped%29.jpg',
+    party:'PSL',ideology:'Direita / Monarquismo / Conservadorismo',
+    bio:'Herdeiro da família imperial brasileira, bisneto do Príncipe Dom Pedro II. Nasceu na França mas retornou ao Brasil, tornando-se empresário e político. Deputado federal pelo PSL, é defensor da monarquia constitucional e de valores conservadores cristãos. Sua presença na chapa atraria o eleitorado monárquico e parte do conservadorismo católico.',
+    strength:'Sudeste e conservadores católicos',bonus:'SE +2%, católicos +3%',
+    actions:[
+      {id:'vp_orleans_sp',label:'Evento em São Paulo',icon:'👑',desc:'Orleans mobiliza o eleitorado conservador paulistano',cost:4000000,effect:'SP +3%, MG +2%'},
+      {id:'vp_orleans_catol',label:'Encontro com Líderes Católicos',icon:'✝️',desc:'Articula o eleitorado católico conservador',cost:2000000,effect:'+3% católicos'},
+      {id:'vp_orleans_debate',label:'Debate de Valores',icon:'🏛️',desc:'Defende tradição, família e propriedade',cost:0,effect:'+1.5% conservadores'},
+      {id:'vp_orleans_mg',label:'Visita a Minas Gerais',icon:'⛪',desc:'Tour pelo estado mais católico do Brasil',cost:3000000,effect:'MG +3%'}
+    ]
+  },
+  janaina18:{
+    fullName:'Janaina Conceição Paschoal',born:'16 de setembro de 1974',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/2022-02-14_Sess%C3%A3o_de_Debate_Tem%C3%A1tico_-_Efici%C3%AAncia_do_Passaporte_Sanit%C3%A1rio_no_enfrentamento_%C3%A0_Pandemia_da_COVID-19%2C_03_%28Jana%C3%ADna_Paschoal%29.jpg/500px-2022-02-14_Sess%C3%A3o_de_Debate_Tem%C3%A1tico_-_Efici%C3%AAncia_do_Passaporte_Sanit%C3%A1rio_no_enfrentamento_%C3%A0_Pandemia_da_COVID-19%2C_03_%28Jana%C3%ADna_Paschoal%29.jpg',
+    party:'PSL',ideology:'Centro-Direita / Combate à Corrupção',
+    bio:'Advogada criminalista e professora da USP. Tornou-se celebridade política ao assinar o pedido de impeachment de Dilma Rousseff em 2015 ao lado de Hélio Bicudo. Em 2018, foi eleita com 2 milhões de votos para a Assembleia Legislativa de SP — maior votação da história do estado. Sua presença na chapa traria enorme visibilidade feminina e jurídica.',
+    strength:'São Paulo',bonus:'SP +4%, mulheres +2%',
+    actions:[
+      {id:'vp_janaina_sp',label:'Mobilização Paulista',icon:'⭐',desc:'Janaina ativa sua enorme base em SP',cost:3000000,effect:'SP +5%, ABC paulista +3%'},
+      {id:'vp_janaina_imp',label:'Evento Anticorrupção',icon:'⚖️',desc:'Discurso sobre o impeachment e a luta contra corrupção',cost:0,effect:'+2% indecisos, +3% classe média'},
+      {id:'vp_janaina_mulheres',label:'Mobilização Feminina',icon:'👩',desc:'Eventos com mulheres conservadoras de SP',cost:2000000,effect:'+3% mulheres SE'},
+      {id:'vp_janaina_debate',label:'Debate Jurídico',icon:'📋',desc:'Participação em debate sobre direito e democracia',cost:0,effect:'+1.5% juristas e classe média'}
+    ]
+  },
+  /* ─── 2018 VICES — HADDAD ─── */
+  manuela18:{
+    fullName:'Manuela Pinto Vieira D\'Ávila',born:'11 de dezembro de 1977',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Manuela_davila_%2854422250365%29.jpg/500px-Manuela_davila_%2854422250365%29.jpg',
+    party:'PCdoB',ideology:'Esquerda / Comunismo',
+    bio:'Jornalista e política gaúcha. Deputada federal e estadual pelo PCdoB. Candidata a governadora do RS. Vice real de Haddad em 2018. É uma das figuras mais carismáticas da esquerda, popular entre jovens e movimento feminista. Candidata à prefeitura de Porto Alegre em 2024.',
+    strength:'Sul e juventude progressista',bonus:'RS +3%, S +2%, jovens +3%',
+    actions:[
+      {id:'vp_manuela_rs',label:'Mobilização no RS',icon:'⭐',desc:'Manuela usa sua popularidade gaúcha',cost:3000000,effect:'RS +5%, SC +2%'},
+      {id:'vp_manuela_jovens',label:'Evento com Jovens',icon:'🧑',desc:'Mobiliza universitários e jovens progressistas',cost:2000000,effect:'+4% jovens urbanos'},
+      {id:'vp_manuela_sul',label:'Tour pelo Sul',icon:'✈️',desc:'Campanha nos três estados do Sul',cost:4000000,effect:'S +3%, RS +3%'},
+      {id:'vp_manuela_feminismo',label:'Pauta Feminista',icon:'👩',desc:'Eventos com movimentos de mulheres',cost:0,effect:'+2% mulheres, +1.5% jovens'}
+    ]
+  },
+  jaques18:{
+    fullName:'Jaques Wagner',born:'8 de outubro de 1951',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg',
+    party:'PT',ideology:'Esquerda / Trabalhismo',
+    bio:'Ex-governador da Bahia por dois mandatos (2007–2015), Jaques Wagner é um dos políticos mais populares do Nordeste. Ministro da Defesa (2015–2016), senador e liderança histórica do PT. Baiano de coração apesar do sotaque gaúcho, sua presença na chapa de Haddad traria votos cruciais do Nordeste.',
+    strength:'Nordeste, especialmente Bahia',bonus:'BA +4%, NE +3%',
+    actions:[
+      {id:'vp_jaques_ba',label:'Mobilização na Bahia',icon:'☀️',desc:'Jaques usa sua enorme popularidade baiana',cost:3000000,effect:'BA +6%, NE +3%'},
+      {id:'vp_jaques_ne',label:'Caravana Nordestina',icon:'✈️',desc:'Tour pelos estados do Nordeste',cost:6000000,effect:'NE +4%, N +2%'},
+      {id:'vp_jaques_pt',label:'Ativação da Base PT',icon:'⭐',desc:'Mobiliza militância petista histórica',cost:2000000,effect:'+3% base PT'},
+      {id:'vp_jaques_tv',label:'Entrevista no Norte/NE',icon:'📺',desc:'Entrevista em emissoras regionais',cost:0,effect:'NE +2%, N +1%'}
+    ]
+  },
+  /* ─── 2014 VICES — DILMA ─── */
+  temer14:{
+    fullName:'Michel Miguel Elias Temer Lulia',born:'23 de setembro de 1940',birthPlace:'Tietê, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg/500px-Michel_Temer_%28foto_oficial%29_%28cropped_2%29.jpg',
+    party:'MDB (PMDB)',ideology:'Centro / Centrismo',
+    bio:'Advogado constitucionalista e político paulistano. Presidente da Câmara por vários mandatos e vice-presidente no governo Dilma. Representava a aliança do PT com o PMDB, fundamental para a governabilidade. Tornou-se presidente após o impeachment de Dilma em 2016, governando até 2018. Hoje responde a processos mas permanece figura influente.',
+    strength:'Sudeste e centro político',bonus:'SP +3%, SE +2%, centro +2%',
+    actions:[
+      {id:'vp_temer14_sp',label:'Articulação em SP',icon:'🏛️',desc:'Temer usa sua rede política paulistana',cost:3000000,effect:'SP +4%, SE +2%'},
+      {id:'vp_temer14_pmdb',label:'Aliança PMDB',icon:'🤝',desc:'Ativa a máquina do PMDB nos estados',cost:5000000,effect:'+3% nacional, GO +2%, RJ +2%'},
+      {id:'vp_temer14_camara',label:'Articulação no Congresso',icon:'📋',desc:'Temer articula apoio de parlamentares',cost:2000000,effect:'+2% centro político'},
+      {id:'vp_temer14_debate',label:'Debate Institucional',icon:'⚖️',desc:'Defende a estabilidade institucional',cost:0,effect:'+1% indecisos'}
+    ]
+  },
+  jaques14:{
+    fullName:'Jaques Wagner',born:'8 de outubro de 1951',birthPlace:'Porto Alegre, Rio Grande do Sul',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg',
+    party:'PT',ideology:'Esquerda / Trabalhismo',
+    bio:'Ex-governador da Bahia por dois mandatos (2007–2015), um dos políticos mais populares do Brasil. Liderança histórica do PT e figura muito querida no Nordeste. Como vice de Dilma, traria votos valiosos do BA e Nordeste, onde o PT já era forte mas precisava consolidar.',
+    strength:'Nordeste, especialmente Bahia',bonus:'BA +5%, NE +4%',
+    actions:[
+      {id:'vp_jaques14_ba',label:'Mobilização na Bahia',icon:'☀️',desc:'Wagner usa sua popularidade no estado',cost:3000000,effect:'BA +6%, NE +3%'},
+      {id:'vp_jaques14_ne',label:'Caravana Nordestina',icon:'✈️',desc:'Tour pelos nove estados nordestinos',cost:6000000,effect:'NE +5%, N +2%'},
+      {id:'vp_jaques14_pt',label:'Militância PT',icon:'⭐',desc:'Ativa a base petista histórica',cost:2000000,effect:'+3% base PT'},
+      {id:'vp_jaques14_tv',label:'TV no Nordeste',icon:'📺',desc:'Aparições em emissoras regionais',cost:0,effect:'NE +2%, N +1%'}
+    ]
+  },
+  /* ─── 2014 VICES — AÉCIO ─── */
+  aloysio14:{
+    fullName:'Aloysio Nunes Ferreira Filho',born:'30 de setembro de 1948',birthPlace:'Santo André, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/e/ed/Foto_oficial_de_Aloysio_Nunes_%28cropped%29.jpg',
+    party:'PSDB',ideology:'Centro-Direita / Social-democracia',
+    bio:'Advogado e político paulistano, Aloysio Nunes foi o vice real de Aécio Neves em 2014. Ex-guerrilheiro de esquerda nos anos 70, migrou para o centro e tornou-se senador por SP. Ministro das Relações Exteriores no governo Temer (2017–2019). Sua presença reforçava a candidatura de Aécio em SP, estado-chave para o PSDB.',
+    strength:'São Paulo e Sudeste',bonus:'SP +3%, SE +2%',
+    actions:[
+      {id:'vp_aloysio_sp',label:'Mobilização em SP',icon:'🏛️',desc:'Aloysio ativa a base tucana paulistana',cost:4000000,effect:'SP +4%, SE +2%'},
+      {id:'vp_aloysio_debate',label:'Debate Político Nacional',icon:'📺',desc:'Representa a chapa com experiência parlamentar',cost:0,effect:'+2% centro-direita'},
+      {id:'vp_aloysio_abc',label:'Campanha no ABC Paulista',icon:'🏭',desc:'Visita às cidades industriais do Grande SP',cost:3000000,effect:'SP +3%, trabalhadores +2%'},
+      {id:'vp_aloysio_mg',label:'Visita a Minas Gerais',icon:'✈️',desc:'Reforça presença no estado de Aécio',cost:3000000,effect:'MG +3%'}
+    ]
+  },
+  serra14:{
+    fullName:'José Ignácio Ferreira Serra',born:'19 de março de 1942',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Senador_Jos%C3%A9_Serra_-_foto_oficial_2.jpg/500px-Senador_Jos%C3%A9_Serra_-_foto_oficial_2.jpg',
+    party:'PSDB',ideology:'Centro-Direita / Social-democracia',
+    bio:'Economista e político veterano, Serra já disputou a presidência em 2002 (derrota para Lula com 38%) e 2010 (derrota para Dilma com 43,9%). Foi governador de SP, prefeito de SP e ministro da Saúde e Planejamento. Uma das maiores lideranças do PSDB. Como vice de Aécio traria experiência, visibilidade e votos do Sudeste.',
+    strength:'Sudeste — o peso pesado do PSDB',bonus:'SP +4%, SE +3%',
+    actions:[
+      {id:'vp_serra_sp',label:'Mobilização Tucana em SP',icon:'🏛️',desc:'Serra ativa toda a máquina do PSDB paulistano',cost:5000000,effect:'SP +5%, SE +3%'},
+      {id:'vp_serra_debate',label:'Debate de Propostas',icon:'📺',desc:'Serra expõe o programa econômico com profundidade',cost:0,effect:'+3% centro-direita, +2% indecisos'},
+      {id:'vp_serra_empresarios',label:'Encontro com Empresários',icon:'💼',desc:'Reúne o setor produtivo paulistano',cost:4000000,effect:'+3% empresários, SP +2%'},
+      {id:'vp_serra_mg',label:'Campanha em MG',icon:'✈️',desc:'Reforça o ticket Aécio-Serra no estado do presidenciável',cost:4000000,effect:'MG +4%, SE +2%'}
+    ]
+  },
+  alckmin14:{
+    fullName:'Geraldo José Rodrigues Alckmin Filho',born:'11 de novembro de 1952',birthPlace:'Pindamonhangaba, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Geraldo_Alckmin_em_junho_de_2014_%28cropped%29.jpg/500px-Geraldo_Alckmin_em_junho_de_2014_%28cropped%29.jpg',
+    party:'PSDB',ideology:'Centro-Direita / Social-democracia',
+    bio:'Governador de São Paulo em 2014 (terceiro mandato), Alckmin era o tucano mais poderoso do estado. Médico e administrador metódico, ficou famoso pelo apelido "Picolé de Chuchu" pela aparente frieza — mas entregava gestão fiscal impecável. Como vice de Aécio traria o peso total do estado de SP, mas poderia criar tensão interna no PSDB por ser também presidenciável.',
+    strength:'O estado de SP — força máxima',bonus:'SP +5%, SE +4%',
+    actions:[
+      {id:'vp_alckmin14_sp',label:'Domínio Absoluto em SP',icon:'🏛️',desc:'Alckmin mobiliza toda a máquina estadual de SP',cost:5000000,effect:'SP +6%, SE +3%'},
+      {id:'vp_alckmin14_empresarios',label:'Setor Produtivo',icon:'💼',desc:'Encontro com empresários e indústria paulistana',cost:4000000,effect:'+4% empresários SP, SE +2%'},
+      {id:'vp_alckmin14_mg',label:'Aliança com MG',icon:'✈️',desc:'Governador de SP visita Minas — parceria política',cost:4000000,effect:'MG +4%, SE +2%'},
+      {id:'vp_alckmin14_sul',label:'Tour pelo Sul',icon:'🏔️',desc:'Visita os estados do Sul para ampliar base tucana',cost:4000000,effect:'S +3%, PR +2%'}
     ]
   }
 };
@@ -5390,7 +6110,7 @@ function conductSecondRound(){
 function renderResultsTab(results,round){
   const sorted=[...results].sort((a,b)=>b.pct-a.pct);
   document.getElementById('results-tab-content').innerHTML=`
-    <div class="round-banner"><div class="round-banner-text">${round===1?(CURRENT_ELECTION===2018?'1º TURNO — 07/10/2018':'1º TURNO — 02/10/2022'):(CURRENT_ELECTION===2018?'2º TURNO — 28/10/2018':'2º TURNO — 30/10/2022')}</div><div style="font-size:11px;color:var(--text3)">Resultado Oficial TSE</div></div>
+    <div class="round-banner"><div class="round-banner-text">${round===1?(CURRENT_ELECTION===2018?'1º TURNO — 07/10/2018':CURRENT_ELECTION===2014?'1º TURNO — 05/10/2014':'1º TURNO — 02/10/2022'):(CURRENT_ELECTION===2018?'2º TURNO — 28/10/2018':CURRENT_ELECTION===2014?'2º TURNO — 26/10/2014':'2º TURNO — 30/10/2022')}</div><div style="font-size:11px;color:var(--text3)">Resultado Oficial TSE</div></div>
     <div class="results-table">
       <div class="results-row header"><span>#</span><span>Candidato</span><span style="text-align:right">Votos</span><span style="text-align:right">%</span><span style="text-align:center">Status</span></div>
       ${sorted.map((r,i)=>`<div class="results-row ${i===0?'winner':''} ${r.id===G.player.id?'player':''}">
