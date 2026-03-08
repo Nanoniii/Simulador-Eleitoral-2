@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -32,61 +33,283 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 @media(max-width:768px){html,body{overflow:auto}}
 ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 
-/* ── MOBILE RESPONSIVE ───────────────────────────────── */
+/* ══════════════════════════════════════════════════════
+   MOBILE — REWRITE COMPLETO
+   Arquitetura: topbar fixo topo + bottom nav fixo + scroll no meio
+   ══════════════════════════════════════════════════════ */
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TOPBAR MOBILE ─────────────────────────────────── */
 @media(max-width:768px){
-  .screen{position:relative;min-height:100vh;overflow-y:auto}
-  .screen.active{display:block}
-  #intro-screen{overflow-y:auto}
-  .intro-content{padding:20px 12px}
-  .game-title{font-size:clamp(28px,8vw,48px)}
-  .diff-grid{grid-template-columns:repeat(2,1fr)}
-  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .candidate-card{padding:12px 10px}
-  .candidate-photo{width:56px;height:56px}
-  .vice-grid{gap:10px}
-  .vice-card{width:calc(50% - 5px)}
-  #game-screen{flex-direction:column;overflow-y:auto;height:auto;min-height:100vh}
-  #game-screen .screen{display:flex;flex-direction:column}
-  .topbar{height:auto;flex-wrap:wrap;padding:8px 10px;gap:8px;position:sticky;top:0;z-index:200}
-  .topbar-stats{flex-wrap:wrap;gap:8px}
-  .topbar-stats>div{min-width:60px}
-  .topbar-stat-value{font-size:12px}
-  .topbar-right{width:100%;justify-content:flex-end;flex-wrap:wrap;gap:6px}
-  .momentum-bar{display:none}
-  .game-body{flex-direction:column;overflow:visible;height:auto}
-  .sidebar{width:100%;height:auto;flex-direction:row;border-right:none;border-bottom:1px solid var(--border);overflow-x:auto;overflow-y:hidden;flex-shrink:0}
-  .sidebar-nav{flex-direction:row;padding:4px;gap:2px;overflow-x:auto;white-space:nowrap;min-width:max-content}
-  .nav-btn{flex-direction:column;padding:6px 8px;font-size:10px;gap:2px;align-items:center;min-width:56px}
-  .nav-btn .icon{font-size:16px;width:auto}
-  .sidebar-bottom{display:none}
-  .main-content{overflow-y:auto;flex:1}
-  .tab-panel{padding:12px}
-  .states-layout{grid-template-columns:1fr;height:auto;gap:10px}
-  .map-container{height:280px}
-  .polls-grid{grid-template-columns:1fr}
-  .grid-2,.grid-3{grid-template-columns:1fr}
-  .strategy-grid{grid-template-columns:1fr}
-  .campaign-actions{grid-template-columns:repeat(2,1fr)}
-  .finance-summary{grid-template-columns:repeat(2,1fr)}
+
+  /* INTRO */
+  #intro-screen{overflow-y:auto;-webkit-overflow-scrolling:touch;flex-direction:column;align-items:center}
+  .intro-content{padding:16px 12px 40px;width:100%}
+  .game-title{font-size:clamp(28px,9vw,52px)}
+  .game-subtitle{font-size:10px;letter-spacing:2px}
+  .diff-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .diff-btn{padding:10px 6px}
+  .diff-icon{font-size:18px}
+  .diff-name{font-size:10px}
+  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:8px}
+  .candidate-card{padding:10px 8px}
+  .candidate-photo{width:54px;height:54px;margin-bottom:7px}
+  .candidate-name{font-size:11px}
+  .candidate-party{font-size:9px;padding:1px 6px}
+  .vice-grid{gap:8px;justify-content:center}
+  .vice-card{width:calc(50% - 8px);max-width:150px;padding:10px}
+  .vice-photo{width:46px;height:46px}
+  .sandbox-toggle{padding:10px 14px;gap:8px}
+  .start-btn{padding:14px 40px;font-size:18px}
   .diff-section{max-width:100%}
-  .debate-stage{min-height:120px;padding:12px}
-  .debate-photo-sm{width:38px;height:38px}
+
+  /* ── GAME SCREEN: arquitetura fixa ── */
+  #game-screen{
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    inset:0;
+    overflow:hidden;
+  }
+
+  /* TOPBAR: compacto, linha única, scroll horizontal nas stats */
+  .topbar{
+    flex-shrink:0;
+    height:52px;
+    min-height:52px;
+    max-height:52px;
+    padding:0 10px;
+    gap:8px;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    z-index:200;
+    box-shadow:0 2px 12px rgba(0,0,0,.6);
+  }
+  .topbar-candidate{
+    display:flex;align-items:center;gap:6px;
+    flex-shrink:0;
+    padding-right:8px;
+    border-right:1px solid var(--border);
+  }
+  .topbar-photo{width:28px;height:28px;flex-shrink:0}
+  .topbar-name{font-size:11px;white-space:nowrap}
+  .topbar-party{display:none}
+  .topbar-stats{
+    display:flex;gap:10px;flex:1;
+    overflow-x:auto;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;align-items:center;
+  }
+  .topbar-stats::-webkit-scrollbar{display:none}
+  .topbar-stats>div{flex-shrink:0;text-align:center}
+  .topbar-stat-label{font-size:7px;letter-spacing:1px}
+  .topbar-stat-value{font-size:13px}
+  .momentum-bar{display:none}
+  .topbar-right{
+    display:flex;align-items:center;gap:4px;
+    flex-shrink:0;margin-left:auto;
+  }
+  .speed-btn{padding:3px 7px;font-size:10px}
+  .pause-btn{padding:4px 8px;font-size:11px}
+  #sandbox-badge-top{display:none!important}
+
+  /* ── GAME BODY: ocupa tudo entre topbar e bottom nav ── */
+  .game-body{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    position:relative;
+    min-height:0;
+  }
+
+  /* ── MAIN CONTENT: scroll livre ── */
+  .main-content{
+    flex:1;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    min-height:0;
+    /* padding bottom = altura do nav (58px) + folga */
+    padding-bottom:66px;
+  }
+  .tab-panel{
+    padding:12px 12px 8px;
+    animation:fadeInUp .2s ease;
+  }
+  .tab-panel.active{display:block}
+
+  /* ── BOTTOM NAV (sidebar vira nav bar) ── */
+  .sidebar{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    height:58px;
+    min-height:58px;
+    background:var(--bg2);
+    border-top:1px solid var(--border);
+    border-right:none;
+    width:100%;
+    flex-direction:row;
+    flex-shrink:0;
+    z-index:300;
+    box-shadow:0 -2px 16px rgba(0,0,0,.5);
+  }
+  .sidebar-nav{
+    flex-direction:row;
+    padding:4px 2px;
+    gap:0;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    white-space:nowrap;
+    width:100%;
+    height:100%;
+    align-items:center;
+  }
+  .sidebar-nav::-webkit-scrollbar{display:none}
+  .nav-btn{
+    flex-direction:column;
+    padding:4px 8px;
+    font-size:9px;
+    gap:2px;
+    align-items:center;
+    min-width:52px;
+    border-radius:8px;
+    height:50px;
+    justify-content:center;
+    flex-shrink:0;
+  }
+  .nav-btn .icon{font-size:17px;width:auto;margin:0;line-height:1}
+  .nav-btn.active{background:rgba(0,212,255,.12);color:var(--accent)}
+  .sidebar-bottom{display:none}
+
+  /* ── CONTEÚDO DAS TABS ── */
+
+  /* Campanha */
+  .campaign-actions{grid-template-columns:repeat(2,1fr);gap:8px}
+  .action-btn{padding:10px 8px}
+  .action-icon{font-size:20px;margin-bottom:4px}
+  .action-title{font-size:11px}
+  .action-desc{font-size:9px}
+  .grid-2,.grid-3{grid-template-columns:1fr;gap:10px}
+  .card{padding:12px}
+
+  /* Agenda */
+  .agenda-grid{grid-template-columns:repeat(4,1fr);gap:4px}
+  .agenda-slot{padding:5px;min-height:54px;font-size:9px}
+
+  /* Debates */
+  .debate-stage{min-height:90px;padding:10px}
+  .debate-photo-sm{width:34px;height:34px}
+  .debate-cand-name{font-size:8px;max-width:52px}
   .debate-options{grid-template-columns:1fr}
-  .agenda-grid{grid-template-columns:repeat(4,1fr)}
-  .results-row{grid-template-columns:28px 1fr 70px 60px 60px;font-size:11px}
+  .debate-speech-bubble{margin:8px;font-size:11px}
+
+  /* Estados / Mapa */
+  .states-layout{grid-template-columns:1fr!important;height:auto!important;gap:8px}
+  .map-container{height:280px!important;min-height:240px!important;max-height:280px}
+  #brazil-map{width:100%!important;height:100%!important}
+  .state-info-panel{max-height:none;overflow:visible}
+
+  /* Pesquisas */
+  .polls-grid{grid-template-columns:1fr;gap:10px}
+  .chart-container{height:200px!important}
+
+  /* Finanças */
+  .finance-summary{grid-template-columns:repeat(3,1fr);gap:6px}
+  .finance-card{padding:10px 8px}
+  .finance-card-label{font-size:9px}
+  .finance-card-value{font-size:14px}
+
+  /* Resultados */
+  .results-row{grid-template-columns:24px 1fr 65px 50px;font-size:11px;padding:9px 10px;gap:6px}
+  .results-pct{font-size:13px}
   .post-election-actions{grid-template-columns:1fr}
-  .topbar-candidate{padding-right:8px}
-  #map-fallback{grid-template-columns:repeat(4,1fr)}
-  .results-screen-inner{padding:16px 10px}
-  .event-popup{padding:18px;max-width:95vw}
-  .interview-popup{padding:18px;max-width:95vw}
+  #map-fallback{grid-template-columns:repeat(4,1fr);gap:3px}
+  .results-screen-inner{padding:14px 10px}
+  .poll-table-header,.poll-table-row{grid-template-columns:1fr 60px 50px;padding:7px 10px}
+  .poll-cand-name{font-size:10px}
+
+  /* Estratégia */
+  .strategy-grid{grid-template-columns:1fr}
+
+  /* Social */
+  #tab-social .social-feed{max-height:none}
+  .platform-tabs{gap:4px}
+  .platform-btn{padding:6px 10px;font-size:11px}
+
+  /* ── POPUPS / BOTTOM SHEETS ── */
+  .event-popup-overlay{align-items:flex-end!important;padding:0!important}
+  .event-popup{
+    width:100%!important;max-width:100%!important;
+    border-radius:20px 20px 0 0!important;
+    padding:8px 16px 36px!important;
+    max-height:85vh!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    animation:slideUp .28s cubic-bezier(.22,.61,.36,1)!important;
+  }
+  .interview-popup{
+    width:100%!important;max-width:100%!important;
+    border-radius:20px 20px 0 0!important;
+    padding:8px 16px 36px!important;
+    max-height:88vh!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch!important;
+    animation:slideUp .28s cubic-bezier(.22,.61,.36,1)!important;
+  }
+  .event-popup::before,.interview-popup::before{
+    content:'';display:block;width:40px;height:4px;
+    background:var(--border2);border-radius:2px;
+    margin:8px auto 14px;
+  }
+  .event-popup-icon{font-size:34px;margin-bottom:6px}
+  .event-popup-title{font-size:22px;margin-bottom:6px}
+  .event-popup-desc{font-size:12px;margin-bottom:14px;line-height:1.5}
+  .event-choice-btn{
+    padding:13px 14px;font-size:12px;
+    min-height:52px;touch-action:manipulation;
+  }
+  .interview-choice{
+    padding:13px 14px;font-size:12px;
+    min-height:52px;touch-action:manipulation;
+  }
+  /* Modal bottom sheet */
+  .modal-overlay{align-items:flex-end!important;padding:0!important}
+  .modal-box{
+    width:100%!important;max-width:100%!important;
+    border-radius:20px 20px 0 0!important;
+    padding:8px 16px 36px!important;
+    animation:slideUp .28s cubic-bezier(.22,.61,.36,1)!important;
+  }
+  .modal-box::before{
+    content:'';display:block;width:40px;height:4px;
+    background:var(--border2);border-radius:2px;
+    margin:8px auto 14px;
+  }
+  .modal-actions{flex-direction:column;gap:8px}
+  .modal-actions .btn-primary,.modal-actions .btn-secondary,.modal-actions .btn-danger{
+    width:100%;text-align:center;padding:14px;font-size:13px;min-height:52px;
+  }
+
+  /* Toast */
+  #toast-container{top:60px;right:8px;left:8px;z-index:9999}
+  .toast{max-width:100%}
 }
+
+/* ── 480px e menor ── */
 @media(max-width:480px){
-  .candidates-grid{grid-template-columns:1fr 1fr}
+  .candidates-grid{grid-template-columns:repeat(2,1fr);gap:6px}
   .agenda-grid{grid-template-columns:repeat(3,1fr)}
   .campaign-actions{grid-template-columns:1fr}
   #map-fallback{grid-template-columns:repeat(3,1fr)}
   .topbar-stats>div:nth-child(n+5){display:none}
+  .finance-summary{grid-template-columns:1fr 1fr}
+  .diff-grid{grid-template-columns:repeat(2,1fr)}
+  .vice-card{width:calc(50% - 4px)}
+  .nav-btn{min-width:44px;padding:4px 5px;font-size:8px}
+  .nav-btn .icon{font-size:16px}
 }
 .screen{position:fixed;inset:0;display:none;overflow:hidden}.screen.active{display:flex}
 
@@ -461,6 +684,21 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   </div>
 </div>
 
+<!-- TWEET MODAL -->
+<div class="event-popup-overlay" id="tweet-modal-overlay" style="z-index:2100">
+  <div class="event-popup" style="max-width:540px;width:95%">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+      <div style="font-size:28px">🐦</div>
+      <div>
+        <div style="font-weight:700;font-size:15px" id="tweet-modal-author">Tweetar</div>
+        <div style="font-size:11px;color:var(--text3)">Escolha um tweet para publicar — atenção, as repercussões podem surpreender!</div>
+      </div>
+    </div>
+    <div id="tweet-options-list" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto"></div>
+    <button class="btn-secondary" onclick="closeTweetModal()" style="width:100%;margin-top:12px">Cancelar</button>
+  </div>
+</div>
+
 <!-- ════════════════════════════════════════════ INTRO SCREEN -->
 <div class="screen active" id="intro-screen">
   <div class="intro-bg"></div><div class="intro-grid"></div>
@@ -475,7 +713,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <div class="section-heading">Selecione a Eleição</div>
       <div class="election-buttons">
         <button class="election-btn active" onclick="selElection(2022,this)">🗳️ Eleição 2022</button>
-        <button class="election-btn wip" title="Em Desenvolvimento">🗳️ Eleição 2018</button>
+        <button class="election-btn" onclick="selElection(2018,this)">🗳️ Eleição 2018</button>
         <button class="election-btn wip" title="Em Desenvolvimento">🗳️ Eleição 2014</button>
         <button class="election-btn wip" title="Em Desenvolvimento">🗳️ Eleição 2010</button>
       </div>
@@ -529,6 +767,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <div><div class="topbar-stat-label">Rejeição</div><div class="topbar-stat-value reject" id="stat-reject">0%</div></div>
       <div><div class="topbar-stat-label">Fundo</div><div class="topbar-stat-value money" id="stat-money">R$0</div></div>
       <div><div class="topbar-stat-label">Pop</div><div class="topbar-stat-value pop" id="stat-pop">0</div></div>
+      <div><div class="topbar-stat-label">⚡ Energia</div><div class="topbar-stat-value" id="stat-energy" style="color:#f39c12">100</div></div>
       <div><div class="topbar-stat-label">Data</div><div class="topbar-stat-value time" id="stat-date"></div></div>
       <div class="momentum-bar">
         <div><div class="momentum-label">Momentum</div>
@@ -642,6 +881,10 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
           <button class="platform-btn" onclick="switchPlatform('instagram',this)">📸 Instagram</button>
           <button class="platform-btn" onclick="switchPlatform('news',this)">📰 Notícias</button>
         </div>
+        <div id="twitter-tweet-zone" style="display:none;margin-bottom:14px">
+          <button class="btn-primary" onclick="openTweetModal()" style="width:100%;padding:12px;font-size:13px;background:linear-gradient(135deg,#1DA1F2,#0d7bc4);border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">🐦 Tweetar como ${G.player?.shortName||'Candidato'}</button>
+          <div id="tweet-cooldown-msg" style="display:none;font-size:11px;color:var(--orange);margin-top:4px;text-align:center"></div>
+        </div>
         <div class="social-feed" id="social-feed"></div>
       </div>
 
@@ -687,6 +930,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <!-- FINANCES -->
       <div class="tab-panel" id="tab-finances">
         <div style="margin-bottom:16px"><div class="panel-title">Finanças</div><div class="panel-subtitle">Fundo eleitoral</div></div>
+        <div id="finance-lock-banner"></div>
         <div class="finance-summary" id="finance-summary"></div>
         <div class="card" style="margin-bottom:14px"><div class="card-title">Arrecadação</div><div class="invest-grid" id="invest-grid"></div></div>
         <div class="card"><div class="card-title">Histórico</div><div id="finance-history"></div></div>
@@ -695,7 +939,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
       <!-- RESULTS -->
       <div class="tab-panel" id="tab-results">
         <div style="margin-bottom:16px"><div class="panel-title">Resultados</div><div class="panel-subtitle">Apuração eleitoral</div></div>
-        <div id="results-tab-content"><div style="color:var(--text3);text-align:center;padding:40px;font-size:12px"><div style="font-size:36px;margin-bottom:10px">📊</div>Apuração exibida após o 1º turno (2/10/2022).</div></div>
+        <div id="results-tab-content"><div style="color:var(--text3);text-align:center;padding:40px;font-size:12px"><div style="font-size:36px;margin-bottom:10px">📊</div>Apuração exibida após o 1º turno.</div></div>
       </div>
 
     </div>
@@ -794,6 +1038,172 @@ const VICES_2022 = {
   mourao:{ id:'mourao', name:'Hamilton Mourão', party:'Republicanos', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Hamilton_Mour%C3%A3o.jpg/500px-Hamilton_Mour%C3%A3o.jpg', region:'Sul', pop:55, exp:75, align:75, bonus:{S:4,RS:3}, desc:'Ex-vice-presidente no primeiro mandato' }
 };
 
+// ════ LOGOS DOS PARTIDOS ════════════════════════════════
+const PARTY_LOGOS = {
+  'PT':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/PT_%28Brazil%29_logo_2021.svg/960px-PT_%28Brazil%29_logo_2021.svg.png',
+  'PL':'https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Partido_Liberal_%28Brazil%29_logo.svg/960px-Partido_Liberal_%28Brazil%29_logo.svg.png',
+  'PDT':'https://upload.wikimedia.org/wikipedia/commons/4/4f/LogoPDT.png',
+  'MDB':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Movimento_Democr%C3%A1tico_Brasileiro_%282017%29.svg/960px-Movimento_Democr%C3%A1tico_Brasileiro_%282017%29.svg.png',
+  'PSDB':'https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Logo_of_the_Brazilian_Social_Democracy_Party_%282023%29.svg/1920px-Logo_of_the_Brazilian_Social_Democracy_Party_%282023%29.svg.png',
+  'NOVO':'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Partido_Novo_logo_%282023%29.svg/250px-Partido_Novo_logo_%282023%29.svg.png',
+  'PATRIOTA':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logotipo_do_partido_Patriota.svg/330px-Logotipo_do_partido_Patriota.svg.png',
+  'PSOL':'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Logo_PSOL_roxo.svg/960px-Logo_PSOL_roxo.svg.png',
+  'REDE':'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Logomarca_da_Rede_Sustentabilidade_%28REDE%29%2C_do_Brasil.png/250px-Logomarca_da_Rede_Sustentabilidade_%28REDE%29%2C_do_Brasil.png',
+  'PODEMOS':'https://upload.wikimedia.org/wikipedia/commons/9/99/Logo_Podemos_20.png',
+  'PSTU':'https://upload.wikimedia.org/wikipedia/commons/a/a6/Logo_PSTU.png',
+  'Democracia Cristã':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Logomarca_Democracia_Crist%C3%A3.png/250px-Logomarca_Democracia_Crist%C3%A3.png',
+  'DC':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Logomarca_Democracia_Crist%C3%A3.png/250px-Logomarca_Democracia_Crist%C3%A3.png',
+  'PPL':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Logomarca_do_Partido_P%C3%A1tria_Livre%2C_do_Brasil.png/250px-Logomarca_do_Partido_P%C3%A1tria_Livre%2C_do_Brasil.png',
+  'PTB':'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Logomarca_Partido_Trabalhista_Brasileiro.png/250px-Logomarca_Partido_Trabalhista_Brasileiro.png',
+  'UP':'https://upload.wikimedia.org/wikipedia/pt/0/00/Logo_-_UP_site.png',
+  'Unidade Popular':'https://upload.wikimedia.org/wikipedia/pt/0/00/Logo_-_UP_site.png',
+  'PCB':'https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Logo_PCB.png/250px-Logo_PCB.png',
+  'União Brasil':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Uni%C3%A3o_Brasil_logo.svg/1280px-Uni%C3%A3o_Brasil_logo.svg.png',
+  'UNIÃO':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Uni%C3%A3o_Brasil_logo.svg/1280px-Uni%C3%A3o_Brasil_logo.svg.png',
+  'PP':'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Progressistas_%28Brazil%29_logo.svg/960px-Progressistas_%28Brazil%29_logo.svg.png',
+  'Republicanos':'https://upload.wikimedia.org/wikipedia/pt/0/0d/Republicanos_logo.png',
+  'PSD':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/PSD_Brazil_logo.svg/1280px-PSD_Brazil_logo.svg.png',
+  'PSB':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Logo_of_the_Brazilian_Socialist_Party_%28wordmark_color%29.svg/1920px-Logo_of_the_Brazilian_Socialist_Party_%28wordmark_color%29.svg.png',
+  'PCdoB':'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/PCdoB_logo.svg/1920px-PCdoB_logo.svg.png',
+  'PRTB':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/PRTB-LOGO-04-1024x393.png/250px-PRTB-LOGO-04-1024x393.png',
+  'PRD':'https://upload.wikimedia.org/wikipedia/commons/5/54/Logomarca_Partido_Renova%C3%A7%C3%A3o_Democr%C3%A1tica.png',
+  'Cidadania':'https://upload.wikimedia.org/wikipedia/commons/d/d7/Logo_do_Cidadania_23.png',
+  'Solidariedade':'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Logomarca_do_Partido_Solidariedade.png/1920px-Logomarca_do_Partido_Solidariedade.png',
+  'PV':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Logomarca_do_Partido_Verde.svg/1920px-Logomarca_do_Partido_Verde.svg.png',
+  'AVANTE':'https://upload.wikimedia.org/wikipedia/commons/9/93/AVANTE_Brazil_Logo.png',
+  'Avante':'https://upload.wikimedia.org/wikipedia/commons/9/93/AVANTE_Brazil_Logo.png',
+  'AGIR':'https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Logotipo_do_partido_Agir.svg/1920px-Logotipo_do_partido_Agir.svg.png',
+  'Democrata':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Logomarca_O_Democrata_35.png/250px-Logomarca_O_Democrata_35.png',
+  'Mobiliza':'https://upload.wikimedia.org/wikipedia/commons/7/7f/Logomarca_Partido_Mobiliza.png',
+  'PCO':'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Logo_PCO_Institucional.svg/250px-Logo_PCO_Institucional.svg.png',
+  'Missão':'https://upload.wikimedia.org/wikipedia/pt/thumb/4/47/MISS%C3%83O_logo.png/250px-MISS%C3%83O_logo.png',
+  'PSL':'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Partido_Social_Liberal_logo.svg/250px-Partido_Social_Liberal_logo.svg.png',
+  'PSC':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/PSC_logo%28cortado%29.png/250px-PSC_logo%28cortado%29.png',
+};
+
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATES 2018
+// ════════════════════════════════════════════════════════
+const CANDIDATES_2018 = [
+  { id:'bolsonaro18', name:'Jair Messias Bolsonaro', shortName:'Bolsonaro', party:'PSL', partyColor:'#1a6b3a', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Michel_Temer_durante_encontro_com_Jair_Bolsonaro%2C_Presidente_da_Rep%C3%BAblica_eleito_4_%28cropped%29.jpg/500px-Michel_Temer_durante_encontro_com_Jair_Bolsonaro%2C_Presidente_da_Rep%C3%BAblica_eleito_4_%28cropped%29.jpg',
+    baseVote:46, baseReject:43, attrs:{carisma:82,experiencia:60,rejeicao:43,apoioPartidario:72,arrecadacao:55},
+    regionBias:{N:1.1,NE:0.65,CO:1.35,SE:1.1,S:1.4},
+    vices:['mourao18','moro18','orleans18','janaina18'],
+    debateStrengths:['seguranca','religiao','valores','corrupcao'],
+    description:'Deputado federal e candidato de direita, militar reformado' },
+  { id:'haddad18', name:'Fernando Haddad', shortName:'Haddad', party:'PT', partyColor:'#e53935', ideology:'Esquerda', ideologyClass:'ideo-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Fernando_Haddad_Prefeito_2016.jpg/500px-Fernando_Haddad_Prefeito_2016.jpg',
+    baseVote:29, baseReject:45, attrs:{carisma:65,experiencia:80,rejeicao:45,apoioPartidario:80,arrecadacao:65},
+    regionBias:{N:1.0,NE:1.5,CO:0.8,SE:0.9,S:0.7},
+    vices:[{id:'manuela18',name:'Manuela D\'Avila',region:'Sul',party:'PCdoB',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Manuela_davila_%2854422250365%29.jpg/500px-Manuela_davila_%2854422250365%29.jpg',pop:62,exp:60,align:80,bonus:{RS:3,S:2},desc:'Candidata do PCdoB, muito popular no Sul'},
+              {id:'jaques18',name:'Jaques Wagner',region:'Nordeste',party:'PT',photo:'https://upload.wikimedia.org/wikipedia/commons/b/b3/Foto_oficial_de_Jaques_Wagner.jpg',pop:60,exp:75,align:95,bonus:{BA:3,NE:2},desc:'Ex-governador da Bahia, forte no Nordeste'}],
+    debateStrengths:['economia','programas_sociais','educacao','saude'],
+    description:'Ex-prefeito de SP, substituto de Lula na candidatura do PT' },
+  { id:'ciro18', name:'Ciro Ferreira Gomes', shortName:'Ciro Gomes', party:'PDT', partyColor:'#e65100', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Presidente_Ciro_Gomes.png/500px-Presidente_Ciro_Gomes.png',
+    baseVote:12, baseReject:36, attrs:{carisma:72,experiencia:85,rejeicao:36,apoioPartidario:62,arrecadacao:48},
+    regionBias:{N:0.9,NE:1.3,CO:0.9,SE:1.0,S:0.85},
+    vices:[{id:'katia18',name:'Kátia Abreu',region:'Nordeste/CO',party:'PDT',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:54,exp:72,align:80,bonus:{NE:1,TO:2},desc:'Senadora do Tocantins, vice real de Ciro Gomes em 2018'}],
+    debateStrengths:['economia','educacao','corrupcao'],
+    description:'Ex-governador do Ceará, economista e político experiente' },
+  { id:'alckmin18', name:'Geraldo Alckmin', shortName:'Alckmin', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Governador_Geraldo_Alckmin_Anuncia_Duplica%C3%A7%C3%A3o_da_Euclides_da_Cunha_em_2011_%28cropped%29.jpg/500px-Governador_Geraldo_Alckmin_Anuncia_Duplica%C3%A7%C3%A3o_da_Euclides_da_Cunha_em_2011_%28cropped%29.jpg',
+    baseVote:4.8, baseReject:30, attrs:{carisma:55,experiencia:90,rejeicao:30,apoioPartidario:70,arrecadacao:60},
+    regionBias:{N:0.8,NE:0.7,CO:0.9,SE:1.3,S:1.1},
+    vices:[{id:'aaa18',name:'Ana Amélia',region:'Sul',party:'PP',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:55,exp:68,align:80,bonus:{S:3},desc:'Senadora gaúcha, vice do PSDB'}],
+    debateStrengths:['economia','privatizacoes','educacao'],
+    description:'Ex-governador de SP, candidato do PSDB' },
+  { id:'marina18', name:'Marina Silva', shortName:'Marina Silva', party:'REDE', partyColor:'#00796b', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Marina_Silva_em_junho_de_2018_%281%29_%28cropped%29.jpg/960px-Marina_Silva_em_junho_de_2018_%281%29_%28cropped%29.jpg',
+    baseVote:1.0, baseReject:24, attrs:{carisma:70,experiencia:78,rejeicao:24,apoioPartidario:50,arrecadacao:30},
+    regionBias:{N:1.1,NE:1.0,CO:0.85,SE:1.0,S:0.9},
+    vices:[{id:'brizola18',name:'Eduardo Jorge',region:'São Paulo',party:'PV',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:45,exp:60,align:80,bonus:{SP:1},desc:'Médico sanitarista do PV, vice real de Marina Silva em 2018'}],
+    debateStrengths:['meio_ambiente','educacao','saude'],
+    description:'Ex-senadora, candidata da REDE Sustentabilidade' },
+  { id:'amoedo18', name:'João Amoêdo', shortName:'João Amoêdo', party:'NOVO', partyColor:'#e67e00', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/4/40/Jo%C3%A3o_Amo%C3%AAdo_review_ContabilidadeTv_%28cropped%29.jpg',
+    baseVote:2.5, baseReject:18, attrs:{carisma:58,experiencia:50,rejeicao:18,apoioPartidario:48,arrecadacao:52},
+    regionBias:{N:0.6,NE:0.5,CO:0.8,SE:1.2,S:1.35},
+    vices:[{id:'cris18',name:'Christian Lohbauer',region:'Sudeste',party:'NOVO',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:40,exp:50,align:85,bonus:{SP:1},desc:'Vice do NOVO'}],
+    debateStrengths:['privatizacoes','economia','corrupcao'],
+    description:'Empresário e político liberal, primeiro candidato do Partido NOVO' },
+  { id:'meirelles18', name:'Henrique Meirelles', shortName:'Meirelles', party:'MDB', partyColor:'#2980b9', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Henrique_Meirelles_sorrindo.png/500px-Henrique_Meirelles_sorrindo.png',
+    baseVote:1.2, baseReject:28, attrs:{carisma:52,experiencia:82,rejeicao:28,apoioPartidario:55,arrecadacao:45},
+    regionBias:{N:0.9,NE:0.9,CO:1.0,SE:1.1,S:1.0},
+    vices:[{id:'lorena18',name:'Germano Rigotto',region:'Sul',party:'MDB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:50,exp:65,align:80,bonus:{S:2},desc:'Vice do MDB'}],
+    debateStrengths:['economia','privatizacoes'],
+    description:'Ex-presidente do Banco Central e ministro da Fazenda' },
+  { id:'alvaro18', name:'Álvaro Dias', shortName:'Álvaro Dias', party:'PODEMOS', partyColor:'#2e7d32', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/7/72/Foto_oficial_de_%C3%81lvaro_Dias.jpg',
+    baseVote:0.9, baseReject:20, attrs:{carisma:60,experiencia:72,rejeicao:20,apoioPartidario:52,arrecadacao:30},
+    regionBias:{N:0.9,NE:0.85,CO:1.0,SE:1.0,S:1.2},
+    vices:[{id:'paul18',name:'Paulo Rabello de Castro',region:'Sudeste',party:'PSC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:45,exp:60,align:75,bonus:{},desc:'Vice do PODEMOS'}],
+    debateStrengths:['corrupcao','seguranca','valores'],
+    description:'Senador do Paraná, candidato do PODEMOS' },
+  { id:'daciolo18', name:'Cabo Daciolo', shortName:'Cabo Daciolo', party:'PATRIOTA', partyColor:'#827717', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/e/e1/Deputados_cabo_Daciolo_%28PSOL-RJ%29_e_Marcos_Reategui_%28PSC-AP%29_participam_do_programa_Brasil_em_Debate_%28cropped%29.jpg',
+    baseVote:1.3, baseReject:22, attrs:{carisma:62,experiencia:35,rejeicao:22,apoioPartidario:40,arrecadacao:12},
+    regionBias:{N:0.9,NE:1.0,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'suelene18',name:'Suelene Nascimento',region:'Centro-Oeste',party:'PATRIOTA',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:28,exp:32,align:90,bonus:{DF:1},desc:'Pedagoga do DF, vice real de Cabo Daciolo em 2018'}],
+    debateStrengths:['religiao','valores','seguranca'],
+    description:'Bombeiro e deputado federal, candidato evangélico do PATRIOTA' },
+  { id:'boulos18', name:'Guilherme Boulos', shortName:'Boulos', party:'PSOL', partyColor:'#9c27b0', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Audi%C3%AAncia_P%C3%BAblica_-_Guilherme_Boulos_%28cropped%29.jpg/500px-Audi%C3%AAncia_P%C3%BAblica_-_Guilherme_Boulos_%28cropped%29.jpg',
+    baseVote:0.6, baseReject:28, attrs:{carisma:70,experiencia:45,rejeicao:28,apoioPartidario:50,arrecadacao:15},
+    regionBias:{N:0.7,NE:0.9,CO:0.7,SE:1.2,S:0.9},
+    vices:[{id:'sonia18',name:'Sônia Guajajara',region:'Nordeste',party:'PSOL',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:55,exp:50,align:95,bonus:{NE:1},desc:'Liderança indígena, vice do PSOL'}],
+    debateStrengths:['programas_sociais','educacao','saude'],
+    description:'Liderança do MTST, candidato do PSOL' },
+  { id:'vera18', name:'Vera Lúcia', shortName:'Vera', party:'PSTU', partyColor:'#6a1b9a', ideology:'Extrema Esquerda', ideologyClass:'ideo-far-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/-2022-08-20-_Vera-e-Raquel_07_%2852305375940%29_%28cropped%29.jpg/500px--2022-08-20-_Vera-e-Raquel_07_%2852305375940%29_%28cropped%29.jpg',
+    baseVote:0.08, baseReject:18, attrs:{carisma:52,experiencia:48,rejeicao:18,apoioPartidario:36,arrecadacao:5},
+    regionBias:{N:0.8,NE:0.8,CO:0.7,SE:1.1,S:1.0},
+    vices:[{id:'hertz18',name:'Hertz Dias',region:'Nordeste',party:'PSTU',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:25,exp:30,align:98,bonus:{},desc:'Vice do PSTU'}],
+    debateStrengths:['programas_sociais','saude','educacao'],
+    description:'Dirigente do PSTU, esquerda trabalhista' },
+  { id:'eymael18', name:'José Maria Eymael', shortName:'Eymael', party:'DC', partyColor:'#33691e', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    baseVote:0.07, baseReject:14, attrs:{carisma:40,experiencia:65,rejeicao:14,apoioPartidario:28,arrecadacao:8},
+    regionBias:{N:0.7,NE:0.7,CO:0.9,SE:1.1,S:1.1},
+    vices:[{id:'eymael_v18',name:'Hélvio Costa',region:'Sudeste',party:'DC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:30,align:92,bonus:{},desc:'Pastor, vice real de Eymael em 2018'}],
+    debateStrengths:['religiao','valores','educacao'],
+    description:'Candidato histórico, democrata cristão' },
+  { id:'goulart18', name:'João Goulart Filho', shortName:'Goulart Filho', party:'PPL', partyColor:'#c0392b', ideology:'Esquerda', ideologyClass:'ideo-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Jo%C3%A3o_Goulart_Filho_2015.jpg/500px-Jo%C3%A3o_Goulart_Filho_2015.jpg',
+    baseVote:0.08, baseReject:16, attrs:{carisma:48,experiencia:50,rejeicao:16,apoioPartidario:32,arrecadacao:8},
+    regionBias:{N:0.8,NE:1.0,CO:0.8,SE:1.0,S:1.0},
+    vices:[{id:'goulart_v18',name:'Léo Alves',region:'Centro-Oeste',party:'PPL',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:22,exp:35,align:90,bonus:{},desc:'Professor da UCB, vice real de Goulart Filho em 2018'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Filho do ex-presidente João Goulart, candidato do PPL' }
+];
+
+const VICES_2018 = {
+  mourao18:{ id:'mourao18', name:'Hamilton Mourão', party:'PRTB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Hamilton_Mour%C3%A3o.jpg/500px-Hamilton_Mour%C3%A3o.jpg', region:'Sul', pop:52, exp:70, align:88, bonus:{S:4,RS:3}, desc:'General, vice real de Bolsonaro em 2018' },
+  moro18:{ id:'moro18', name:'Sérgio Moro', party:'PODEMOS', photo:'https://upload.wikimedia.org/wikipedia/commons/a/a8/Senador_da_Rep%C3%BAblica_S%C3%A9rgio_Moro.jpg', region:'Sul', pop:72, exp:68, align:80, bonus:{S:5,SE:3,PR:4}, desc:'Juiz federal da Lava Jato, símbolo do anti-corrupção. Altíssima popularidade no Sul e Sudeste.' },
+  orleans18:{ id:'orleans18', name:'Luiz Philippe de Orleans e Bragança', party:'PSL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Deputado_Luiz_Philippe_de_Orleans_e_Bragan%C3%A7a_%28cropped%29.jpg/500px-Deputado_Luiz_Philippe_de_Orleans_e_Bragan%C3%A7a_%28cropped%29.jpg', region:'Sudeste', pop:40, exp:45, align:90, bonus:{SE:2}, desc:'Deputado, descendente da família imperial' },
+  janaina18:{ id:'janaina18', name:'Janaina Paschoal', party:'PSL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/2022-02-14_Sess%C3%A3o_de_Debate_Tem%C3%A1tico_-_Efici%C3%AAncia_do_Passaporte_Sanit%C3%A1rio_no_enfrentamento_%C3%A0_Pandemia_da_COVID-19%2C_03_%28Jana%C3%ADna_Paschoal%29.jpg/500px-2022-02-14_Sess%C3%A3o_de_Debate_Tem%C3%A1tico_-_Efici%C3%AAncia_do_Passaporte_Sanit%C3%A1rio_no_enfrentamento_%C3%A0_Pandemia_da_COVID-19%2C_03_%28Jana%C3%ADna_Paschoal%29.jpg', region:'São Paulo', pop:60, exp:62, align:85, bonus:{SP:4}, desc:'Professora e procuradora, autora do impeachment de Dilma' },
+};
+
+// Real 2018 first-round results by state (Bolsonaro %, Haddad %)
+const REAL_RESULTS_2018 = {
+  AC:{bolsonaro:54.8,haddad:26.4}, AL:{bolsonaro:44.8,haddad:35.5},
+  AM:{bolsonaro:55.2,haddad:25.5}, AP:{bolsonaro:46.3,haddad:32.8},
+  BA:{bolsonaro:27.7,haddad:50.8}, CE:{bolsonaro:26.1,haddad:50.3},
+  DF:{bolsonaro:60.1,haddad:17.0}, ES:{bolsonaro:56.1,haddad:22.9},
+  GO:{bolsonaro:61.3,haddad:19.6}, MA:{bolsonaro:26.6,haddad:49.2},
+  MG:{bolsonaro:51.0,haddad:26.0}, MS:{bolsonaro:61.5,haddad:19.3},
+  MT:{bolsonaro:66.1,haddad:16.0}, PA:{bolsonaro:44.6,haddad:31.4},
+  PB:{bolsonaro:37.0,haddad:41.5}, PE:{bolsonaro:34.4,haddad:41.9},
+  PI:{bolsonaro:28.3,haddad:47.3}, PR:{bolsonaro:60.1,haddad:22.3},
+  RJ:{bolsonaro:63.0,haddad:18.9}, RN:{bolsonaro:37.0,haddad:42.0},
+  RO:{bolsonaro:67.3,haddad:17.3}, RR:{bolsonaro:66.0,haddad:16.0},
+  RS:{bolsonaro:57.5,haddad:24.5}, SC:{bolsonaro:70.8,haddad:15.8},
+  SE:{bolsonaro:44.0,haddad:37.0}, SP:{bolsonaro:56.1,haddad:24.0},
+  TO:{bolsonaro:60.8,haddad:22.5}
+};
+
 // ════ STATES — all 27 with SVG IDs, demographics ═══════
 
 // Real 2022 first-round results by state (Lula %, Bolsonaro %)
@@ -866,12 +1276,20 @@ const DEBATE_TOPICS = [
   {id:'privatizacoes',label:'Privatizações',icon:'🏗️'},{id:'meio_ambiente',label:'Meio Ambiente',icon:'🌿'}
 ];
 
-const SCHEDULED_DEBATES = [
+const SCHEDULED_DEBATES_2022 = [
   {date:'2022-08-28',name:'Debate Band/Jovem Pan',participants:'todos',round:1},
   {date:'2022-09-09',name:'Debate RedeTV!/ISTOÉ',participants:'todos',round:1},
   {date:'2022-09-22',name:'Debate Globo',participants:'top6',round:1},
   {date:'2022-10-28',name:'Debate Globo 2º Turno',participants:'top2',round:2}
 ];
+const SCHEDULED_DEBATES_2018 = [
+  {date:'2018-08-09',name:'Debate RedeTV!/SBT',participants:'todos',round:1},
+  {date:'2018-09-09',name:'Debate Globo/Folha',participants:'top6',round:1},
+  {date:'2018-09-26',name:'Debate Band/UOL',participants:'todos',round:1},
+  {date:'2018-10-26',name:'Debate Globo 2º Turno',participants:'top2',round:2}
+];
+let SCHEDULED_DEBATES = SCHEDULED_DEBATES_2022;
+function getScheduledDebates(){ return CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:SCHEDULED_DEBATES_2022; }
 
 // Enhanced random events with choices
 const RANDOM_EVENTS = [
@@ -991,23 +1409,29 @@ const INTERVIEW_QUESTIONS = [
 // Social media posts
 const SOCIAL_POSTS_TEMPLATES = {
   twitter:[
-    {user:'@bolsonaro_verdade',handle:'Apoiador BJ',icon:'🇧🇷',text:'URGENTE: pesquisa mostra Bolsonaro crescendo fortemente no Sudeste! As Forças Armadas estão com o povo! 🇧🇷 #BolsonaroPresidente',type:'support',cand:'bolsonaro',likes:12400,rt:8900},
-    {user:'@lulalivre2022',handle:'PT Nordeste',icon:'🌡️',text:'Lula vai ganhar no primeiro turno! Nordeste está unido! Fome zero, Bolsa Família, educação e saúde para o povo! #LulaPresidente',type:'support',cand:'lula',likes:8700,rt:5400},
-    {user:'@politicaNeutral',handle:'Analista Político',icon:'📊',text:'As pesquisas mostram uma eleição extremamente polarizada. Qualquer coisa pode acontecer até outubro. #Eleições2022',type:'neutral',likes:3200,rt:1800},
-    {user:'@fakechecker_BR',handle:'AosDados',icon:'🔎',text:'VERIFICADO COMO FALSO: corrente viral sobre fraude eleitoral não tem nenhuma base factual. Compartilhe a verdade! #Desinformação',type:'neutral',likes:5600,rt:4100},
-    {user:'@meme_politico',handle:'Memes do Brasil',icon:'😂',text:'[MEME] "Como estão as pesquisas?" vs "Como está minha conta bancária depois das doações" 💀 Alguém se identifica?',isMeme:true,likes:24000,rt:15000},
-    {user:'@economistaBR',handle:'Dr. Gustavo Eco.',icon:'📈',text:'PIB cresceu 1,2% no trimestre — mas desigualdade ainda é enorme. O próximo presidente precisará de um plano sólido e concreto.',type:'neutral',likes:2100,rt:900},
-    {user:'@cironamidia',handle:'PDT Brasil',icon:'🔴',text:'Ciro Gomes é o único candidato com experiência real de governo E sem a bagagem do PT ou do PL. Vote com consciência!',type:'support',cand:'ciro',likes:1800,rt:760},
-    {user:'@twittercomum123',handle:'Cidadã Maria S.',icon:'👩',text:'Tenho 3 filhos, não sei em quem votar. Quero ver os candidatos debaterem mais sobre emprego e saúde! Quem vai ajudar minha família?',type:'neutral',likes:890,rt:320},
-    {user:'@agronoticias',handle:'Campo Forte',icon:'🌾',text:'Agronegócio produz 27% do PIB e precisa de um presidente que respeite o campo! Soraya e Tebet entendem o agro! 🚜 #Agro',type:'support',cand:'soraya',likes:4200,rt:2100},
-    {user:'@jovempolitizado',handle:'João, 22 anos',icon:'🧑',text:'Meu primeiro voto será em quem realmente se preocupa com o futuro. Precisamos de mudança real, não de mais do mesmo!',type:'neutral',likes:5400,rt:3200},
-    {user:'@debateforum',handle:'Fórum Político',icon:'🎙️',text:'Os debates televisivos têm mostrado candidatos cada vez mais nervosos. Quem você acha que sai melhor? Comenta!',type:'neutral',likes:7800,rt:4200},
-    {user:'@nordestevota',handle:'Nordeste Unido',icon:'☀️',text:'O Nordeste nunca vai esquecer o que o PT fez por nós. Lula presidente de novo! #LulaNordeste',type:'support',cand:'lula',likes:9100,rt:6300},
-    {user:'@sulbrasileiro',handle:'Sul do Brasil',icon:'🏔️',text:'O Sul não está com o PT! Nossa região tem valores diferentes. Família, trabalho e liberdade. #SulÉDireita',type:'support',cand:'bolsonaro',likes:5600,rt:3800},
-    {user:'@novo_partido',handle:'Partido NOVO',icon:'🆕',text:'Felipe D\'Avila é a alternativa ao sistema! Menos governo, mais liberdade, menos impostos. #BrasilNovo',type:'support',cand:'davila',likes:2300,rt:1200},
-    {user:'@xadrezbrasileiro',handle:'Xadrez Verbal',icon:'♟️',text:'Análise: por que a rejeição é o fator mais importante do segundo turno? Thread 🧵 (1/10)...',type:'neutral',likes:8900,rt:5200},
-    {user:'@senhorabolsonaro',handle:'Mamãe de 4',icon:'👩‍👧‍👦',text:'Vou votar em quem defende a família! Valores cristãos e segurança para meus filhos! Deus acima de tudo! 🙏',type:'support',cand:'bolsonaro',likes:6700,rt:4100},
-    {user:'@professorapt',handle:'Prof. Andréa',icon:'📚',text:'A educação pública está em colapso. Precisamos de candidatos sérios com propostas reais, não slogans. #EducaçãoBrasileira',type:'neutral',likes:3400,rt:2100}
+    {user:'@rodrigo_alves1982',handle:'Rodrigo Alves 🇧🇷',icon:'🇧🇷',text:'Acordei cedo, li as pesquisas e to feliz. Movimento crescendo todo dia. Nada vai parar isso. #BrasilNoRumo',type:'support',cand:'bolsonaro',likes:12400,rt:8900},
+    {user:'@marciasouza_pe',handle:'Márcia Souza ☀️',icon:'☀️',text:'Fui ao posto de saúde hoje. Vazio, sem remédio, sem médico. E alguém me explica por que isso aconteceu nos últimos 4 anos? #SaúdePública',type:'support',cand:'lula',likes:8700,rt:5400},
+    {user:'@professor_rocha_sp',handle:'Prof. Marcos Rocha 📊',icon:'📊',text:'Analisando os números: margem de erro ainda muito alta. Qualquer coisa pode acontecer. Não temos nenhum resultado garantido. #Eleições',type:'neutral',likes:3200,rt:1800},
+    {user:'@aosdados_real',handle:'AosDados ✅',icon:'🔎',text:'VERIFICADO: áudio que circula no zap sobre fraude nas urnas é FALSO. TSE já esclareceu. Não compartilhe desinformação. #FakeNews',type:'neutral',likes:5600,rt:4100},
+    {user:'@memesbr_oficial',handle:'Memes Brasil 😂',icon:'😂',text:'Eu tentando entender o programa de governo do candidato depois de assistir o debate inteiro 💀💀 [imagem] Salva isso!',isMeme:true,likes:24000,rt:15000},
+    {user:'@gustavoeconomia',handle:'Gustavo Veiga, Economista',icon:'📈',text:'PIB cresce 1,2% mas inflação corrói salário real. O eleitor sente no bolso, não no papel. Quem tem solução de verdade?',type:'neutral',likes:2100,rt:900},
+    {user:'@patriciafbr',handle:'Patrícia F. 🩷',icon:'👩',text:'Mãe solo, 2 empregos, filha na escola pública. Só quero saber: quem vai me ajudar de verdade? Cansada de promessa.',type:'neutral',likes:890,rt:320},
+    {user:'@agronoticias_br',handle:'Canal do Agro 🌾',icon:'🌾',text:'Safra recorde! Agronegócio em alta. E o candidato que quer taxar exportações acha que vai chegar longe? 🚜 #Agro #Produtores',type:'neutral',likes:4200,rt:2100},
+    {user:'@vitor_22anos',handle:'Vitor, 1º voto 🗳️',icon:'🧑',text:'Pesquisei cada candidato. Li os programas. Fiz planilha mesmo kkkk. Voto consciente é o que vai mudar esse país.',type:'neutral',likes:5400,rt:3200},
+    {user:'@xadrezverbal_br',handle:'Xadrez Verbal ♟️',icon:'♟️',text:'Thread: A rejeição é o FATOR DECISIVO desta eleição — mais do que as intenções de voto. Vou explicar 🧵 (1/12)',type:'neutral',likes:8900,rt:5200},
+    {user:'@nordeste_real',handle:'Nordeste Fala ☀️',icon:'☀️',text:'Aqui no Nordeste a gente sabe o que é passar fome. A gente não esquece quem nos ajudou. #NordesteDecide',type:'support',cand:'lula',likes:9100,rt:6300},
+    {user:'@juliana_mkt_digital',handle:'Juliana Ramos | Marketing',icon:'💼',text:'Analisei os perfis de todos os candidatos no Instagram. A diferença de engajamento é absurda. Thread com dados 👇',type:'neutral',likes:3800,rt:2400},
+    {user:'@anderson_tjba',handle:'Anderson Lima 👨‍⚖️',icon:'👨‍⚖️',text:'Servidor público há 18 anos. Nunca vi tanta politicagem em seleção para cargos. Quem vai limpar essa bagunça?',type:'neutral',likes:2900,rt:1300},
+    {user:'@beatriz_reporter_cnn',handle:'Beatriz Tavares | CNN',icon:'🎤',text:'EXCLUSIVO: Bastidores do debate de ontem. O que aconteceu nos corredores antes de começar (thread)',type:'neutral',likes:7200,rt:4100},
+    {user:'@paulinhoconservador',handle:'Paulo H. | PR 🏔️',icon:'🏔️',text:'Sul do Brasil cansado de ser ignorado. Pagamos imposto pra bancar o resto e não temos retorno. Chega! #SulProtesta',type:'support',cand:'bolsonaro',likes:5600,rt:3800},
+    {user:'@dezebranca_memes',handle:'Dezé Branca 😂',icon:'😂',text:'quando o candidato fala "vou acabar com a corrupção" e era réu em 2019 💀💀💀 [meme] Quem conhece conhece',isMeme:true,likes:31000,rt:18000},
+    {user:'@andreaprof_edu',handle:'Profa. Andréa Costa 📚',icon:'📚',text:'Escola pública sem professor de matemática há 3 meses. Isso é descaso. Educação não pode ser pauta secundária. #EduBR',type:'neutral',likes:3400,rt:2100},
+    {user:'@rebeca_tex',handle:'Rebeca Texeira | Jornalista',icon:'📰',text:'Fui atrás dos números reais: quantos candidatos realmente cumpriram o que prometeram na última eleição? A resposta vai te chocar.',type:'neutral',likes:6700,rt:4300},
+    {user:'@eleitor_mg_2022',handle:'Carlos de Belo Horizonte',icon:'🏙️',text:'MG é o estado mais indeciso do Brasil e eu sou a prova. Minha família está dividida 3 a 3 ao redor da mesa.',type:'neutral',likes:1200,rt:580},
+    {user:'@ciro_presidencia',handle:'Ciro Gomes Oficial',icon:'🔴',text:'Nenhum dos dois extremos vai resolver o Brasil. O País precisa de um projeto real de desenvolvimento. Não de guerra cultural.',type:'support',cand:'ciro',likes:4500,rt:2200},
+    {user:'@empreendedor_sul',handle:'Ricardo | Empreendedor 💼',icon:'💼',text:'Abri empresa em 2020, sobrevivi à pandemia. Agora pago 42% de imposto. O próximo presidente TEM que desburocratizar.',type:'neutral',likes:7800,rt:3900},
+    {user:'@tiktok_politica_br',handle:'PolíticaRápida ⚡',icon:'⚡',text:'Em 30 segundos: o que cada candidato falou sobre emprego no debate. Salva pra decidir seu voto 🗳️ #GenZ',type:'neutral',likes:45000,rt:12000},
+    {user:'@giovanna_ativismo',handle:'Giovanna Brito ✊',icon:'✊',text:'Representatividade importa. Não tem como votar em quem não me vê. Precisamos de mais vozes diversas na política.',type:'neutral',likes:6200,rt:3100},
   ],
   instagram:[
     {user:'influencer_politico',handle:'Bruno Política',icon:'📸',text:'Fiz um reels comparando as propostas de cada candidato. Link na bio! É importante votar conscientemente 🗳️ #Eleições2022 #VotoConsciente',type:'neutral',likes:48000,rt:1200},
@@ -1067,6 +1491,7 @@ let G = {
   activeSocialPlatform:'twitter', socialPosts:[],
   interviewCooldown:0, scandals:[],
   viceCooldowns:{}, viceHistory:[], actionCount:{},
+  financeCooldowns:{}, financeLockedKey:null, thirdCandSurged:null,
   campaignActions:{
     comicio:{cooldown:0,maxCooldown:20},
     tv:{cooldown:0,maxCooldown:25},
@@ -1090,6 +1515,9 @@ const addDays=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
 const daysBetween=(a,b)=>Math.round((b-a)/(864e5));
 
 function showToast(title,msg,type='info',dur=4000){
+  if(type==='success')playSFX('success');
+  else if(type==='error')playSFX('error');
+  else if(type==='warning')playSFX('event');
   const c=document.getElementById('toast-container');
   const t=document.createElement('div');
   t.className=`toast ${type}`;
@@ -1114,6 +1542,7 @@ function showScreen(id){
 }
 
 function showTab(id,btn){
+  playSFX('tab');
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   const panel=document.getElementById('tab-'+id);
@@ -1136,9 +1565,25 @@ function showTab(id,btn){
 // ════════════════════════════════════════════════════════
 // INTRO
 // ════════════════════════════════════════════════════════
+let CURRENT_ELECTION = 2022;
+
+function getCandidates(){ return CURRENT_ELECTION===2018?CANDIDATES_2018:CANDIDATES_2022; }
+function getVices(){ return CURRENT_ELECTION===2018?VICES_2018:VICES_2022; }
+function getRealResults(){ return CURRENT_ELECTION===2018?REAL_RESULTS_2018:REAL_RESULTS_2022; }
+function getElectionDates(){
+  if(CURRENT_ELECTION===2018) return {start:'2017-10-07',first:'2018-10-07',second:'2018-10-28',totalDays:366};
+  return {start:'2021-10-02',first:'2022-10-02',second:'2022-10-30',totalDays:366};
+}
+
 function selElection(y,btn){
   document.querySelectorAll('.election-btn:not(.wip)').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
+  CURRENT_ELECTION=y;
+  G.selectedCandidate=null;G.selectedVice=null;
+  document.getElementById('vice-section').style.display='none';
+  document.getElementById('start-btn').disabled=true;
+  document.getElementById('start-hint').textContent='Selecione candidato e vice para começar';
+  renderCandidateCards();
 }
 
 function renderDifficultyGrid(){
@@ -1166,14 +1611,18 @@ function toggleSandbox(on){
 function renderCandidateCards(){
   const g=document.getElementById('candidates-grid');
   g.innerHTML='';
-  CANDIDATES_2022.forEach(c=>{
+  getCandidates().forEach(c=>{
     const el=document.createElement('div');
     el.className='candidate-card';
     el.dataset.id=c.id;
+    const partyLogoUrl=PARTY_LOGOS[c.party]||'';
     el.innerHTML=`
       <img class="candidate-photo" src="${c.photo}" alt="${c.shortName}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%23333%22 width=%2280%22 height=%2280%22/><text fill=%22%23888%22 x=%2240%22 y=%2250%22 font-size=%2222%22 text-anchor=%22middle%22>?</text></svg>'">
       <div class="candidate-name">${c.shortName}</div>
-      <div class="candidate-party badge" style="background:${c.partyColor}22;color:${c.partyColor}">${c.party}</div>
+      <div class="candidate-party badge" style="background:${c.partyColor}22;color:${c.partyColor};display:flex;align-items:center;gap:4px;justify-content:center">
+        ${partyLogoUrl?`<img src="${partyLogoUrl}" style="height:12px;width:auto;object-fit:contain;filter:none" onerror="this.style.display='none'">`:''}
+        ${c.party}
+      </div>
       <div class="candidate-ideology ${c.ideologyClass}">${c.ideology}</div>
     `;
     el.onclick=()=>selectCandidate(c.id,el);
@@ -1197,20 +1646,30 @@ function selectCandidate(id,el){
 function renderViceCards(cid){
   const g=document.getElementById('vice-grid');
   g.innerHTML='';
-  const cand=CANDIDATES_2022.find(c=>c.id===cid);
+  const cand=getCandidates().find(c=>c.id===cid);
+  const vices=getVices();
   let list=[];
-  if(cid==='lula') list=['alckmin','haddad','dino'].map(id=>VICES_2022[id]);
-  else if(cid==='bolsonaro') list=['braganetto','terezacristina','mourao'].map(id=>VICES_2022[id]);
-  else list=(cand.vices||[]).filter(v=>typeof v==='object');
+  if(CURRENT_ELECTION===2022){
+    if(cid==='lula') list=['alckmin','haddad','dino'].map(id=>vices[id]);
+    else if(cid==='bolsonaro') list=['braganetto','terezacristina','mourao'].map(id=>vices[id]);
+    else list=(cand.vices||[]).filter(v=>typeof v==='object');
+  } else {
+    if(cid==='bolsonaro18') list=['mourao18','moro18','orleans18','janaina18'].map(id=>vices[id]);
+    else list=(cand.vices||[]).filter(v=>typeof v==='object');
+  }
 
   list.forEach(v=>{
     const el=document.createElement('div');
     el.className='vice-card';
     el.dataset.id=v.id;
+    const partyLogoV=PARTY_LOGOS[v.party]||'';
     el.innerHTML=`
       <img class="vice-photo" src="${v.photo}" alt="${v.name}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 60 60%22><rect fill=%22%23333%22 width=%2260%22 height=%2260%22/><text fill=%22%23888%22 x=%2230%22 y=%2238%22 font-size=%2218%22 text-anchor=%22middle%22>?</text></svg>'">
       <div class="vice-name">${v.name}</div>
-      <div class="vice-region">${v.party}</div>
+      <div class="vice-region" style="display:flex;align-items:center;gap:3px;justify-content:center">
+        ${partyLogoV?`<img src="${partyLogoV}" style="height:10px;width:auto;object-fit:contain" onerror="this.style.display='none'">`:''}
+        ${v.party}
+      </div>
       <div class="vice-region">${v.region}</div>
     `;
     el.onclick=()=>selectVice(v,el);
@@ -1231,24 +1690,34 @@ function selectVice(v,el){
 // GAME INIT
 // ════════════════════════════════════════════════════════
 function startGame(){
-  const cand=CANDIDATES_2022.find(c=>c.id===G.selectedCandidate);
+  const cand=getCandidates().find(c=>c.id===G.selectedCandidate);
   G.player=JSON.parse(JSON.stringify(cand));
   G.vice=G.selectedViceObj;
   const diff=DIFFICULTIES.find(d=>d.id===G.difficulty)||DIFFICULTIES[3];
   G.diffSettings=diff;
+  const dates=getElectionDates();
+  G.currentDate=new Date(dates.start); G.gameStartDate=new Date(dates.start);
+  G.firstRoundDate=new Date(dates.first); G.secondRoundDate=new Date(dates.second);
+  G.totalDays=dates.totalDays;
 
-  const baseMoneys={lula:500e6,bolsonaro:450e6,ciro:120e6,tebet:80e6,soraya:50e6,davila:60e6,kelmon:5e6,pericles:2e6,sofia:1e6,vera:1e6,eymael:1e6};
+  const baseMoneys={lula:500e6,bolsonaro:450e6,ciro:120e6,tebet:80e6,soraya:50e6,davila:60e6,kelmon:5e6,pericles:2e6,sofia:1e6,vera:1e6,eymael:1e6,
+    bolsonaro18:200e6,haddad18:220e6,ciro18:80e6,alckmin18:150e6,marina18:25e6,amoedo18:30e6,meirelles18:60e6,alvaro18:20e6,daciolo18:5e6,boulos18:10e6,vera18:1e6,eymael18:2e6,goulart18:2e6};
   G.money=G.sandbox?1e12:(baseMoneys[cand.id]||10e6)*diff.moneyMult;
   G.popularity=cand.attrs.carisma;
   G.rejection=cand.baseReject;
   G.momentum=50;
+  G.energy=100;
+  G.energyRegen=0;
+  G.financeCooldowns={};
+  G.financeLockedKey=null;
+  G.thirdCandSurged=null;
 
   initializePolls();
   initSocialPosts();
 
   document.getElementById('topbar-photo').src=cand.photo;
   document.getElementById('topbar-name').textContent=cand.shortName;
-  document.getElementById('topbar-party').textContent=cand.party+' · '+cand.ideology;
+  document.getElementById('topbar-party').innerHTML=(PARTY_LOGOS[cand.party]?`<img src="${PARTY_LOGOS[cand.party]}" style="height:11px;width:auto;object-fit:contain;vertical-align:middle;margin-right:3px" onerror="this.style.display='none'">`:'')+(cand.party+' · '+cand.ideology);
   if(G.sandbox)document.getElementById('sandbox-badge-top').style.display='';
 
   updateTopBar();
@@ -1266,7 +1735,9 @@ function startGame(){
 }
 
 function initializePolls(){
-  const cands=CANDIDATES_2022;
+  const cands=getCandidates();
+  const realResults=getRealResults();
+  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:['lula','bolsonaro'];
   G.polls={};G.rejectPolls={};
   const diff=G.diffSettings||DIFFICULTIES[3];
   cands.forEach(c=>{
@@ -1280,29 +1751,32 @@ function initializePolls(){
   Object.keys(STATES).forEach(abbr=>{
     const st=STATES[abbr];
     G.statePoll[abbr]={};
-    const real=REAL_RESULTS_2022[abbr];
-    const demo=st.demo||{};
+    const real=realResults[abbr];
     let total=0;
+    const raw={};
     cands.forEach(c=>{
-      let base;
-      if(real && (c.id==='lula' || c.id==='bolsonaro')){
-        // Anchor top-2 to real TSE 2022 data with small noise
-        base = (c.id==='lula' ? real.lula : real.bolsonaro) * (0.92+Math.random()*0.16);
-      } else {
-        // Minor candidates: demographic + region model
-        const regionMult=c.regionBias?.[st.region]||1.0;
-        base=c.baseVote*regionMult;
-        Object.keys(demo).forEach(dKey=>{
-          const dPct=demo[dKey]/100;
-          const dBias=DEMO_VOTE_TENDENCY[dKey]?.[c.id]||DEMO_VOTE_TENDENCY[dKey]?.default||1.0;
-          base*=(1+(dBias-1)*dPct*0.3);
-        });
-        base*=(0.8+Math.random()*0.4);
+      const natPct=G.polls[c.id]||0.1;
+      const regionMult=c.regionBias?.[st.region]||1.0;
+      const demo=st.demo||{};
+      let dynamicVal=natPct*regionMult;
+      // Apply demographic bias
+      Object.keys(demo).forEach(dKey=>{
+        const dPct=demo[dKey]/100;
+        const dBias=DEMO_VOTE_TENDENCY[dKey]?.[c.id]||DEMO_VOTE_TENDENCY[dKey]?.default||1.0;
+        dynamicVal*=(1+(dBias-1)*dPct*0.3);
+      });
+      dynamicVal*=(0.92+Math.random()*0.16); // small initial variance
+      // For top-2 historical candidates, anchor heavily to real results at game start
+      if(real && top2ids.includes(c.id)){
+        const key=c.id===top2ids[0]?(CURRENT_ELECTION===2018?'bolsonaro':'lula'):(CURRENT_ELECTION===2018?'haddad':'bolsonaro');
+        const realVal=real[key]||dynamicVal;
+        // At game start: 70% real, 30% dynamic
+        dynamicVal=dynamicVal*0.3+realVal*0.7;
       }
-      G.statePoll[abbr][c.id]=Math.max(0.1,base);
-      total+=G.statePoll[abbr][c.id];
+      raw[c.id]=Math.max(0.1,dynamicVal);
+      total+=raw[c.id];
     });
-    cands.forEach(c=>G.statePoll[abbr][c.id]=G.statePoll[abbr][c.id]/total*100);
+    cands.forEach(c=>G.statePoll[abbr][c.id]=raw[c.id]/total*100);
   });
 
   // Apply vice bonus
@@ -1321,7 +1795,7 @@ function initializePolls(){
 
 function normalizePoll(){
   let t=Object.values(G.polls).reduce((a,b)=>a+b,0);
-  if(t>0) CANDIDATES_2022.forEach(c=>G.polls[c.id]=(G.polls[c.id]||0)/t*100);
+  if(t>0) getCandidates().forEach(c=>G.polls[c.id]=(G.polls[c.id]||0)/t*100);
 }
 
 function initSocialPosts(){
@@ -1355,7 +1829,26 @@ function advanceOneDay(){
   Object.keys(G.campaignActions).forEach(k=>{if(G.campaignActions[k].cooldown>0)G.campaignActions[k].cooldown--;});
   if(G.interviewCooldown>0)G.interviewCooldown--;
   if(G.viceCooldowns)Object.keys(G.viceCooldowns).forEach(k=>{if(G.viceCooldowns[k]>0)G.viceCooldowns[k]--;});
+  // Decay persistent state investments slowly (viagem bonuses fade over time)
+  if(G.stateInvestments&&G.daysPassed%3===0){
+    Object.keys(G.stateInvestments).forEach(k=>{
+      G.stateInvestments[k]=Math.max(0,(G.stateInvestments[k]||0)-0.08);
+      if(G.stateInvestments[k]<=0)delete G.stateInvestments[k];
+    });
+  }
   tickCD(); // per-state action cooldowns
+  // Finance cooldowns
+  if(!G.financeCooldowns)G.financeCooldowns={};
+  Object.keys(G.financeCooldowns).forEach(k=>{if(G.financeCooldowns[k]>0)G.financeCooldowns[k]--;});
+  // When ALL cooldowns reach 0, unlock the global finance lock
+  if(G.financeLockedKey){
+    const cd=G.financeCooldowns[G.financeLockedKey]||0;
+    if(cd<=0)G.financeLockedKey=null;
+  }
+  // Energy regeneration: very slow — 1 per day (heavy decisions matter!)
+  G.energy=clamp((G.energy||0)+1,0,100);
+  // Tweet cooldown
+  if(typeof tweetCooldown!=='undefined'&&tweetCooldown>0)tweetCooldown--;
 
   // Daily donation income
   const donationIncome=Math.floor(randRange(10000,80000)*(1+G.polls[G.player.id]/100)*(G.sandbox?5:1));
@@ -1393,7 +1886,8 @@ function advanceOneDay(){
 
 function updatePolls(){
   const diff=G.diffSettings||DIFFICULTIES[3];
-  CANDIDATES_2022.forEach(c=>{
+  const cands=getCandidates();
+  cands.forEach(c=>{
     let drift=(Math.random()-0.48)*0.9*diff.eventMild;
     if(c.id===G.player.id){
       drift+=(G.momentum-50)*0.02;
@@ -1409,7 +1903,7 @@ function updatePolls(){
 
   // State polls follow national with lag
   Object.keys(G.statePoll).forEach(abbr=>{
-    CANDIDATES_2022.forEach(c=>{
+    cands.forEach(c=>{
       const prev=G.historicalPolls.length>1?G.historicalPolls[G.historicalPolls.length-1].polls[c.id]:G.polls[c.id];
       const natDiff=G.polls[c.id]-prev;
       G.statePoll[abbr][c.id]=clamp(G.statePoll[abbr][c.id]+natDiff*0.5+(Math.random()-.5)*0.6,0.05,92);
@@ -1420,28 +1914,138 @@ function updatePolls(){
 
   G.investedAreas={};
 
+  // "3º Candidato" event — random outside top-2 gets surge
+  if(G.daysPassed%7===0 && !G.thirdCandSurged && Math.random()<0.04){
+    const top2=Object.entries(G.polls).sort((a,b)=>b[1]-a[1]).slice(0,2).map(e=>e[0]);
+    const candidates=getCandidates().filter(c=>!top2.includes(c.id)&&(G.polls[c.id]||0)>0.4);
+    if(candidates.length){
+      const third=candidates[Math.floor(Math.random()*candidates.length)];
+      const boost=3+Math.random()*5;
+      G.polls[third.id]=clamp(G.polls[third.id]+boost,0,40);
+      normalizePoll();
+      G.thirdCandSurged=third.id;
+      showToast(`🚀 3º Candidato!`,`${third.shortName} (${third.party}) está explodindo nas redes! +${boost.toFixed(1)}% nas pesquisas.`,'warning',6000);
+      G.events.unshift({type:'warning',icon:'🚀',title:`${third.shortName} vira o "3º candidato"`,desc:`${third.shortName} do ${third.party} ganha impulso inesperado e vira assunto nacional. Mídia passa a cobrir como alternativa real.`,date:fmtDate(G.currentDate),effect:`+${boost.toFixed(1)}% pesquisa nacional`});
+    }
+  }
+
   // Update map colors
   if(document.getElementById('brazil-map')) colorizeMap();
 }
 
-// AI Actions
+// Recalculate all state polls from national polls + region bias.
+// Core formula: each candidate's state share = national_share * regionBias[region]
+// Then normalize. This makes states move WITH the national poll proportionally.
+// A candidate with 9% nationally and regionBias 1.5 in NE gets ~13.5% there BEFORE normalization.
+// After normalization against all other candidates (who also have their biases), the final %
+// reflects realistic regional distribution.
+// Additionally, stateInvestments (from viagem action) add a persistent boost per state.
+function recomputeStatePolls(){
+  const cands = getCandidates();
+  const stateInvestments = G.stateInvestments || {};
+  const realResults = getRealResults();
+  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : ['lula','bolsonaro'];
+  // How far into the campaign are we? 0=start, 1=election day
+  const progress = Math.min(1, (G.daysPassed||0) / (G.totalDays||366));
+
+  Object.keys(G.statePoll).forEach(abbr => {
+    const st = STATES[abbr];
+    if(!st) return;
+    const real = realResults[abbr];
+    const raw = {};
+    let total = 0;
+
+    cands.forEach(c => {
+      const natPct = G.polls[c.id] || 0.1;
+      const regionMult = c.regionBias?.[st.region] || 1.0;
+      const investBoost = (c.id === G.player.id && stateInvestments[abbr]) ? stateInvestments[abbr] : 0;
+      const noise = (Math.random() - 0.5) * 1.2;
+
+      // Compute "dynamic" value: national % × regional bias
+      let dynamicVal = natPct * regionMult + investBoost + noise;
+
+      // For top-2 historical candidates, blend in the real historical result as an anchor.
+      // At start: 70% anchored to real result. At end: 100% dynamic.
+      // This prevents a candidate who was historically weak in a region
+      // from suddenly dominating just because they gained national support.
+      if(real && top2ids.includes(c.id)) {
+        const realKey = c.id === top2ids[0]
+          ? (CURRENT_ELECTION===2018 ? 'bolsonaro' : 'lula')
+          : (CURRENT_ELECTION===2018 ? 'haddad' : 'bolsonaro');
+        const realVal = real[realKey] || dynamicVal;
+        // anchor weight decreases as campaign progresses: starts at 0.7, ends at 0.0
+        const anchorWeight = Math.max(0, 0.7 - progress * 0.7);
+        dynamicVal = dynamicVal * (1 - anchorWeight) + realVal * anchorWeight;
+      }
+
+      raw[c.id] = Math.max(0.05, dynamicVal);
+      total += raw[c.id];
+    });
+
+    // Normalize to 100%
+    cands.forEach(c => {
+      G.statePoll[abbr][c.id] = raw[c.id] / total * 100;
+    });
+  });
+
+  // Re-apply vice regional bonuses (capped, reduced weight)
+  if(G.vice?.bonus){
+    Object.entries(G.vice.bonus).forEach(([k, bonus]) => {
+      if(STATES[k] && G.statePoll[k]){
+        G.statePoll[k][G.player.id] = clamp((G.statePoll[k][G.player.id]||0) + bonus * 0.25, 0, 85);
+        let t = Object.values(G.statePoll[k]).reduce((a,b) => a+b, 0);
+        Object.keys(G.statePoll[k]).forEach(id => G.statePoll[k][id] = G.statePoll[k][id] / t * 100);
+      }
+    });
+  }
+}
+
+// AI Actions — multiple candidates act every week, top-2 get extra boosts
 function runAiActions(){
   const diff=G.diffSettings||DIFFICULTIES[3];
-  if(Math.random()>diff.aiAggression)return;
-
-  const aiCands=CANDIDATES_2022.filter(c=>c.id!==G.player.id && G.polls[c.id]>0.5);
+  const aiCands=getCandidates().filter(c=>c.id!==G.player.id && (G.polls[c.id]||0)>0.3);
   if(!aiCands.length)return;
-  const ai=aiCands[Math.floor(Math.random()*aiCands.length)];
-  const actions=['comicio','tv_ad','digital_push','alliance_nego','state_visit'];
-  const act=actions[Math.floor(Math.random()*actions.length)];
 
-  let boost=randRange(0.2,0.8)*diff.aiAggression;
-  G.polls[ai.id]=clamp(G.polls[ai.id]+boost,0.1,70);
-  normalizePoll();
+  // Sort by poll — top candidates act more
+  aiCands.sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0));
+  const top2ids=[aiCands[0]?.id, aiCands[1]?.id].filter(Boolean);
 
-  const aiMsgs={comicio:`🎤 ${ai.shortName} (${ai.party}) realiza grande comício`,tv_ad:`📺 ${ai.shortName} investe pesado em propaganda`,digital_push:`📱 ${ai.shortName} domina as redes sociais`,alliance_nego:`🤝 ${ai.shortName} fecha aliança inesperada`,state_visit:`✈️ ${ai.shortName} visita estados estratégicos`};
+  // How many candidates act this week: scales with difficulty
+  const actorsCount=Math.ceil(diff.aiAggression*3);
+  const actors=aiCands.slice(0,Math.min(actorsCount,aiCands.length));
 
-  G.aiLastAction={msg:aiMsgs[act]||`${ai.shortName} faz campanha`,cand:ai.shortName};
+  const allActions=['comicio','tv_ad','digital_push','alliance_nego','state_visit','press_conf','attack_ad','poll_push'];
+
+  actors.forEach(ai=>{
+    // Top 2 act multiple times
+    const numActs=top2ids.includes(ai.id)?Math.ceil(diff.aiAggression*2):1;
+    for(let i=0;i<numActs;i++){
+      const act=allActions[Math.floor(Math.random()*allActions.length)];
+      // Top 2 get extra boost multiplier
+      const topMult=top2ids.includes(ai.id)?1.5:1.0;
+      const boost=randRange(0.3,1.2)*diff.aiAggression*topMult;
+      G.polls[ai.id]=clamp(G.polls[ai.id]+boost,0.1,70);
+
+      // AI rejection also shifts
+      if(Math.random()<0.3){
+        G.rejectPolls[ai.id]=clamp((G.rejectPolls[ai.id]||0)+randRange(-0.3,0.5),0,80);
+      }
+    }
+    normalizePoll();
+
+    const aiMsgs={
+      comicio:`🎤 ${ai.shortName} (${ai.party}) realiza mega comício`,
+      tv_ad:`📺 ${ai.shortName} investe pesado em propaganda na TV`,
+      digital_push:`📱 ${ai.shortName} domina redes sociais`,
+      alliance_nego:`🤝 ${ai.shortName} fecha aliança estratégica`,
+      state_visit:`✈️ ${ai.shortName} visita estados-chave`,
+      press_conf:`🎙️ ${ai.shortName} dá coletiva bomba`,
+      attack_ad:`⚔️ ${ai.shortName} lança ataque contra oponentes`,
+      poll_push:`📊 ${ai.shortName} sobe nas pesquisas`
+    };
+    G.aiLastAction={msg:aiMsgs[allActions[Math.floor(Math.random()*allActions.length)]]||`${ai.shortName} faz campanha intensa`,cand:ai.shortName};
+  });
+
   if(document.getElementById('ai-ticker-zone')) renderAiTicker();
 }
 
@@ -1525,6 +2129,8 @@ function updateTopBar(){
   document.getElementById('stat-money').textContent=G.sandbox?'♾️':fmtMoney(G.money);
   document.getElementById('stat-pop').textContent=Math.round(G.popularity);
   document.getElementById('stat-date').textContent=fmtDate(G.currentDate);
+  const enEl=document.getElementById('stat-energy');
+  if(enEl)enEl.textContent=Math.round(G.energy||0);
   document.getElementById('momentum-fill').style.width=G.momentum+'%';
   document.getElementById('momentum-val').textContent=Math.round(G.momentum);
   const prog=clamp(G.daysPassed/G.totalDays*100,0,100);
@@ -1534,8 +2140,8 @@ function updateTopBar(){
 function updateSidebarPoll(){
   const el=document.getElementById('sidebar-poll');if(!el)return;
   const cands=G.secondRoundActive
-    ? G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean)
-    : [...CANDIDATES_2022].sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,5);
+    ? G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+    : [...getCandidates()].sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,5);
 
   el.innerHTML=cands.map(c=>`
     <div class="poll-mini-item">
@@ -1549,8 +2155,8 @@ function updateSidebarPoll(){
 function updatePollTable(){
   const el=document.getElementById('poll-table-rows');if(!el)return;
   const activeCands=G.secondRoundActive
-    ? G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean)
-    : CANDIDATES_2022;
+    ? G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+    : getCandidates();
   const sorted=activeCands.map(c=>{
     const prev=G.historicalPolls.length>1?(G.historicalPolls[G.historicalPolls.length-2]?.polls[c.id]||0):G.polls[c.id];
     return{...c,pct:G.polls[c.id]||0,diff:(G.polls[c.id]||0)-prev};
@@ -1558,7 +2164,7 @@ function updatePollTable(){
 
   el.innerHTML=sorted.map(c=>`
     <div class="poll-table-row ${c.id===G.player?.id?'player-row':''}">
-      <div class="poll-cand-info"><div class="poll-cand-dot" style="background:${c.partyColor}"></div><div><div class="poll-cand-name">${c.shortName}</div><div class="poll-cand-party">${c.party}</div></div></div>
+      <div class="poll-cand-info"><div class="poll-cand-dot" style="background:${c.partyColor}"></div><div><div class="poll-cand-name">${c.shortName}</div><div class="poll-cand-party" style="display:flex;align-items:center;gap:3px">${PARTY_LOGOS[c.party]?`<img src="${PARTY_LOGOS[c.party]}" style="height:9px;width:auto;object-fit:contain" onerror="this.style.display='none'">`:''}${c.party}</div></div></div>
       <div class="poll-pct-val" style="color:${c.partyColor}">${c.pct.toFixed(1)}%</div>
       <div class="poll-trend ${c.diff>0.1?'trend-up':c.diff<-0.1?'trend-down':'trend-same'}">${c.diff>0.1?'▲':c.diff<-0.1?'▼':'—'} ${Math.abs(c.diff).toFixed(1)}%</div>
     </div>
@@ -1590,14 +2196,18 @@ function renderCampaignTab(){
     const cd=G.campaignActions[a.id];
     const onCd=cd&&cd.cooldown>0;
     const noMoney=!G.sandbox&&a.cost>0&&G.money<a.cost;
-    return`<button class="action-btn" ${onCd||noMoney?'disabled':''} onclick="runCampaignAction('${a.id}')">
+    const eCost=ACTION_ENERGY_COST&&ACTION_ENERGY_COST[a.id]||15;
+    const noEnergy=!G.sandbox&&(G.energy||100)<eCost;
+    return`<button class="action-btn" ${onCd||noMoney||noEnergy?'disabled':''} onclick="runCampaignAction('${a.id}')">
       <span class="action-icon">${a.icon}</span>
       <div class="action-title">${a.title}</div>
       <div class="action-desc">${a.desc}</div>
       <div class="action-cost">${a.cost>0?fmtMoney(a.cost):'Gratuito'}</div>
       <div class="action-effect">${a.effect}</div>
+      <div style="font-size:9px;color:#f39c12;margin-top:2px">⚡ ${eCost} energia</div>
       ${onCd?`<div class="action-cooldown">⏳ ${cd.cooldown} dias</div>`:a.cooldownDays?`<div style="font-size:9px;color:var(--text3);margin-top:3px">Cooldown: ${a.cooldownDays} dias</div>`:''}
       ${noMoney?`<div class="action-cooldown" style="color:var(--red)">💸 Sem fundos</div>`:''}
+      ${noEnergy?`<div class="action-cooldown" style="color:#f39c12">⚡ Sem energia</div>`:''}
     </button>`;
   }).join('');
 
@@ -1643,7 +2253,11 @@ function renderCampaignRoundBadge(){
 
 function renderTimeline(){
   const el=document.getElementById('campaign-timeline');
-  const milestones=[
+  const milestones=CURRENT_ELECTION===2018?[
+    {label:'Início',d:new Date('2017-10-07')},{label:'Jan 18',d:new Date('2018-01-01')},
+    {label:'Mai 18',d:new Date('2018-05-01')},{label:'Ago 18',d:new Date('2018-08-01')},
+    {label:'1º Turno',d:new Date('2018-10-07')},{label:'2º Turno',d:new Date('2018-10-28')}
+  ]:[
     {label:'Início',d:new Date('2021-10-02')},{label:'Fev 22',d:new Date('2022-02-01')},
     {label:'Mai 22',d:new Date('2022-05-01')},{label:'Ago 22',d:new Date('2022-08-01')},
     {label:'1º Turno',d:new Date('2022-10-02')},{label:'2º Turno',d:new Date('2022-10-30')}
@@ -1724,11 +2338,33 @@ function closeInterview(){
   document.getElementById('pause-btn').textContent='⏸ Pausar';
 }
 
+// Energy costs per action — heavy! 2 major actions = ~80% energy drain
+const ACTION_ENERGY_COST={comicio:42,tv:38,digital:28,viagem:40,equipe:18,entrevista:35,proposta:20,jantar:25};
+
+function spendEnergy(id){
+  const cost=ACTION_ENERGY_COST[id]||25;
+  if((G.energy||0)<cost){
+    showToast('⚡ Exausto!',`${G.player.shortName} está completamente exausto! Energia: ${Math.round(G.energy||0)}/100. Aguarde recuperação.`,'error');
+    // Heavy penalty for overworking — affects polls and rejection
+    G.polls[G.player.id]=clamp(G.polls[G.player.id]-1.5,0.5,70);
+    G.popularity=clamp(G.popularity-6,0,100);
+    G.rejection=clamp((G.rejection||0)+1.5,0,100);
+    G.rejectPolls[G.player.id]=clamp((G.rejectPolls[G.player.id]||0)+1.5,0,80);
+    normalizePoll();
+    return false;
+  }
+  G.energy=clamp((G.energy||100)-cost,0,100);
+  return true;
+}
+
 // ════ CAMPAIGN ACTIONS (balanced, no easy spam) ═════════
 function runCampaignAction(id){
   if(!G.player)return;
   const diff=G.diffSettings||DIFFICULTIES[3];
   const inSecondRound=G.secondRoundActive;
+
+  // Energy check FIRST — too many actions drain the candidate
+  if(!G.sandbox&&!spendEnergy(id))return;
 
   // In 2nd round costs double, effects are bigger but opponents react faster
   const costMult=inSecondRound?2:1;
@@ -1781,6 +2417,12 @@ function runCampaignAction(id){
       if(!G.sandbox&&G.money<cost){showToast('💸','Fundos insuficientes.','error');return;}
       doAction('viagem',cost,()=>{
         const b=(2.5+Math.random()*2)*drFactor;
+        // Store persistent state investment so recomputeStatePolls can keep it
+        if(!G.stateInvestments)G.stateInvestments={};
+        G.stateInvestments[G.focusedState]=(G.stateInvestments[G.focusedState]||0)+b;
+        // Decay older investments over time (max 15% cap per state)
+        G.stateInvestments[G.focusedState]=Math.min(G.stateInvestments[G.focusedState],15);
+        // Also apply immediately
         const sp=G.statePoll[G.focusedState];
         if(sp){
           sp[G.player.id]=clamp(sp[G.player.id]+b,0,80);
@@ -1822,7 +2464,7 @@ function runCampaignAction(id){
     case 'jantar':{
       if(!G.campaignActions.jantar)G.campaignActions.jantar={cooldown:0,maxCooldown:25};
       if(G.campaignActions.jantar.cooldown>0){showToast('⏳',`Próximo jantar em ${G.campaignActions.jantar.cooldown} dias.`,'warning');return;}
-      G.campaignActions.jantar.cooldown=25;
+      G.campaignActions.jantar.cooldown=90; // 3 months cooldown
       const arrecadacao=25000000+Math.random()*10000000;
       G.money+=arrecadacao;
       G.financeHistory.unshift({date:fmtDate(G.currentDate),desc:'Jantar de arrecadação',value:Math.round(arrecadacao)});
@@ -1911,6 +2553,165 @@ function openInterviewFromTab(){
 // CANDIDATE PROFILES
 // ════════════════════════════════════════════════════════
 const CANDIDATE_PROFILES = {
+  /* ─────────────── PERFIS 2018 ─────────────── */
+  bolsonaro18:{
+    fullName:'Jair Messias Bolsonaro',born:'21 de março de 1955',birthPlace:'Glicério, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Michel_Temer_durante_encontro_com_Jair_Bolsonaro%2C_Presidente_da_Rep%C3%BAblica_eleito_4_%28cropped%29.jpg/500px-Michel_Temer_durante_encontro_com_Jair_Bolsonaro%2C_Presidente_da_Rep%C3%BAblica_eleito_4_%28cropped%29.jpg',
+    party:'PSL — Partido Social Liberal',ideology:'Direita / Conservadorismo / Populismo',
+    trajectory:'Militar reformado e deputado federal pelo Rio de Janeiro por 27 anos consecutivos (1991–2018), Bolsonaro era figura marginal no Congresso até a crise política pós-2013. Em 2018, surfou na onda antipetista e no cansaço com a corrupção, elegendo-se presidente com 55,1% dos votos no 2º turno. Sua campanha foi marcada pelo uso massivo de redes sociais, apoio evangélico e o slogan "Brasil acima de tudo, Deus acima de todos". Sofreu um atentado a faca em setembro de 2018, que paradoxalmente aumentou sua popularidade.',
+    elections:[
+      {year:2018,round:'2º turno',result:'✅ ELEITO (55,1%)'},
+      {year:2022,round:'2º turno',result:'Derrota para Lula (49,1%)'}
+    ],
+    achievements:['Eleição com maior votação da direita brasileira','Campanha digital inovadora','Expansão do porte de armas','Reforma da Previdência aprovada em 2019'],
+    controversies:['Declarações polêmicas sobre minorias','Atentado a faca em Juiz de Fora (set/2018)','Apoio a torturadores da ditadura','Aliança com família Bolsonaro (filhos deputados/vereador)']
+  },
+  haddad18:{
+    fullName:'Fernando Haddad',born:'25 de janeiro de 1963',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Fernando_Haddad_Prefeito_2016.jpg/500px-Fernando_Haddad_Prefeito_2016.jpg',
+    party:'PT — Partido dos Trabalhadores',ideology:'Esquerda / Social-democracia',
+    trajectory:'Advogado, professor universitário e ex-ministro da Educação (2005–2012) dos governos Lula e Dilma. Foi prefeito de São Paulo (2013–2016), gestão marcada por polêmicas nas ciclovias e transportes. Em 2018, foi lançado às pressas como substituto de Lula, preso pela Lava Jato em abril daquele ano. Iniciou a campanha com menos de 4% nas pesquisas, mas chegou ao 2º turno com 29,3% e perdeu para Bolsonaro com 44,9%.',
+    elections:[
+      {year:2018,round:'2º turno',result:'Derrota para Bolsonaro (44,9%)'},
+      {year:2022,round:'Governador SP',result:'Derrota p/ Tarcísio de Freitas (47,6%)'}
+    ],
+    achievements:['Ministro da Educação — PROUNI, REUNI','Prefeito de SP — expansão de ciclovias','Resistiu como candidato de transição em 2018'],
+    controversies:['Polêmicas de gestão em São Paulo','Candidatura substituta de Lula','Rejeição alta associada ao PT e Lula']
+  },
+  ciro18:{
+    fullName:'Ciro Ferreira Gomes',born:'26 de novembro de 1957',birthPlace:'Sobral, Ceará',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Presidente_Ciro_Gomes.png/500px-Presidente_Ciro_Gomes.png',
+    party:'PDT — Partido Democrático Trabalhista',ideology:'Centro-Esquerda / Trabalhismo',
+    trajectory:'Advogado cearense e político veterano, com passagem como prefeito de Fortaleza (1989–1990), governador do Ceará (1991–1994) e ministro da Fazenda de Itamar Franco. Em 2018, foi o terceiro colocado com 12,5%, propondo uma "terceira via" entre PT e PSL. Seu programa econômico incluía renegociação de dívidas e projetos de desenvolvimento nacional. Conhecido pelo temperamento explosivo e domínio de temas econômicos.',
+    elections:[
+      {year:1994,round:'1º turno',result:'Derrota (4,4%)'},
+      {year:1998,round:'1º turno',result:'Derrota (10,9%)'},
+      {year:2002,round:'1º turno',result:'Derrota (11,9%)'},
+      {year:2018,round:'1º turno',result:'Derrota (12,5%)'},
+      {year:2022,round:'1º turno',result:'Derrota (3,0%)'}
+    ],
+    achievements:['Governou o Ceará (1991–1994)','Estabilização econômica como Ministro da Fazenda','Melhor resultado eleitoral fora do eixo PT/PSDB em 2018'],
+    controversies:['Temperamento agressivo em debates','Viagem ao exterior após 1º turno em 2022','Recusa em apoiar PT no 2º turno em 2018']
+  },
+  alckmin18:{
+    fullName:'Geraldo José Rodrigues Alckmin Filho',born:'11 de novembro de 1952',birthPlace:'Pindamonhangaba, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Governador_Geraldo_Alckmin_Anuncia_Duplica%C3%A7%C3%A3o_da_Euclides_da_Cunha_em_2011_%28cropped%29.jpg/500px-Governador_Geraldo_Alckmin_Anuncia_Duplica%C3%A7%C3%A3o_da_Euclides_da_Cunha_em_2011_%28cropped%29.jpg',
+    party:'PSDB — Partido da Social Democracia Brasileira',ideology:'Centro-Direita / Social-democracia',
+    trajectory:'Médico e político paulistano, governou São Paulo por três mandatos (2001–2006 e 2010–2018). Em 2018, candidatou-se pelo PSDB com enorme estrutura de coligação, 8 partidos aliados e maior tempo de TV. Mesmo assim, obteve apenas 4,76% dos votos, em uma eleição que decretou o fim da hegemonia tucana. A rejeição ao establishment e à falta de carisma pesaram contra ele.',
+    elections:[
+      {year:2006,round:'2º turno',result:'Derrota para Lula (39,2%)'},
+      {year:2018,round:'1º turno',result:'Derrota (4,76%)'}
+    ],
+    achievements:['Três mandatos como governador de SP','Gestão fiscal responsável','Maior coligação da eleição de 2018'],
+    controversies:['Campanha apagada em 2018','Queda no prestígio do PSDB','Apelido "Geraldo Caju" pela frieza','Aliança com MDB de Temer impopular']
+  },
+  marina18:{
+    fullName:'Marina Silva',born:'8 de fevereiro de 1958',birthPlace:'Breu Velho, Acre',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Marina_Silva_em_junho_de_2018_%281%29_%28cropped%29.jpg/960px-Marina_Silva_em_junho_de_2018_%281%29_%28cropped%29.jpg',
+    party:'REDE — Rede Sustentabilidade',ideology:'Centro-Esquerda / Ambientalismo',
+    trajectory:'Filha de seringueiros, cresceu na floresta amazônica. Tornou-se senadora pelo PT, depois ministra do Meio Ambiente de Lula (2003–2008), cargo que deixou por discordâncias sobre política ambiental. Fundou a REDE em 2013. Foi candidata presidencial em 2010 (19,3%), 2014 (21,3% — quase chegando ao 2º turno) e 2018, quando teve desempenho decepcionante com apenas 1%. Atualmente é Ministra do Meio Ambiente no governo Lula 3.',
+    elections:[
+      {year:2010,round:'1º turno',result:'Derrota (19,3%)'},
+      {year:2014,round:'1º turno',result:'Derrota (21,3%)'},
+      {year:2018,round:'1º turno',result:'Derrota (1,0%)'}
+    ],
+    achievements:['Ministra do Meio Ambiente (2003–2008)','Redução do desmatamento na Amazônia','Ícone do ambientalismo global','Votação histórica de 21,3% em 2014'],
+    controversies:['Queda expressiva em 2018 após altas em 2014','Acusações de contradições no programa econômico','Saída do PT e do PSB antes de fundar a REDE']
+  },
+  amoedo18:{
+    fullName:'João Dionísio Filgueira Barreto Amoêdo',born:'28 de outubro de 1963',birthPlace:'Rio de Janeiro, Rio de Janeiro',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/4/40/Jo%C3%A3o_Amo%C3%AAdo_review_ContabilidadeTv_%28cropped%29.jpg',
+    party:'NOVO — Partido Novo',ideology:'Direita / Liberalismo econômico',
+    trajectory:'Empresário carioca formado em Engenharia e com MBA em finanças. Foi CEO da rede de franquias e empresário do setor privado. Co-fundou o Partido Novo em 2011, sendo seu primeiro candidato presidencial. Em 2018, obteve 2,5% dos votos com um discurso liberal de privatizações, corte de gastos e combate à corrupção. Primeira candidatura presidencial de um representante do neoliberalismo puro no Brasil.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (2,5%)'}
+    ],
+    achievements:['Primeiro candidato presidencial do NOVO','Destaque nos debates econômicos','Expansão do partido a nível nacional'],
+    controversies:['Falta de experiência política antes de 2018','Propostas consideradas radicais na privatização','Saiu do NOVO após 2018']
+  },
+  meirelles18:{
+    fullName:'Henrique de Campos Meirelles',born:'31 de agosto de 1945',birthPlace:'Anápolis, Goiás',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Henrique_Meirelles_sorrindo.png/500px-Henrique_Meirelles_sorrindo.png',
+    party:'MDB — Movimento Democrático Brasileiro',ideology:'Centro / Social-liberal / Tecnocracia',
+    trajectory:'Economista e ex-presidente do BankBoston. Foi presidente do Banco Central do Brasil por dois mandatos completos (2003–2010) no governo Lula, sendo responsável pela política de metas de inflação. Tornou-se Ministro da Fazenda no governo Temer (2016–2018) e pai do teto de gastos. Candidatou-se pelo MDB em 2018 com enorme credencial técnica mas sem apelo popular, obtendo apenas 1,2%.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (1,2%)'}
+    ],
+    achievements:['Presidente do Banco Central (2003–2010)','Responsável pelo teto de gastos','Estabilidade econômica como Ministro da Fazenda'],
+    controversies:['Associado ao impopular governo Temer','Candidatura sem apelo popular','Resultado pífio apesar da credencial técnica']
+  },
+  alvaro18:{
+    fullName:'Álvaro Fernandes Dias',born:'1 de maio de 1946',birthPlace:'Santo Antônio da Platina, Paraná',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/7/72/Foto_oficial_de_%C3%81lvaro_Dias.jpg',
+    party:'PODEMOS — Partido Podemos',ideology:'Centro-Direita / Liberal-conservador',
+    trajectory:'Engenheiro e político paranaense de longa carreira. Foi governador do Paraná (1987–1991) e senador por décadas. Em 2018, candidatou-se ao Planalto com discurso anticorrupção e pró-Lava Jato, aproveitando o momento político favorável ao antiestablishment, mas obteve apenas 0,9%. Continua senador pelo Paraná.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (0,9%)'}
+    ],
+    achievements:['Governador do Paraná (1987–1991)','Décadas de mandatos como senador','Defensor da Lava Jato no Senado'],
+    controversies:['Campanha de baixíssimo impacto em 2018','Dificuldade de diferenciação em campo já polarizado']
+  },
+  daciolo18:{
+    fullName:'Adilson Gonçalves da Fonseca (Cabo Daciolo)',born:'17 de setembro de 1975',birthPlace:'Rio de Janeiro, Rio de Janeiro',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/e/e1/Deputados_cabo_Daciolo_%28PSOL-RJ%29_e_Marcos_Reategui_%28PSC-AP%29_participam_do_programa_Brasil_em_Debate_%28cropped%29.jpg',
+    party:'PATRIOTA — Partido Patriota',ideology:'Direita / Conservadorismo cristão',
+    trajectory:'Ex-bombeiro militar e deputado federal, Daciolo é pastor evangélico da Igreja Cristã Maranata. Iniciou carreira política pelo PSOL, tornando-se famoso pela radicalidade religiosa. Migrou para o PATRIOTA em 2018. Ficou conhecido pelos debates presidenciais, onde atacou Ciro Gomes com acusações de pertencer à Ordem dos Illuminati. Obteve 1,26% dos votos, desempenho acima do esperado.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (1,26%)'}
+    ],
+    achievements:['Deputado federal eleito pelo PSOL','Desempenho surpreendente de 1,26%','Enorme presença nos debates'],
+    controversies:['Acusação de Illuminati contra Ciro Gomes','Discurso religioso radical','Sem proposta econômica consistente']
+  },
+  boulos18:{
+    fullName:'Guilherme Castro Boulos',born:'19 de junho de 1982',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Audi%C3%AAncia_P%C3%BAblica_-_Guilherme_Boulos_%28cropped%29.jpg/500px-Audi%C3%AAncia_P%C3%BAblica_-_Guilherme_Boulos_%28cropped%29.jpg',
+    party:'PSOL — Partido Socialismo e Liberdade',ideology:'Extrema Esquerda / Socialismo',
+    trajectory:'Filósofo formado pela USP e líder do Movimento dos Trabalhadores Sem Teto (MTST). Em 2018, candidatou-se à presidência com um discurso radical de esquerda, obtendo 0,58% dos votos. Tornou-se o rosto jovem da esquerda radical no Brasil. Em 2022, candidatou-se à prefeitura de São Paulo, chegando ao 2º turno. Em 2024, disputou novamente a prefeitura paulistana.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (0,58%)'}
+    ],
+    achievements:['Líder nacional do MTST','Rosto jovem da esquerda radical','Chegou ao 2º turno em SP em 2022'],
+    controversies:['Propostas consideradas radicais (habitação)','Duas derrotas consecutivas em SP','Rejeição alta em setores moderados']
+  },
+  vera18:{
+    fullName:'Vera Lúcia Salgado',born:'1965',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/-2022-08-20-_Vera-e-Raquel_07_%2852305375940%29_%28cropped%29.jpg/500px--2022-08-20-_Vera-e-Raquel_07_%2852305375940%29_%28cropped%29.jpg',
+    party:'PSTU — Partido Socialista dos Trabalhadores Unificado',ideology:'Extrema-Esquerda / Trotskismo',
+    trajectory:'Professora e sindicalista, dirigente histórica do PSTU. Candidatou-se à presidência em 2018 e 2022, representando a corrente trotskista do socialismo. O PSTU se distingue do PT e PSOL por recusar alianças com partidos "burgueses" e por defender a revolução como único caminho para a transformação social. Obteve 0,08% em 2018.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (0,08%)'},
+      {year:2022,round:'1º turno',result:'Derrota (0,05%)'}
+    ],
+    achievements:['Décadas de militância operária','Liderança histórica do PSTU','Representação da esquerda trotskista'],
+    controversies:['Base eleitoral muito pequena','Recusa sistemática de alianças']
+  },
+  eymael18:{
+    fullName:'José Maria Eymael',born:'20 de abril de 1933',birthPlace:'Guaratinguetá, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/5/5b/Sess%C3%A3o_Ordin%C3%A1ria_-_Jos%C3%A9_Maria_Eymael_-_18.06.2018_%2828015948837%29_%28cropped%29.jpg',
+    party:'DC — Democracia Cristã',ideology:'Centro-Direita / Democracia Cristã',
+    trajectory:'Advogado e político paulistano, candidato presidencial recorrente desde 1989. Representante da democracia cristã no Brasil, com propostas baseadas na doutrina social da Igreja Católica. Deputado federal e liderança histórica do DC. Um dos políticos mais longevos em atividade no Brasil, com mais de 50 anos de carreira e inúmeras candidaturas presidenciais com resultados irrelevantes.',
+    elections:[
+      {year:1989,round:'1º turno',result:'Derrota (0,56%)'},
+      {year:2006,round:'1º turno',result:'Derrota (0,06%)'},
+      {year:2014,round:'1º turno',result:'Derrota (0,02%)'},
+      {year:2018,round:'1º turno',result:'Derrota (0,01%)'},
+      {year:2022,round:'1º turno',result:'Derrota (0,03%)'}
+    ],
+    achievements:['Carreira política de 50+ anos','Candidato presidencial recorrente','Deputado federal histórico','Maior jingle político da história do Brasil'],
+    controversies:['Votações irrisórias em todas eleições','Partido sem capilaridade real']
+  },
+  goulart18:{
+    fullName:'João Vicente de Carvalho Goulart Filho',born:'3 de outubro de 1964',birthPlace:'São Paulo, São Paulo',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Jo%C3%A3o_Goulart_Filho_2015.jpg/500px-Jo%C3%A3o_Goulart_Filho_2015.jpg',
+    party:'PPL — Partido Pátria Livre',ideology:'Esquerda / Trabalhismo',
+    trajectory:'Filho do ex-presidente João Goulart, deposto pelo golpe militar de 1964. Empresário e político, João Vicente herdou o nome e o legado político do pai. Em 2018, candidatou-se à presidência pelo PPL com um discurso trabalhista e de homenagem ao governo Jango, obtendo 0,08% dos votos. O PPL foi incorporado ao PT em 2019.',
+    elections:[
+      {year:2018,round:'1º turno',result:'Derrota (0,08%)'}
+    ],
+    achievements:['Representação do legado de João Goulart','Herdeiro do trabalhismo clássico'],
+    controversies:['Candidatura sem expressão eleitoral','Partido pequeno extinto em 2019','Sombra do legado do pai difícil de superar']
+  },
+  /* ─────────────── PERFIS 2022 ─────────────── */
   lula:{
     fullName:'Luiz Inácio Lula da Silva',born:'27 de outubro de 1945',birthPlace:'Caetés, Pernambuco',
     photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/2022_-_Conven%C3%A7%C3%A3o_Nacional_do_PSB_-_Lula_%28cropped_1%29.jpg/500px-2022_-_Conven%C3%A7%C3%A3o_Nacional_do_PSB_-_Lula_%28cropped_1%29.jpg',
@@ -2053,7 +2854,7 @@ const CANDIDATE_PROFILES = {
 let selectedProfileId=null;
 function renderProfilesTab(){
   const el=document.getElementById('profiles-content');if(!el)return;
-  const activeCands=CANDIDATES_2022;
+  const activeCands=getCandidates();
   const prof=selectedProfileId?CANDIDATE_PROFILES[selectedProfileId]:null;
   const cand=selectedProfileId?activeCands.find(c=>c.id===selectedProfileId):null;
 
@@ -2468,7 +3269,7 @@ function scheduleActivity(a){
 // DEBATES
 // ════════════════════════════════════════════════════════
 function renderDebatesTab(){
-  const upcoming=SCHEDULED_DEBATES.map(d=>{
+  const upcoming=getScheduledDebates().map(d=>{
     const dd=new Date(d.date);
     const isPast=dd<G.currentDate;
     return`<div style="display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--bg3);border-radius:7px;margin-bottom:7px;border:1px solid var(--border);opacity:${isPast?.6:1}">
@@ -2488,227 +3289,287 @@ function renderDebatesTab(){
 
 function checkScheduledDebates(){
   const dateStr=G.currentDate.toISOString().slice(0,10);
-  const d=SCHEDULED_DEBATES.find(d=>d.date===dateStr&&!d.triggered&&d.round===G.round);
+  const d=getScheduledDebates().find(d=>d.date===dateStr&&!d.triggered&&d.round===G.round);
   if(d){d.triggered=true;G.paused=true;document.getElementById('pause-btn').textContent='▶ Continuar';triggerDebate(d);}
 }
 
 function triggerDebate(debate){
   showToast('⚡ Debate!',`${debate.name} começa agora! Acesse Debates.`,'warning',6000);
-  G.debateState={debate,topic:DEBATE_TOPICS[Math.floor(Math.random()*DEBATE_TOPICS.length)],round:0,maxRounds:6,score:0,log:[],oppSpeech:''};
+  let participants=getCandidates();
+  if(debate.participants==='top2') participants=G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean);
+  else if(debate.participants==='top6') participants=[...getCandidates()].sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,6);
+  const opps=participants.filter(c=>c.id!==G.player.id);
+  const currentOpp=opps[Math.floor(Math.random()*opps.length)];
+  G.debateState={
+    debate,
+    participants,
+    topic:DEBATE_TOPICS[Math.floor(Math.random()*DEBATE_TOPICS.length)],
+    round:0,maxRounds:8,score:0,log:[],
+    phase:'opp_speaks', // opp_speaks → player_responds → can_interrupt → next_round
+    currentOpp:currentOpp?.id||null,
+    oppArgument:'',
+    canInterrupt:false,
+    interrupted:false,
+    waitingForPlayer:false,
+  };
+  G.debateState.oppArgument=getOppDebateSpeech(G.debateState.topic, currentOpp);
   const debBtn=document.querySelectorAll('.nav-btn')[2];
   showTab('debates',debBtn);
+  renderActiveDebate();
 }
 
 function renderActiveDebate(){
   if(!G.debateState)return;
   const ds=G.debateState;
-  let participants=CANDIDATES_2022;
-  if(ds.debate.participants==='top2') participants=G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean);
-  else if(ds.debate.participants==='top6') participants=[...CANDIDATES_2022].sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,6);
+  const participants=ds.participants||getCandidates();
+  const playerIn=participants.find(c=>c.id===G.player.id);
 
+  // Build candidate avatars
   document.getElementById('debate-stage').innerHTML=`
-    ${ds.oppSpeech?`<div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);background:rgba(230,57,70,.1);border:1px solid rgba(230,57,70,.3);border-radius:8px;padding:8px 14px;font-size:11px;color:var(--text2);font-style:italic;max-width:300px;text-align:center">${ds.oppSpeech}</div>`:''}
-    ${participants.map(c=>`
-      <div class="debate-candidate ${c.id===G.player?.id?'speaking':''}" id="dc-${c.id}">
-        <img class="debate-photo-sm" src="${c.photo}" alt="${c.shortName}" onerror="this.style.background='var(--bg4)'">
-        <div class="debate-cand-name">${c.shortName}</div>
-        <div style="font-size:9px;color:var(--text3);font-family:'IBM Plex Mono',monospace">${(G.polls[c.id]||0).toFixed(1)}%</div>
-      </div>
-    `).join('')}
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;padding:14px;min-height:80px">
+      ${participants.map(c=>{
+        const isSpeaking=c.id===(ds.currentOpp||'') && ds.phase==='opp_speaks';
+        const isPlayer=c.id===G.player.id;
+        return`<div style="text-align:center;position:relative;transition:all .3s;${isSpeaking||isPlayer&&ds.phase!=='opp_speaks'?'transform:scale(1.12)':''}">
+          <img style="width:${isSpeaking||isPlayer&&ds.phase!=='opp_speaks'?50:38}px;height:${isSpeaking||isPlayer&&ds.phase!=='opp_speaks'?50:38}px;border-radius:50%;object-fit:cover;object-position:top;border:2px solid ${isPlayer?'var(--accent)':isSpeaking?'var(--red)':c.partyColor};transition:all .3s;filter:${isSpeaking||isPlayer?'none':'grayscale(0.4)'}" src="${c.photo}" onerror="this.style.background='var(--bg4)'">
+          <div style="font-size:9px;margin-top:4px;font-weight:700;color:${isPlayer?'var(--accent)':c.partyColor}">${c.shortName.split(' ')[0]}</div>
+          ${isSpeaking?'<div style="font-size:8px;color:var(--red);animation:pulse 1s infinite">🎙 FALANDO</div>':''}
+          ${isPlayer&&ds.phase!=='opp_speaks'?'<div style="font-size:8px;color:var(--accent)">SUA VEZ</div>':''}
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="padding:8px 14px;background:rgba(0,212,255,.05);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <span style="font-size:11px;color:var(--text3)">Tema: <b style="color:var(--text)">${ds.topic.icon} ${ds.topic.label}</b></span>
+      <span style="margin-left:auto;font-size:11px;color:var(--text3)">Rodada ${ds.round+1}/${ds.maxRounds}</span>
+      <div style="width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden"><div style="width:${(ds.round/ds.maxRounds*100)}%;height:100%;background:${ds.score>0?'var(--green)':'var(--red)'};transition:width .5s"></div></div>
+    </div>
   `;
 
-  const playerIn=participants.find(c=>c.id===G.player.id);
   const ctrlEl=document.getElementById('debate-controls');
+  const logEl=document.getElementById('debate-log');
 
   if(ds.round>=ds.maxRounds){endDebate();return;}
 
-  if(playerIn){
-    const opps=participants.filter(c=>c.id!==G.player.id);
-    const opp=opps[Math.floor(Math.random()*opps.length)];
-    const strength=G.player.debateStrengths.includes(ds.topic.id);
-    // Store opp id safely
-    G._debateOppId=opp?.id||'';
-
-    ctrlEl.innerHTML=`
-      <div class="debate-topic-header">Rodada ${ds.round+1}/${ds.maxRounds} · ${ds.topic.icon} ${ds.topic.label}</div>
-      ${ds.round>0?`<div class="opp-speech">${opp?.shortName||'Adversário'}: "${getOppDebateSpeech(ds.topic,opp)}"</div>`:''}
-      <div class="debate-options">
-        <button class="debate-opt-btn" onclick="selectDebateOpt(0)"><div class="opt-type opt-attack">⚔️ ATACAR ${opp?.shortName?.split(' ')[0]||'adversário'}</div>Criticar posição de ${opp?.shortName||'adversário'} sobre ${ds.topic.label}</button>
-        <button class="debate-opt-btn" onclick="selectDebateOpt(1)"><div class="opt-type opt-defend">🛡️ DEFENDER</div>Defender sua posição sobre ${ds.topic.label} com dados</button>
-        <button class="debate-opt-btn" onclick="selectDebateOpt(2)"><div class="opt-type opt-propose">💡 PROPOSTA</div>Apresentar proposta concreta de ${ds.topic.label}</button>
-        <button class="debate-opt-btn" onclick="selectDebateOpt(3)"><div class="opt-type opt-agree">🤝 CONCORDAR</div>Concordar com ponto do adversário sobre ${ds.topic.label}</button>
-        <button class="debate-opt-btn" onclick="selectDebateOpt(4)"><div class="opt-type opt-neutral">💬 MODERADO</div>Dar resposta equilibrada e técnica</button>
-        <button class="debate-opt-btn" onclick="selectDebateOpt(5)"><div class="opt-type opt-attack">🔥 PROVOCAR</div>Fazer afirmação polêmica ${strength?'<span style="color:var(--gold)">(Área forte!)</span>':''}</button>
-      </div>
-    `;
-  } else {
+  if(!playerIn){
     ctrlEl.innerHTML=`<div style="padding:12px;text-align:center;color:var(--text3);font-size:12px">Você não foi convidado para este debate.</div>`;
-    endDebate();
+    endDebate();return;
   }
 
-  document.getElementById('debate-log').innerHTML=ds.log.map(l=>`<div class="debate-log-entry">${l}</div>`).join('');
+  const opp=participants.find(c=>c.id===ds.currentOpp)||participants.find(c=>c.id!==G.player.id);
+  const oppName=opp?.shortName||'Adversário';
+  const oppFirst=opp?.shortName?.split(' ')[0]||'Adversário';
+
+  if(ds.phase==='opp_speaks'){
+    // Show opponent's argument with interrupt option
+    ctrlEl.innerHTML=`
+      <div style="padding:14px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px">🎙 ${oppName.toUpperCase()} FALA:</div>
+        <div style="background:rgba(231,57,70,.07);border:1px solid rgba(231,57,70,.25);border-radius:8px;padding:12px;font-style:italic;font-size:12px;color:var(--text);line-height:1.6;margin-bottom:12px">"${ds.oppArgument}"</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button onclick="debateInterrupt()" style="flex:1;padding:10px;border-radius:7px;border:2px solid var(--red);background:rgba(231,57,70,.1);color:var(--red);cursor:pointer;font-weight:700;font-size:12px;transition:all .2s" onmouseover="this.style.background='rgba(231,57,70,.2)'" onmouseout="this.style.background='rgba(231,57,70,.1)'">⚡ INTERROMPER — Contra-argumento imediato<div style="font-size:10px;font-weight:400;color:var(--text3);margin-top:2px">Alto risco, alto impacto</div></button>
+          <button onclick="debateContinue()" style="flex:1;padding:10px;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text);cursor:pointer;font-weight:700;font-size:12px;transition:all .2s" onmouseover="this.style.background='var(--bg4)'" onmouseout="this.style.background='var(--bg3)'">⏭ Aguardar sua vez de responder<div style="font-size:10px;font-weight:400;color:var(--text3);margin-top:2px">Mais seguro, resposta planejada</div></button>
+        </div>
+      </div>
+    `;
+  } else if(ds.phase==='player_responds' || ds.phase==='interrupted'){
+    const strength=G.player.debateStrengths.includes(ds.topic.id);
+    const wasInterrupted=ds.phase==='interrupted';
+    ctrlEl.innerHTML=`
+      <div style="padding:14px">
+        ${wasInterrupted?`<div style="font-size:11px;color:var(--red);margin-bottom:8px;font-weight:700">⚡ VOCÊ INTERROMPEU — Todos os olhares estão em você!</div>`:''}
+        <div style="font-size:11px;color:var(--accent);margin-bottom:10px;font-family:'IBM Plex Mono',monospace">SUA VEZ DE RESPONDER SOBRE: ${ds.topic.icon} ${ds.topic.label.toUpperCase()} ${strength?'<span style="color:var(--gold)">(Área forte!)</span>':''}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <button class="debate-opt-btn" onclick="selectDebateOpt(0)" style="border-color:rgba(231,57,70,.4);background:rgba(231,57,70,.05)">
+            <div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px">⚔️ ATACAR ${oppFirst}</div>
+            <div style="font-size:11px;color:var(--text2)">Criticar a posição de ${oppName}</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:4px">Risco médio — alto impacto</div>
+          </button>
+          <button class="debate-opt-btn" onclick="selectDebateOpt(1)" style="border-color:rgba(52,152,219,.4);background:rgba(52,152,219,.05)">
+            <div style="font-size:10px;font-weight:700;color:#3498db;margin-bottom:4px">🛡️ DEFENDER sua posição</div>
+            <div style="font-size:11px;color:var(--text2)">Apresentar dados e argumentos</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:4px">Baixo risco — impacto moderado</div>
+          </button>
+          <button class="debate-opt-btn" onclick="selectDebateOpt(2)" style="border-color:rgba(46,204,113,.4);background:rgba(46,204,113,.05)">
+            <div style="font-size:10px;font-weight:700;color:var(--green);margin-bottom:4px">💡 PROPOR solução concreta</div>
+            <div style="font-size:11px;color:var(--text2)">Apresentar plano específico</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:4px">Positivo com eleitores indecisos</div>
+          </button>
+          <button class="debate-opt-btn" onclick="selectDebateOpt(3)" style="border-color:rgba(155,89,182,.4);background:rgba(155,89,182,.05)">
+            <div style="font-size:10px;font-weight:700;color:#9b59b6;margin-bottom:4px">🤝 CONCORDAR parcialmente</div>
+            <div style="font-size:11px;color:var(--text2)">Mostrar moderação e diálogo</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:4px">Bom para indecisos</div>
+          </button>
+          <button class="debate-opt-btn" onclick="selectDebateOpt(4)" style="border-color:rgba(149,165,166,.4);background:rgba(149,165,166,.05)">
+            <div style="font-size:10px;font-weight:700;color:var(--text2);margin-bottom:4px">💬 RESPOSTA TÉCNICA</div>
+            <div style="font-size:11px;color:var(--text2)">Argumentação especializada</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:4px">Seguro, agrada classe média</div>
+          </button>
+          <button class="debate-opt-btn" onclick="selectDebateOpt(5)" style="border-color:rgba(243,156,18,.4);background:rgba(243,156,18,.05)">
+            <div style="font-size:10px;font-weight:700;color:var(--orange);margin-bottom:4px">🔥 PROVOCAR / POLÊMICA</div>
+            <div style="font-size:11px;color:var(--text2)">Afirmação ousada ${strength?'⭐':''}</div>
+            <div style="font-size:9px;color:var(--text3);margin-top:4px">Alto risco — pode viralizar</div>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  logEl.innerHTML=ds.log.map(l=>`<div class="debate-log-entry">${l}</div>`).join('');
+}
+
+function debateInterrupt(){
+  if(!G.debateState)return;
+  G.debateState.phase='interrupted';
+  G.debateState.interrupted=true;
+  const opp=G.debateState.participants?.find(c=>c.id===G.debateState.currentOpp);
+  const oppFirst=opp?.shortName?.split(' ')[0]||'Adversário';
+  G.debateState.log.unshift(`<span style="color:var(--orange)">⚡ VOCÊ interrompeu ${oppFirst}! Todos aguardam sua resposta...</span>`);
+  renderActiveDebate();
+}
+
+function debateContinue(){
+  if(!G.debateState)return;
+  G.debateState.phase='player_responds';
+  // Opponent gets a small passive boost for finishing argument uninterrupted
+  const opp=G.debateState.participants?.find(c=>c.id===G.debateState.currentOpp);
+  if(opp){
+    G.polls[opp.id]=clamp((G.polls[opp.id]||0)+0.2,0.1,70);
+    normalizePoll();
+  }
+  renderActiveDebate();
 }
 
 function getOppDebateSpeech(topic,opp){
   const ALL_SPEECHES={
     economia:[
-      "O Brasil precisa de mais investimento público em infraestrutura",
-      "Vamos reduzir a dívida pública para crescer de forma sustentável",
-      "Corrupção e má gestão arruinaram nossa economia por décadas",
-      "O mercado precisa de mais liberdade, menos regulação estatal",
-      "Precisamos de uma reforma tributária justa para os mais pobres",
+      "O Brasil precisa de mais investimento público em infraestrutura!",
+      "Vamos reduzir a dívida pública para crescer de forma sustentável!",
+      "Corrupção e má gestão arruinaram nossa economia por décadas.",
+      "O mercado precisa de mais liberdade, menos regulação estatal.",
+      "Precisamos de uma reforma tributária justa para os mais pobres!",
       "O desemprego está em 12 milhões — isso é inadmissível!",
-      "Meu plano econômico vai gerar 10 milhões de empregos",
-      "O Brasil perdeu competitividade por culpa de políticas populistas",
-      "A inflação corrói o salário do trabalhador todo dia",
-      "Precisamos de industrialização nacional, não importação",
-      "Sem estabilidade fiscal, não há crescimento possível",
-      "O setor privado cria emprego, o Estado deve ajudar, não atrapalhar"
+      "Meu plano econômico vai gerar 10 milhões de empregos!",
+      "A inflação corrói o salário do trabalhador todo dia.",
+      "Precisamos de industrialização nacional, não importação!",
     ],
     corrupcao:[
-      "Meu adversário tem muitas fichas sujas na Justiça",
-      "Precisamos de mais transparência e controle social",
-      "A Lava Jato foi necessária e deve continuar seu trabalho",
-      "A corrupção é sistêmica — precisamos reformar o sistema político",
-      "Voto impresso e auditoria pública em todas as eleições",
-      "Quem rouba do povo deve responder na cadeia",
-      "Os corruptos têm nome, partido e endereço conhecidos",
-      "Fortalecer o MP e TCU é a saída para acabar com a corrupção",
-      "Nenhum político deveria estar acima da lei",
-      "Cada real roubado é uma escola não construída, um hospital fechado",
-      "Transparência total: todos os gastos públicos online em tempo real"
+      "Meu adversário tem muitas fichas sujas na Justiça!",
+      "Precisamos de mais transparência e controle social.",
+      "A corrupção é sistêmica — precisamos reformar o sistema político.",
+      "Quem rouba do povo deve responder na cadeia!",
+      "Os corruptos têm nome, partido e endereço conhecidos.",
+      "Cada real roubado é uma escola não construída, um hospital fechado.",
     ],
     programas_sociais:[
-      "O Bolsa Família tirou 30 milhões de pessoas da pobreza",
-      "Assistencialismo gera dependência — precisamos de empregos de verdade",
-      "Precisamos de empregos, não de esmolas pagas com dinheiro público",
-      "A renda básica de cidadania deve ser direito constitucional",
-      "Meu governo vai duplicar o valor dos benefícios sociais",
-      "Não podemos deixar nenhuma criança passar fome no Brasil",
-      "O salário mínimo precisa chegar a R$ 2.000 urgentemente",
-      "Cortar programas sociais é cruel com quem mais precisa",
-      "Vamos expandir o FIES e o ProUni para mais brasileiros",
-      "A proteção social é investimento, não gasto"
+      "O Bolsa Família tirou 30 milhões de pessoas da pobreza!",
+      "Assistencialismo gera dependência — precisamos de empregos de verdade.",
+      "A renda básica de cidadania deve ser direito constitucional!",
+      "Não podemos deixar nenhuma criança passar fome no Brasil.",
+      "Cortar programas sociais é cruel com quem mais precisa!",
     ],
     seguranca:[
-      "Crime organizado precisa ser combatido com mão de ferro",
-      "Armamento não resolve violência estrutural, pelo contrário",
-      "Mais policiamento ostensivo e menos bandido solto nas ruas",
-      "Vou federalizar a segurança nos estados mais violentos",
-      "Precisamos de prevenção, não só repressão",
-      "O Brasil tem 50 mil homicídios por ano — isso é uma guerra",
-      "As milícias são tão perigosas quanto as facções criminosas",
-      "Desmilitarização das polícias reduziria a violência",
-      "Vou dobrar o efetivo da Polícia Federal",
-      "Segurança pública começa com educação de qualidade",
-      "Tolerância zero com o narcotráfico e o crime organizado"
+      "Crime organizado precisa ser combatido com mão de ferro!",
+      "Mais policiamento ostensivo e menos bandido solto nas ruas!",
+      "O Brasil tem 50 mil homicídios por ano — isso é uma guerra!",
+      "Tolerância zero com o narcotráfico e o crime organizado!",
+      "As milícias são tão perigosas quanto as facções criminosas.",
     ],
     educacao:[
-      "Nossa educação está em colapso — somos péssimos no PISA",
-      "Investir em educação é o melhor investimento que um país pode fazer",
-      "Voucher educacional é a solução para a liberdade de escolha dos pais",
-      "Vou alfabetizar 100% das crianças nos primeiros anos do governo",
-      "As universidades públicas precisam de mais recursos, não menos",
-      "Educação técnica deve ser tão valorizada quanto a universitária",
-      "Vou acabar com o analfabetismo funcional no Brasil",
-      "Professores merecem salários dignos e valorização profissional",
-      "Tecnologia na educação é o caminho para o futuro",
-      "A escola integral é fundamental para o desenvolvimento das crianças"
+      "Nossa educação está em colapso — somos péssimos no PISA!",
+      "Investir em educação é o melhor investimento de um país!",
+      "Vou alfabetizar 100% das crianças nos primeiros anos!",
+      "Professores merecem salários dignos e valorização!",
     ],
     saude:[
-      "O SUS é patrimônio do povo brasileiro e não pode ser desmontado",
-      "Planos de saúde privados são a solução para desafogar o sistema público",
-      "Vou contratar 10 mil novos médicos para as regiões mais carentes",
-      "Saúde mental é saúde — vamos investir em psicólogos no SUS",
-      "O Brasil desperdiça milhões por falta de gestão na saúde",
-      "Farmácias básicas devem estar em todos os postos de saúde",
-      "Vou criar uma rede nacional de prontos-socorros 24 horas",
-      "A pandemia mostrou o que acontece quando se desinveste em saúde"
+      "O SUS é patrimônio do povo brasileiro e não pode ser desmontado!",
+      "Vou contratar 10 mil novos médicos para regiões carentes!",
+      "Saúde mental é saúde — vamos investir em psicólogos no SUS!",
     ],
     religiao:[
-      "Fé e política podem e devem andar juntas no Brasil",
-      "Respeito toda crença, mas o Estado é laico por princípio",
-      "Os valores cristãos de família e amor ao próximo guiam minha campanha",
-      "Liberdade religiosa é direito fundamental — defendo todas as crenças",
-      "O povo de Deus vai ao canto certo nas urnas",
-      "Minha fé me ensinou que servir ao próximo é dever sagrado",
-      "Nem Estado ateu, nem Estado teocrático — equilíbrio é a solução"
+      "Fé e política podem e devem andar juntas no Brasil!",
+      "Os valores cristãos de família guiam minha campanha!",
+      "Liberdade religiosa é direito fundamental — defendo todas as crenças.",
     ],
     valores:[
-      "Família é pai, mãe e filhos — isso é natural e imutável",
-      "Respeito todas as formas de família desde que haja amor e dignidade",
-      "Os valores tradicionais brasileiros devem ser preservados",
-      "Liberdade individual deve prevalecer sobre o moralismo do Estado",
-      "Nossas raízes culturais e religiosas são nossa maior riqueza",
-      "Polarização ideológica destrói o tecido social do país",
-      "Precisamos de diálogo, não de guerra cultural entre brasileiros"
+      "Família é a base da sociedade e deve ser protegida!",
+      "Os valores tradicionais brasileiros devem ser preservados!",
+      "Polarização ideológica destrói o tecido social do país.",
     ],
     privatizacoes:[
-      "Privatizações são necessárias para modernizar o Estado brasileiro",
-      "As estatais devem servir ao povo, não aos interesses privados",
-      "Caso a caso — cada empresa precisa ser analisada individualmente",
-      "A Petrobras é estratégica e não pode ser vendida",
-      "Privatizar os Correios é essencial para eficiência e concorrência",
-      "O Estado não pode ser empresário — foque em saúde e educação",
-      "Concessões, sim — venda definitiva do patrimônio público, não"
+      "Privatizações são necessárias para modernizar o Estado!",
+      "As estatais devem servir ao povo, não ao mercado!",
+      "A Petrobras é estratégica e não pode ser vendida!",
     ],
     meio_ambiente:[
-      "A Amazônia é nossa, mas temos soberania sobre ela",
-      "Precisamos de política ambiental rigorosa e cooperação internacional",
-      "Desenvolvimento sustentável é crescer sem destruir o futuro",
-      "O desmatamento ilegal é crime e vou combatê-lo sem trégua",
-      "Energia renovável vai gerar empregos e salvar o planeta",
-      "Agenda verde e agenda social não são opostas — andam juntas",
-      "O Brasil tem potencial para ser líder mundial em sustentabilidade"
+      "A Amazônia é nossa, mas temos soberania sobre ela!",
+      "O desmatamento ilegal é crime e vou combatê-lo sem trégua!",
+      "Energia renovável vai gerar empregos e salvar o planeta!",
     ],
     default:[
-      "Meu plano de governo é superior em todos os aspectos",
-      "O povo brasileiro quer mudança real, não promessas vazias",
-      "O Brasil merece muito melhor do que tem hoje",
-      "Competência e honestidade são meus maiores ativos",
-      "Já fiz isso na minha cidade, no meu estado — agora farei no país",
-      "A hora é agora ou nunca — o Brasil não pode esperar mais",
-      "Minha trajetória fala por mim — resultados concretos"
+      "Meu plano de governo é superior em todos os aspectos!",
+      "O povo brasileiro quer mudança real, não promessas vazias!",
+      "O Brasil merece muito melhor do que tem hoje!",
+      "A hora é agora ou nunca — o Brasil não pode esperar mais!",
     ]
   };
   const pool=ALL_SPEECHES[topic?.id]||ALL_SPEECHES.default;
-  // Pick different speech each round by mixing random with topic
   const seed=(opp?.id||'').charCodeAt(0)+(topic?.id||'').charCodeAt(0)+(G.debateState?.round||0)*7;
   return pool[seed%pool.length];
 }
 
 function selectDebateOpt(optIdx){
+  playSFX('debate');
   if(!G.debateState)return;
-  const oppId=G._debateOppId||'';
   const ds=G.debateState;
+  const opp=ds.participants?.find(c=>c.id===ds.currentOpp)||ds.participants?.find(c=>c.id!==G.player.id);
+  const oppId=opp?.id||'';
   const strength=G.player.debateStrengths.includes(ds.topic.id)?1.3:0.9;
+  const wasInterrupted=ds.interrupted;
+  // Interrupt: higher risk AND higher reward
+  const interruptMult=wasInterrupted?1.4:1.0;
   const risks=[0.25,0.08,0.15,0.1,0.05,0.4];
   const bases=[1.8,1.3,1.6,0.8,1.0,2.2];
-  const labels=['ATAQUE','DEFESA','PROPOSTA','CONCORDÂNCIA','MODERADO','PROVOCAÇÃO'];
-  const risk=risks[optIdx]||0.15;
-  const base=bases[optIdx]||1.0;
+  const labels=['ATAQUE','DEFESA','PROPOSTA','CONCORDÂNCIA','TÉCNICO','PROVOCAÇÃO'];
+  const interruptRiskBoost=wasInterrupted?0.1:0;
+  const risk=(risks[optIdx]||0.15)+interruptRiskBoost;
+  const base=(bases[optIdx]||1.0)*interruptMult;
   let effect,msg,logColor;
 
   if(Math.random()<risk){
     effect=-base*0.6*strength;
-    msg=`❌ ${labels[optIdx]} SAIU MAL — ${ds.topic.label}: ${effect.toFixed(1)}%`;
+    msg=`❌ ${labels[optIdx]} ${wasInterrupted?'(pós-interrupção) ':''}SAIU MAL — ${ds.topic.label}: ${effect.toFixed(1)}%`;
     logColor='var(--red)';
+    if(wasInterrupted){
+      // Opponent gets a big boost when interrupt backfires
+      if(oppId)G.polls[oppId]=clamp((G.polls[oppId]||0)+1.0,0.1,70);
+      msg+=` 💥 ${opp?.shortName?.split(' ')[0]||'Adversário'} se recupera!`;
+    }
   } else {
     effect=base*strength*(0.8+Math.random()*0.4);
-    msg=`✅ ${labels[optIdx]} POSITIVO — ${ds.topic.label}: +${effect.toFixed(1)}%`;
+    msg=`✅ ${labels[optIdx]} ${wasInterrupted?'(pós-interrupção) ':''}POSITIVO — ${ds.topic.label}: +${effect.toFixed(1)}%`;
     logColor='var(--green)';
+    if(wasInterrupted){msg+=` 🔥 Interrupção bem-sucedida!`;}
   }
 
   ds.score+=effect;
   G.polls[G.player.id]=clamp(G.polls[G.player.id]+effect*0.25,0.5,70);
   normalizePoll();
   G.momentum=clamp(G.momentum+effect*2,0,100);
-  if(oppId) G.polls[oppId]=clamp((G.polls[oppId]||0)-effect*0.1,0.1,70);
+  if(oppId&&effect>0) G.polls[oppId]=clamp((G.polls[oppId]||0)-effect*0.12,0.1,70);
 
   ds.log.unshift(`<span style="color:${logColor}">${msg}</span>`);
   ds.round++;
+  ds.interrupted=false;
+
+  // Rotate to a new opponent if multi-candidate debate
+  if(ds.participants&&ds.participants.length>2){
+    const opps=ds.participants.filter(c=>c.id!==G.player.id);
+    ds.currentOpp=opps[ds.round%opps.length]?.id||oppId;
+  }
   ds.topic=DEBATE_TOPICS[Math.floor(Math.random()*DEBATE_TOPICS.length)];
-  ds.oppSpeech=getOppDebateSpeech(ds.topic,CANDIDATES_2022.find(c=>c.id===oppId));
+  const newOpp=ds.participants?.find(c=>c.id===ds.currentOpp)||opp;
+  ds.oppArgument=getOppDebateSpeech(ds.topic,newOpp);
+  ds.phase='opp_speaks';
 
   if(ds.round>=ds.maxRounds) endDebate();
   else renderActiveDebate();
@@ -2719,16 +3580,19 @@ function endDebate(){
   if(!G.debateState)return;
   const sc=G.debateState.score;
   document.getElementById('debate-controls').innerHTML=`
-    <div style="text-align:center;padding:16px">
-      <div style="font-size:28px;margin-bottom:8px">${sc>8?'🏆':sc>3?'👍':sc>-3?'😐':'👎'}</div>
-      <div style="font-size:15px;font-weight:700;color:${sc>3?'var(--green)':'var(--red)'};margin-bottom:6px">
-        ${sc>8?'Desempenho excepcional!':sc>3?'Bom desempenho!':sc>-3?'Desempenho regular':sc<-3?'Fraco desempenho!':''}
+    <div style="text-align:center;padding:20px">
+      <div style="font-size:36px;margin-bottom:10px">${sc>10?'🏆':sc>4?'👍':sc>-2?'😐':'👎'}</div>
+      <div style="font-size:16px;font-weight:700;color:${sc>4?'var(--green)':sc>-2?'var(--orange)':'var(--red)'};margin-bottom:8px">
+        ${sc>10?'Desempenho excepcional! Debate dominado!':sc>4?'Bom desempenho!':sc>-2?'Desempenho regular — nem ganhou nem perdeu':sc<-2?'Fraco desempenho — adversário dominou!':''}
       </div>
-      <div style="font-size:11px;color:var(--text3)">Impacto: ${(sc*0.25).toFixed(1)}% nas pesquisas</div>
-      <button class="btn-primary" style="margin-top:12px" onclick="G.debateState=null;G.paused=false;document.getElementById('pause-btn').textContent='⏸ Pausar';renderDebatesTab()">Fechar Debate</button>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:16px">Impacto total: ${(sc*0.25).toFixed(1)}% nas pesquisas</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:14px">
+        ${G.debateState.log.slice(0,4).map(l=>`<div style="font-size:10px;padding:4px 8px;border-radius:6px;background:var(--bg3);text-align:left">${l}</div>`).join('')}
+      </div>
+      <button class="btn-primary" style="margin-top:4px" onclick="G.debateState=null;G.paused=false;document.getElementById('pause-btn').textContent='⏸ Pausar';renderDebatesTab()">Fechar Debate</button>
     </div>
   `;
-  showToast(sc>3?'🏆 Debate!':'😬 Debate',`${sc>3?'Ótimo desempenho!':'Desempenho fraco.'} Impacto: ${(sc*0.25).toFixed(1)}%`,sc>3?'success':'error');
+  showToast(sc>4?'🏆 Debate!':'😬 Debate',`${sc>4?'Ótimo desempenho!':'Desempenho fraco.'} Impacto: ${(sc*0.25).toFixed(1)}%`,sc>4?'success':'error');
 }
 
 // ════════════════════════════════════════════════════════
@@ -2744,20 +3608,21 @@ function getLeadingCand(abbr){
 function getStateColor(abbr){
   const leader=getLeadingCand(abbr);
   if(!leader||!leader.id)return'#1a2d42';
-  const c=CANDIDATES_2022.find(c=>c.id===leader.id);
+  const c=getCandidates().find(c=>c.id===leader.id);
   if(!c)return'#1a2d42';
-  // Much deeper, more vivid colors — stronger saturation, less wash-out
-  const intensity=clamp((leader.pct-15)/45,0.35,1.0);
+  // Higher % = darker/more saturated color, lower % = lighter/washed out
+  // intensity: 0 = very light (low %), 1 = full color (high %)
+  const intensity=clamp((leader.pct-15)/55,0.15,1.0);
   const hex=c.partyColor.replace('#','');
   if(hex.length!==6)return c.partyColor;
   const r=parseInt(hex.substr(0,2),16);
   const g=parseInt(hex.substr(2,2),16);
   const b=parseInt(hex.substr(4,2),16);
-  // Dark base #0d1e2e — very dark navy so colors pop
-  const br=0x0d,bg2=0x1e,bb=0x2e;
-  const mr=Math.round(br+(r-br)*intensity);
-  const mg=Math.round(bg2+(g-bg2)*intensity);
-  const mb=Math.round(bb+(b-bb)*intensity);
+  // Light base: mix toward white for low %, stay at full color for high %
+  const lr=220,lg=230,lb=240; // light grayish-blue base
+  const mr=Math.round(lr+(r-lr)*intensity);
+  const mg=Math.round(lg+(g-lg)*intensity);
+  const mb=Math.round(lb+(b-lb)*intensity);
   return`rgb(${mr},${mg},${mb})`;
 }
 
@@ -3198,7 +4063,7 @@ function wireMapEvents(svg){
     const abbr=getAbbr(e.target);
     if(!abbr){tt.style.display='none';return;}
     const sp=G.statePoll[abbr]||{};
-    const top=CANDIDATES_2022.map(c=>({...c,pct:sp[c.id]||0})).sort((a,b)=>b.pct-a.pct).slice(0,4);
+    const top=getCandidates().map(c=>({...c,pct:sp[c.id]||0})).sort((a,b)=>b.pct-a.pct).slice(0,4);
     document.getElementById('tt-state-name').innerHTML=
       '<strong>'+STATES[abbr].name+'</strong> <span style="color:var(--text3);font-size:10px">'+abbr+'</span>';
     document.getElementById('tt-top3').innerHTML=top.map((c,i)=>
@@ -3234,7 +4099,7 @@ function renderFallbackMap(){
   Object.entries(STATES).forEach(([abbr,st])=>{
     const leader=getLeadingCand(abbr);
     const color=getStateColor(abbr);
-    const candInfo=leader?CANDIDATES_2022.find(c=>c.id===leader.id):null;
+    const candInfo=leader?getCandidates().find(c=>c.id===leader.id):null;
     const ln=candInfo?.shortName?.split(' ')[0]||'—';
     const el=document.createElement('div');
     el.style.cssText=`background:${color};border-radius:5px;padding:6px 4px;cursor:pointer;text-align:center;font-size:10px;border:1px solid rgba(255,255,255,.15);min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .2s`;
@@ -3264,8 +4129,8 @@ function initMap(){
 function renderMapLegend(){
   const el=document.getElementById('map-legend');if(!el)return;
   const activeCands=G.secondRoundActive
-    ?G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean)
-    :CANDIDATES_2022.filter(c=>(G.polls[c.id]||0)>0.5).sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0));
+    ?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+    :getCandidates().filter(c=>(G.polls[c.id]||0)>0.5).sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0));
   el.innerHTML=activeCands.map(c=>`
     <div style="display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:12px;background:${c.partyColor}22;border:1px solid ${c.partyColor}55;cursor:pointer" onclick="filterMapByCandidate('${c.id}')">
       <div style="width:10px;height:10px;border-radius:50%;background:${c.partyColor}"></div>
@@ -3300,11 +4165,11 @@ function showStateDetail(abbr){
   const st=STATES[abbr]; if(!st)return;
   const sp=G.statePoll[abbr]||{};
   const cands=G.secondRoundActive
-    ?G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean)
-    :CANDIDATES_2022;
+    ?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+    :getCandidates();
   const sorted=cands.map(c=>({...c,pct:sp[c.id]||0})).sort((a,b)=>b.pct-a.pct);
   const leader=sorted[0];
-  const lc=leader?CANDIDATES_2022.find(c=>c.id===leader.id):null;
+  const lc=leader?getCandidates().find(c=>c.id===leader.id):null;
   const playerPct=G.player?sp[G.player.id]||0:0;
   const playerRank=G.player?sorted.findIndex(c=>c.id===G.player.id)+1:0;
   const regionName={N:'Norte',NE:'Nordeste',CO:'Centro-Oeste',SE:'Sudeste',S:'Sul'}[st.region]||st.region;
@@ -3442,7 +4307,7 @@ function renderPollsTab(){
 
 function renderRejectionTable(){
   const el=document.getElementById('rejection-table');if(!el)return;
-  const activeCands=G.secondRoundActive?G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean):CANDIDATES_2022;
+  const activeCands=G.secondRoundActive?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean):getCandidates();
   el.innerHTML=activeCands.sort((a,b)=>(G.rejectPolls[b.id]||0)-(G.rejectPolls[a.id]||0)).map(c=>`
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
       <div style="width:9px;height:9px;border-radius:50%;background:${c.partyColor};flex-shrink:0"></div>
@@ -3469,8 +4334,8 @@ function drawPollChart(){
     ctx.fillStyle='#5a6a82';ctx.font='9px IBM Plex Mono';ctx.fillText((50-i*10)+'%',3,y+4);
   }
   const activeCands=G.secondRoundActive
-    ?G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean)
-    :CANDIDATES_2022.filter(c=>(G.polls[c.id]||0)>0.8).sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,5);
+    ?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+    :getCandidates().filter(c=>(G.polls[c.id]||0)>0.8).sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,5);
 
   activeCands.forEach(c=>{
     const vals=hist.map(h=>h.polls[c.id]||0);
@@ -3498,8 +4363,8 @@ function drawRegionChart(){
   const regions=['NE','SE','S','CO','N'];
   const rNames={NE:'Nordeste',SE:'Sudeste',S:'Sul',CO:'C.Oeste',N:'Norte'};
   const activeCands=G.secondRoundActive
-    ?G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean)
-    :CANDIDATES_2022.filter(c=>(G.polls[c.id]||0)>1).sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,3);
+    ?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+    :getCandidates().filter(c=>(G.polls[c.id]||0)>1).sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0)).slice(0,3);
 
   const rData={};
   regions.forEach(r=>{rData[r]={};activeCands.forEach(c=>rData[r][c.id]=0);let cnt=0;
@@ -3522,28 +4387,156 @@ function drawRegionChart(){
 // ════════════════════════════════════════════════════════
 // SOCIAL MEDIA
 // ════════════════════════════════════════════════════════
-function switchPlatform(p,btn){
-  G.activeSocialPlatform=p;
-  document.querySelectorAll('.platform-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderSocialFeed();
+// Tweet templates by candidate ideology
+const PLAYER_TWEETS = [
+  // Positive/Safe tweets
+  {id:'economia_social',text:'O Brasil precisa de um projeto econômico que cuide das pessoas, não só dos grandes. Empregos, salário digno e futuro para todos. #BrasilQueQueremos',effect:0.8,rejectEffect:0,risk:'baixo',label:'Econômico-Social',repercussao:'positiva'},
+  {id:'saude',text:'Saúde é um direito, não um privilégio. No meu governo, o SUS será prioridade absoluta. #SaúdeParaTodos',effect:0.6,rejectEffect:0,risk:'baixo',label:'Saúde',repercussao:'positiva'},
+  {id:'seguranca',text:'Segurança pública começa com mais oportunidade e menos desigualdade. Vamos atacar as causas, não só as consequências. #BrasilSeguro',effect:0.5,rejectEffect:0.5,risk:'médio',label:'Segurança',repercussao:'dividida'},
+  // Provocativo (maioria negativa)
+  {id:'ataque_adversario',text:'Meu oponente não tem plano nenhum para o Brasil. Só promessas vazias e passado de problemas. O povo merece mais! #EleNão',effect:-0.5,rejectEffect:2.5,risk:'alto',label:'Ataque ao Adversário',repercussao:'negativa'},
+  {id:'polemica_valores',text:'Quem não é a favor da família tradicional brasileira não merece o voto do povo honesto. Valores acima de tudo! 🇧🇷',effect:-1.0,rejectEffect:3.0,risk:'alto',label:'Valores Polêmico',repercussao:'negativa'},
+  {id:'frase_controversa',text:'O Brasil não aguenta mais essa turma que só sabe roubar e enganar. Chegou a hora de fazer diferente!',effect:0.3,rejectEffect:1.5,risk:'médio',label:'Populismo',repercussao:'mista'},
+  {id:'meme_politico',text:'Eles disseram que era impossível vencer. Mas o Brasil está com a gente! 💪 #VamosPraFrente',effect:0.4,rejectEffect:0,risk:'baixo',label:'Motivacional',repercussao:'positiva'},
+  {id:'debate_ataque',text:'Debatemos ontem e ficou clara a diferença: de um lado o projeto, do outro o improviso. O Brasil sabe escolher!',effect:0.6,rejectEffect:0.8,risk:'médio',label:'Pós-Debate',repercussao:'mista'},
+  {id:'tweet_errado',text:'Acabei de ver o resultado da pesquisa: estamos liderando! Mas calma, ainda falta muito caminho. #JuntosSomosMais',effect:-0.2,rejectEffect:1.0,risk:'médio',label:'Comemorativo Prematuro',repercussao:'mista'},
+  {id:'medio_ambiente',text:'A Amazônia é do Brasil e do mundo. Preservar é desenvolvimento. Não vou deixar nenhum metro ser destruído! 🌿',effect:0.7,rejectEffect:0.3,risk:'baixo',label:'Meio Ambiente',repercussao:'positiva'},
+  {id:'educacao',text:'Educação de qualidade é o maior investimento que um país pode fazer. Mais professores, mais escolas, mais futuro. #EducaçãoPrimeiro',effect:0.6,rejectEffect:0,risk:'baixo',label:'Educação',repercussao:'positiva'},
+  {id:'tweet_impulsivo',text:'NÃO AGUENTO MAIS AS MENTIRAS DOS MEUS ADVERSÁRIOS!! O povo vai ver quem é quem no dia da eleição!!!',effect:-1.5,rejectEffect:4.0,risk:'muito alto',label:'Impulsivo/Raiva',repercussao:'muito negativa'},
+  {id:'religioso',text:'Deus abençoe nosso Brasil e nossa família. Com fé e trabalho, vamos construir um país melhor para todos! 🙏',effect:0.5,rejectEffect:0.5,risk:'médio',label:'Religioso',repercussao:'dividida'},
+  {id:'anti_midia',text:'A imprensa corporativa tenta calar nossa voz, mas o povo fala mais alto! Compartilhe e mostre que estamos aqui!',effect:0.4,rejectEffect:1.5,risk:'médio',label:'Anti-Mídia',repercussao:'mista'},
+];
+
+// Comments templates for tweet posts
+const TWEET_COMMENTS = {
+  positiva:[
+    {user:'@apoiador_fiel',text:'Isso! Essa é a voz que o Brasil precisa! 🔥',likes:Math.floor(Math.random()*800+100)},
+    {user:'@brasileira_comum',text:'Finalmente alguém falando o que eu penso!',likes:Math.floor(Math.random()*400+50)},
+    {user:'@critico_neutro',text:'Belo discurso. Agora precisa de ação concreta.',likes:Math.floor(Math.random()*200+30)},
+  ],
+  negativa:[
+    {user:'@opositor_bravo',text:'QUE ABSURDO!! Como pode uma pessoa falar isso?! #CadeAVeracidade',likes:Math.floor(Math.random()*1200+300)},
+    {user:'@jornalista_online',text:'Declaração polêmica gera controvérsia nas redes. Candidato vai ter que explicar.',likes:Math.floor(Math.random()*900+200)},
+    {user:'@usuario_comum','text':'Não acredito que estou lendo isso em 2022...',likes:Math.floor(Math.random()*600+100)},
+    {user:'@fact_checker_br',text:'⚠️ Esta afirmação precisa de verificação. Sem contexto pode enganar.',likes:Math.floor(Math.random()*400+80)},
+  ],
+  mista:[
+    {user:'@apoiador_fiel',text:'Concordo! #ComVocê',likes:Math.floor(Math.random()*500+50)},
+    {user:'@cidadao_critico',text:'Um pouco exagerado, mas tem razão no ponto central.',likes:Math.floor(Math.random()*300+40)},
+    {user:'@opositor_suave',text:'Não concordo mas respeito a posição. Debate saudável!',likes:Math.floor(Math.random()*200+20)},
+  ],
+  dividida:[
+    {user:'@conservador_br',text:'Isso não é o que o Brasil precisa!',likes:Math.floor(Math.random()*700+100)},
+    {user:'@progressista_sp',text:'Finalmente uma voz corajosa! 👏',likes:Math.floor(Math.random()*650+80)},
+    {user:'@jornalista_online',text:'Tweet do candidato divide opiniões. Ambos os lados reagem.',likes:Math.floor(Math.random()*400+60)},
+  ],
+};
+
+let tweetCooldown=0;
+
+function updateTweetCooldownDisplay(){
+  const msg=document.getElementById('tweet-cooldown-msg');
+  if(!msg)return;
+  if(tweetCooldown>0){msg.style.display='block';msg.textContent=`⏳ Próximo tweet em ${tweetCooldown} dias (Twitter precisa de descanso)`;}
+  else{msg.style.display='none';}
+}
+
+function openTweetModal(){
+  if(tweetCooldown>0){showToast('⏳ Calma!',`Aguarde ${tweetCooldown} dias antes de tweetar novamente.`,'warning');return;}
+  const overlay=document.getElementById('tweet-modal-overlay');
+  const auth=document.getElementById('tweet-modal-author');
+  if(auth)auth.textContent=`${G.player?.shortName||'Candidato'} — Tweetar`;
+  // Shuffle and pick 5 random tweets
+  const shuffled=[...PLAYER_TWEETS].sort(()=>Math.random()-0.5).slice(0,5);
+  const listEl=document.getElementById('tweet-options-list');
+  if(!listEl)return;
+  listEl.innerHTML=shuffled.map((t,i)=>`
+    <div onclick="sendTweet(${i})" data-idx="${i}" style="cursor:pointer;padding:14px;border-radius:8px;border:1px solid var(--border);background:var(--bg3);transition:all .2s;position:relative" onmouseover="this.style.borderColor='#1DA1F2'" onmouseout="this.style.borderColor='var(--border)'">
+      <div style="font-size:12px;line-height:1.5;color:var(--text);margin-bottom:8px">"${t.text}"</div>
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:${t.risk==='baixo'?'rgba(46,204,113,.15)':t.risk==='médio'?'rgba(243,156,18,.15)':t.risk==='alto'||t.risk==='muito alto'?'rgba(231,57,70,.15)':'rgba(150,150,150,.15)'};color:${t.risk==='baixo'?'var(--green)':t.risk==='médio'?'var(--orange)':t.risk==='alto'||t.risk==='muito alto'?'var(--red)':'var(--text3)'}">Risco: ${t.risk}</span>
+        <span style="font-size:10px;color:var(--text3)">Repercussão esperada: <b style="color:${t.repercussao==='positiva'?'var(--green)':t.repercussao.includes('negativa')?'var(--red)':'var(--orange)'}">${t.repercussao}</b></span>
+      </div>
+    </div>
+  `).join('');
+  // Store shuffled list for when user picks
+  window._currentTweetOptions=shuffled;
+  overlay.classList.add('show');
+  G.paused=true;document.getElementById('pause-btn').textContent='▶ Continuar';
+}
+
+function closeTweetModal(){
+  document.getElementById('tweet-modal-overlay').classList.remove('show');
+  G.paused=false;document.getElementById('pause-btn').textContent='⏸ Pausar';
+}
+
+function sendTweet(idx){
+  const tweet=window._currentTweetOptions&&window._currentTweetOptions[idx];
+  if(!tweet)return;
+  closeTweetModal();
+  playSFX('tweet');
+  tweetCooldown=7; // 1 week before next tweet
+  
+  // Apply effects
+  G.polls[G.player.id]=clamp(G.polls[G.player.id]+(tweet.effect||0),0.5,70);
+  G.rejectPolls[G.player.id]=clamp((G.rejectPolls[G.player.id]||0)+(tweet.rejectEffect||0),0,90);
+  G.momentum=clamp(G.momentum+(tweet.effect||0)*5,0,100);
+  normalizePoll();
+  
+  // Generate comments
+  const commentsPool=TWEET_COMMENTS[tweet.repercussao]||TWEET_COMMENTS.mista;
+  const comments=commentsPool.slice(0,3).map(c=>({...c,likes:Math.floor(Math.random()*c.likes+50)}));
+  
+  // Add tweet to social feed
+  const likes=Math.floor(Math.random()*50000+2000);
+  const rt=Math.floor(Math.random()*20000+500);
+  const tweetPost={
+    user:`@${G.player.shortName.toLowerCase().replace(/ /g,'_')}`,
+    handle:G.player.shortName+' (candidato)',
+    icon:'🐦',
+    text:tweet.text,
+    type:'player_tweet',
+    cand:G.player.id,
+    platform:'twitter',
+    likes,rt,
+    gameDate:fmtDate(G.currentDate),
+    isPlayerTweet:true,
+    comments,
+    repercussao:tweet.repercussao,
+  };
+  G.socialPosts.unshift(tweetPost);
+  
+  // Add event
+  G.events.unshift({icon:'🐦',title:`Tweet: "${tweet.label}"`,desc:`Repercussão: ${tweet.repercussao}. ${Math.abs(tweet.effect).toFixed(1)}% impacto.`,type:tweet.effect>0?'positive':'negative',effect:tweet.effect,isPlayer:true,date:fmtDate(G.currentDate)});
+  
+  const type=tweet.effect>=0?'success':'error';
+  const msg=tweet.effect>=0?`+${tweet.effect.toFixed(1)}% nas pesquisas. Repercussão: ${tweet.repercussao}`:`${tweet.effect.toFixed(1)}% nas pesquisas. Repercussão: ${tweet.repercussao}`;
+  showToast('🐦 Tweet Publicado!',msg,type);
+  updateTopBar();renderSocialFeed();updateTweetCooldownDisplay();
 }
 
 function addRandomSocialPost(){
-  const platform=G.activeSocialPlatform||'twitter';
-  const templates=SOCIAL_POSTS_TEMPLATES[platform]||SOCIAL_POSTS_TEMPLATES.twitter;
-  const t=templates[Math.floor(Math.random()*templates.length)];
-  const post={...t,platform,gameDate:fmtDate(G.currentDate),id:Date.now()};
-
-  // Dynamic posts based on game state
-  if(Math.random()<0.3){
-    const leaders=[...CANDIDATES_2022].sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0));
-    const l=leaders[0];
-    post.text=`[PESQUISA] ${l.shortName} lidera com ${(G.polls[l.id]||0).toFixed(1)}%. ${G.player.shortName} está em ${[...leaders].findIndex(c=>c.id===G.player.id)+1}º lugar com ${(G.polls[G.player.id]||0).toFixed(1)}%.`;
-    post.user='@pesquisas_br';post.handle='Pesquisas BR';post.icon='📊';post.type='neutral';
-  }
-  G.socialPosts.unshift(post);
-  if(G.socialPosts.length>40)G.socialPosts.pop();
+  // Add posts to all platforms on each cycle
+  const platforms = ['twitter','instagram','news'];
+  platforms.forEach(platform => {
+    const templates=SOCIAL_POSTS_TEMPLATES[platform]||SOCIAL_POSTS_TEMPLATES.twitter;
+    const t=templates[Math.floor(Math.random()*templates.length)];
+    const post={...t,platform,gameDate:fmtDate(G.currentDate),id:Date.now()+Math.random()};
+    // Dynamic poll posts only for twitter/news
+    if(platform!=='instagram' && Math.random()<0.3){
+      const leaders=[...getCandidates()].sort((a,b)=>(G.polls[b.id]||0)-(G.polls[a.id]||0));
+      const l=leaders[0];
+      if(platform==='twitter'){
+        post.text=`[PESQUISA] ${l.shortName} lidera com ${(G.polls[l.id]||0).toFixed(1)}%. ${G.player.shortName} está em ${[...leaders].findIndex(c=>c.id===G.player.id)+1}º lugar com ${(G.polls[G.player.id]||0).toFixed(1)}%.`;
+        post.user='@pesquisas_br';post.handle='Pesquisas BR';post.icon='📊';post.type='neutral';
+      } else {
+        post.text=`Nova pesquisa: ${l.shortName} (${(G.polls[l.id]||0).toFixed(1)}%) lidera corrida presidencial. ${G.player.shortName} com ${(G.polls[G.player.id]||0).toFixed(1)}%.`;
+        post.user='DataBrasil';post.handle='databrasil.com.br';post.icon='📰';post.type='neutral';post.isNews=true;
+      }
+    }
+    G.socialPosts.unshift(post);
+  });
+  if(G.socialPosts.length>60)G.socialPosts.splice(60);
 }
 
 function addDynamicSocialPost(){
@@ -3557,22 +4550,46 @@ function addDynamicSocialPost(){
   G.socialPosts.unshift({user:p.shortName,handle:p.party,icon:'📱',text:texts[Math.floor(Math.random()*texts.length)],type:'support',cand:p.id,platform:'twitter',likes:Math.floor(randRange(1000,15000)),rt:Math.floor(randRange(500,8000)),gameDate:fmtDate(G.currentDate)});
 }
 
+function switchPlatform(platform, btn){
+  G.activeSocialPlatform = platform;
+  // Update active button state
+  document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderSocialFeed();
+}
+
 function renderSocialFeed(){
   const el=document.getElementById('social-feed');if(!el)return;
-  const posts=G.socialPosts.filter(p=>p.platform===G.activeSocialPlatform||!G.activeSocialPlatform).slice(0,12);
+  // Update twitter tweet zone
+  const tz=document.getElementById('twitter-tweet-zone');
+  if(tz)tz.style.display=(G.activeSocialPlatform==='twitter')?'block':'none';
+  if(tz&&G.player){const btn=tz.querySelector('button');if(btn)btn.textContent=`🐦 Tweetar como ${G.player.shortName}`;}
+  updateTweetCooldownDisplay();
+  
+  const posts=G.socialPosts.filter(p=>p.platform===G.activeSocialPlatform||!G.activeSocialPlatform).slice(0,14);
   if(!posts.length){el.innerHTML='<div style="color:var(--text3);text-align:center;padding:24px">Nenhuma postagem ainda.</div>';return;}
 
-  el.innerHTML=posts.map(p=>`
-    <div class="social-post ${p.viral?'viral':''} ${p.type==='support'?'support':''} ${p.type==='attack'?'attack':''}">
+  el.innerHTML=posts.map(p=>{
+    const commentsHtml=p.comments&&p.comments.length?`
+      <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+        <div style="font-size:9px;color:var(--text3);margin-bottom:6px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px">COMENTÁRIOS</div>
+        ${p.comments.map(c=>`<div style="padding:6px 0;border-bottom:1px solid var(--border22);display:flex;gap:8px;align-items:flex-start">
+          <div style="font-size:11px;color:var(--accent);white-space:nowrap;flex-shrink:0">${c.user}</div>
+          <div style="font-size:11px;color:var(--text2);flex:1">${c.text}</div>
+          <div style="font-size:10px;color:var(--text3);white-space:nowrap">❤️ ${(c.likes||0).toLocaleString()}</div>
+        </div>`).join('')}
+      </div>`:'' ;
+    return`<div class="social-post ${p.viral?'viral':''} ${p.type==='support'||p.type==='player_tweet'?'support':''} ${p.type==='attack'?'attack':''}" style="${p.isPlayerTweet?'border:1px solid #1DA1F2;background:rgba(29,161,242,.07)':''}">
       <div class="social-post-header">
         <div class="social-avatar">${p.icon||'👤'}</div>
-        <div><div class="social-user">${p.user}</div><div class="social-handle">@${p.handle||p.user} · ${p.gameDate||''}</div></div>
-        ${p.cand===G.player?.id?'<div class="badge" style="background:rgba(0,212,255,.1);color:var(--accent);border:1px solid var(--accent);margin-left:auto">Sobre você</div>':''}
+        <div><div class="social-user">${p.user}</div><div class="social-handle">${p.handle||p.user} · ${p.gameDate||''}</div></div>
+        ${p.isPlayerTweet?'<div class="badge" style="background:rgba(29,161,242,.15);color:#1DA1F2;border:1px solid #1DA1F2;margin-left:auto;font-size:9px">Seu Tweet</div>':p.cand===G.player?.id?'<div class="badge" style="background:rgba(0,212,255,.1);color:var(--accent);border:1px solid var(--accent);margin-left:auto">Sobre você</div>':''}
       </div>
       ${p.isMeme?`<div class="meme-post">${p.text}</div>`:`<div class="social-post-text">${p.text}</div>`}
-      ${!p.isNews?`<div class="social-post-meta"><span>❤️ ${(p.likes||0).toLocaleString()}</span><span>🔁 ${(p.rt||0).toLocaleString()}</span></div>`:''}
-    </div>
-  `).join('');
+      ${!p.isNews?`<div class="social-post-meta"><span>❤️ ${(p.likes||0).toLocaleString()}</span><span>🔁 ${(p.rt||0).toLocaleString()}</span>${p.repercussao?`<span style="font-size:10px;color:${p.repercussao==='positiva'?'var(--green)':p.repercussao.includes('negativa')?'var(--red)':'var(--orange)'}">📢 ${p.repercussao}</span>`:''}</div>`:''}
+      ${commentsHtml}
+    </div>`;
+  }).join('');
 }
 
 // ════════════════════════════════════════════════════════
@@ -3600,6 +4617,16 @@ function renderEventsTab(){
 function renderFinancesTab(){
   const totalIn=G.financeHistory.filter(e=>e.value>0).reduce((a,b)=>a+b.value,0);
   const totalOut=Math.abs(G.financeHistory.filter(e=>e.value<0).reduce((a,b)=>a+b.value,0));
+  // Render lock banner
+  const lockEl=document.getElementById('finance-lock-banner');
+  if(lockEl){
+    if(G.financeLockedKey){
+      const cd=G.financeCooldowns[G.financeLockedKey]||0;
+      lockEl.innerHTML=`<div style="background:rgba(230,57,70,.1);border:1px solid var(--red);border-radius:8px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:10px"><span style="font-size:20px">🔒</span><div><div style="font-size:12px;font-weight:700;color:var(--red)">Arrecadação Bloqueada</div><div style="font-size:10px;color:var(--text3)">Uma arrecadação já foi realizada. Todas as opções estarão disponíveis novamente em <strong style="color:var(--orange)">${cd} dias</strong>.</div></div></div>`;
+    } else {
+      lockEl.innerHTML='';
+    }
+  }
   document.getElementById('finance-summary').innerHTML=`
     <div class="finance-card"><div class="finance-card-label">Arrecadado</div><div class="finance-card-value income">${fmtMoney(totalIn)}</div></div>
     <div class="finance-card"><div class="finance-card-label">Gasto</div><div class="finance-card-value expense">${fmtMoney(totalOut)}</div></div>
@@ -3613,13 +4640,20 @@ function renderFinancesTab(){
     {title:'Leilão de Arte',desc:'Evento cultural de arrecadação',cost:800000,income:12000000},
     {title:'Plataforma Digital',desc:'Microdonations por app',cost:500000,income:8000000}
   ];
-  document.getElementById('invest-grid').innerHTML=invs.map(i=>`
-    <div class="invest-card" onclick="makeInvestment('${i.title}',${i.cost},${i.income})">
-      <div class="invest-title">${i.title}</div><div class="invest-desc">${i.desc}</div>
+  document.getElementById('invest-grid').innerHTML=invs.map(i=>{
+    const key=(i.title||'').replace(/\s/g,'_');
+    const globalLocked=!!G.financeLockedKey;
+    const globalCd=G.financeLockedKey?(G.financeCooldowns[G.financeLockedKey]||0):0;
+    const disabled=globalLocked;
+    const isActive=G.financeLockedKey===key;
+    return`<div class="invest-card" onclick="${disabled?'':(`makeInvestment('${i.title}',${i.cost},${i.income})`)}" style="opacity:${disabled&&!isActive?0.35:1};cursor:${disabled?'not-allowed':'pointer'};${isActive?'border:1px solid var(--accent);background:rgba(0,212,255,.04)':''}">
+      <div class="invest-title">${i.title}</div>
+      <div class="invest-desc">${i.desc}</div>
       <div class="invest-cost">${i.cost>0?'Custo: '+fmtMoney(i.cost):'Gratuito'}</div>
       <div class="invest-effect">+${fmtMoney(i.income)}</div>
-    </div>
-  `).join('');
+      ${isActive?`<div style="color:var(--orange);font-size:10px;margin-top:5px;font-weight:700">🔒 Usado — desbloqueia em ${globalCd} dias</div>`:globalLocked?`<div style="color:var(--text3);font-size:9px;margin-top:4px">🔒 Bloqueado (${globalCd}d)</div>`:`<div style="color:var(--text3);font-size:9px;margin-top:4px">Bloqueia tudo por 90 dias</div>`}
+    </div>`;
+  }).join('');
   const hEl=document.getElementById('finance-history');
   hEl.innerHTML=G.financeHistory.length?G.financeHistory.slice(0,12).map(e=>`
     <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)">
@@ -3630,11 +4664,22 @@ function renderFinancesTab(){
 }
 
 function makeInvestment(title,cost,income){
+  if(!G.financeCooldowns)G.financeCooldowns={};
+  const key=title.replace(/\s/g,'_');
+  // Global finance lock: if ANY investment was taken, ALL are blocked
+  if(G.financeLockedKey){
+    const remaining=G.financeCooldowns[G.financeLockedKey]||0;
+    showToast('🔒 Finanças Bloqueadas',`Você já usou "${G.financeLockedKey.replace(/_/g,' ')}" recentemente. Toda a arrecadação fica bloqueada por ${remaining} dias.`,'warning');
+    return;
+  }
   if(!G.sandbox&&G.money<cost){showToast('💸','Fundos insuficientes.','error');return;}
   if(!G.sandbox)G.money-=cost;
   G.money+=income;
+  G.financeCooldowns[key]=90;
+  G.financeLockedKey=key; // Lock ALL finance options
   G.financeHistory.unshift({date:fmtDate(G.currentDate),desc:title,value:income-cost});
-  showToast('💰 Arrecadação!',`${title} gerou ${fmtMoney(income-cost)} líquidos.`,'success');
+  showToast('💰 Arrecadação!',`${title} gerou ${fmtMoney(income-cost)} líquidos. Toda arrecadação bloqueada por 90 dias.`,'success');
+  playSFX('cash');
   updateTopBar();renderFinancesTab();
 }
 
@@ -3723,15 +4768,24 @@ function checkPhaseTransitions(){
 }
 
 function simulateElection(round){
-  const cands=round===2?G.secondRoundCandidates.map(r=>CANDIDATES_2022.find(c=>c.id===r.id)).filter(Boolean):CANDIDATES_2022;
+  const cands=round===2?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean):getCandidates();
   let totalV=0;const sv={};
   cands.forEach(c=>sv[c.id]=0);
   Object.entries(STATES).forEach(([a,st])=>{
     const voters=st.voters;totalV+=voters;
     cands.forEach(c=>sv[c.id]+=(G.statePoll[a]?.[c.id]||0)/100*voters);
   });
-  const tot=Object.values(sv).reduce((a,b)=>a+b,0);
-  return cands.map(c=>({id:c.id,name:c.shortName,party:c.party,partyColor:c.partyColor,votes:Math.round(sv[c.id]),pct:sv[c.id]/tot*100,reject:G.rejectPolls[c.id]||0}));
+  let tot=Object.values(sv).reduce((a,b)=>a+b,0);
+  // Blend state result with national polls to avoid wild drops (60/40 blend)
+  cands.forEach(c=>{
+    const statePct=sv[c.id]/tot*100;
+    const natPct=G.polls[c.id]||statePct;
+    // Weighted blend: 55% national poll, 45% state-by-state result
+    sv[c.id]=(statePct*0.45+natPct*0.55);
+  });
+  // Re-normalize
+  tot=Object.values(sv).reduce((a,b)=>a+b,0);
+  return cands.map(c=>({id:c.id,name:c.shortName,party:c.party,partyColor:c.partyColor,votes:Math.round(sv[c.id]/100*totalV),pct:sv[c.id]/tot*100,reject:G.rejectPolls[c.id]||0}));
 }
 
 function conductFirstRound(){
@@ -3744,7 +4798,7 @@ function conductFirstRound(){
   else{
     G.secondRoundCandidates=top2;
     // Remove non-second-round candidates from polls
-    CANDIDATES_2022.forEach(c=>{if(!top2.find(r=>r.id===c.id))G.polls[c.id]=0;});
+    getCandidates().forEach(c=>{if(!top2.find(r=>r.id===c.id))G.polls[c.id]=0;});
     // Redistribute votes
     const r1=top2[0];const r2=top2[1];
     const others=res.filter(r=>r.id!==r1.id&&r.id!==r2.id);
@@ -3760,17 +4814,42 @@ function conductFirstRound(){
 
     if(top2.find(r=>r.id===G.player.id)){
       G.phase='secondround_campaign';G.secondRoundActive=true;
-      // Reduce speed to 1x for dramatic 2nd round
       G.speed=1;
       document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
       const speedBtns=document.querySelectorAll('.speed-btn');
       if(speedBtns[0])speedBtns[0].classList.add('active');
       updateSidebarPoll();renderPollsTab();
-      setTimeout(()=>showModal('⚡ Segundo Turno',`Você avançou em ${top2.findIndex(r=>r.id===G.player.id)+1}º lugar com ${res.find(r=>r.id===G.player.id)?.pct.toFixed(1)}%. O 2º turno é em 30 de outubro.`,()=>{G.paused=false;document.getElementById('pause-btn').textContent='⏸ Pausar';},'Continuar',false),1500);
+      setTimeout(()=>showModal('⚡ Segundo Turno',`Você avançou em ${top2.findIndex(r=>r.id===G.player.id)+1}º lugar com ${res.find(r=>r.id===G.player.id)?.pct.toFixed(1)}%. O 2º turno é em ${getElectionDates().second.split('-').reverse().join('/')}.`,()=>{G.paused=false;document.getElementById('pause-btn').textContent='⏸ Pausar';},'Continuar',false),1500);
     } else {
-      G.phase='finished';setTimeout(()=>showFinalResults(res,'eliminated',1),1500);
+      // Player eliminated: simulate 2nd round and show full results before game over
+      G.phase='finished';
+      const r2Result=simulateSecondRoundFast(r1,r2,others);
+      setTimeout(()=>{
+        const elim2nd=[...r2Result].sort((a,b)=>b.pct-a.pct);
+        renderResultsTab(elim2nd,2);
+        setTimeout(()=>showFinalResults(res,'eliminated',1,elim2nd),1200);
+      },1500);
     }
   }
+}
+
+function simulateSecondRoundFast(r1,r2,others){
+  // Fast simulate 2nd round between actual top-2 (no player)
+  const r1votes=r1.pct; const r2votes=r2.pct;
+  let r1bonus=0,r2bonus=0;
+  others.forEach(r=>{
+    const lean=Math.random()<0.55?'r1':'r2';
+    if(lean==='r1')r1bonus+=r.pct*0.65;
+    else r2bonus+=r.pct*0.65;
+  });
+  const tot=(r1votes+r1bonus)+(r2votes+r2bonus);
+  const pct1=(r1votes+r1bonus)/tot*100;
+  const pct2=(r2votes+r2bonus)/tot*100;
+  const totalV=Object.values(STATES).reduce((a,s)=>a+s.voters,0);
+  return [
+    {id:r1.id,name:r1.name,party:r1.party,partyColor:r1.partyColor,votes:Math.round(pct1/100*totalV),pct:pct1,reject:r1.reject||0},
+    {id:r2.id,name:r2.name,party:r2.party,partyColor:r2.partyColor,votes:Math.round(pct2/100*totalV),pct:pct2,reject:r2.reject||0}
+  ];
 }
 
 function conductSecondRound(){
@@ -3784,7 +4863,7 @@ function conductSecondRound(){
 function renderResultsTab(results,round){
   const sorted=[...results].sort((a,b)=>b.pct-a.pct);
   document.getElementById('results-tab-content').innerHTML=`
-    <div class="round-banner"><div class="round-banner-text">${round===1?'1º TURNO — 02/10/2022':'2º TURNO — 30/10/2022'}</div><div style="font-size:11px;color:var(--text3)">Resultado Oficial TSE</div></div>
+    <div class="round-banner"><div class="round-banner-text">${round===1?(CURRENT_ELECTION===2018?'1º TURNO — 07/10/2018':'1º TURNO — 02/10/2022'):(CURRENT_ELECTION===2018?'2º TURNO — 28/10/2018':'2º TURNO — 30/10/2022')}</div><div style="font-size:11px;color:var(--text3)">Resultado Oficial TSE</div></div>
     <div class="results-table">
       <div class="results-row header"><span>#</span><span>Candidato</span><span style="text-align:right">Votos</span><span style="text-align:right">%</span><span style="text-align:center">Status</span></div>
       ${sorted.map((r,i)=>`<div class="results-row ${i===0?'winner':''} ${r.id===G.player.id?'player':''}">
@@ -3804,16 +4883,18 @@ function renderResultsTab(results,round){
   showTab('results',navBtn);
 }
 
-function showFinalResults(results,outcome,round){
+function showFinalResults(results,outcome,round,secondRoundResults){
   showScreen('results-screen');
   const sorted=[...results].sort((a,b)=>b.pct-a.pct);
   const won=outcome==='win'||outcome==='win_r1';
-  const titles={win:'🎉 VOCÊ GANHOU!',win_r1:'🎉 VITÓRIA NO 1º TURNO!',eliminated:'❌ ELIMINADO',loss:'😔 DERROTA NO 2º TURNO',loss_r1:'😔 VOCÊ PERDEU'};
-  const subs={win:'Vitória no 2º turno! O Brasil escolheu você.',win_r1:'Maioria absoluta no 1º turno!',eliminated:'Você não avançou para o segundo turno.',loss:'Derrota no segundo turno.',loss_r1:'Você perdeu no primeiro turno.'};
+  const titles={win:'🎉 VOCÊ GANHOU!',win_r1:'🎉 VITÓRIA NO 1º TURNO!',eliminated:'❌ ELIMINADO NO 1º TURNO',loss:'😔 DERROTA NO 2º TURNO',loss_r1:'😔 VOCÊ PERDEU'};
+  const subs={win:'Vitória no 2º turno! O Brasil escolheu você.',win_r1:'Maioria absoluta no 1º turno!',eliminated:'Você não avançou para o segundo turno. Veja abaixo quem venceu.',loss:'Derrota no segundo turno.',loss_r1:'Você perdeu no primeiro turno.'};
   document.getElementById('final-results-title').textContent=titles[outcome]||'RESULTADO FINAL';
   document.getElementById('final-results-title').className=`results-title ${won?'win':'lose'}`;
   document.getElementById('final-results-subtitle').textContent=subs[outcome]||'';
-  document.getElementById('final-results-table').innerHTML=`
+
+  const build1stRound=()=>`
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:10px;text-transform:uppercase">📊 Resultado 1º Turno</div>
     <div class="results-table">
       <div class="results-row header"><span>#</span><span>Candidato</span><span style="text-align:right">Votos</span><span style="text-align:right">%</span><span style="text-align:center">Status</span></div>
       ${sorted.map((r,i)=>`<div class="results-row ${i===0?'winner':''} ${r.id===G.player.id?'player':''}">
@@ -3823,8 +4904,35 @@ function showFinalResults(results,outcome,round){
         <div class="results-pct" style="text-align:right">${r.pct.toFixed(2)}%</div>
         <div style="text-align:center;font-size:11px">${i===0?'<span class="winner-badge">🏆</span>':i===1?'<span class="second-badge">2º</span>':'<span class="eliminated-badge">Elim.</span>'}${r.id===G.player.id?' <span style="color:var(--accent)">(Você)</span>':''}</div>
       </div>`).join('')}
-    </div>
-  `;
+    </div>`;
+
+  let html=build1stRound();
+
+  if(outcome==='eliminated'&&secondRoundResults&&secondRoundResults.length){
+    const sr=[...secondRoundResults].sort((a,b)=>b.pct-a.pct);
+    const winner=sr[0];
+    html+=`
+      <div style="margin-top:22px;padding:14px;background:rgba(0,212,255,.04);border:1px solid var(--border2);border-radius:10px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:10px;text-transform:uppercase">🗳️ Resultado 2º Turno (sem você)</div>
+        <div class="results-table">
+          <div class="results-row header"><span>#</span><span>Candidato</span><span style="text-align:right">Votos</span><span style="text-align:right">%</span><span style="text-align:center">Status</span></div>
+          ${sr.map((r,i)=>`<div class="results-row ${i===0?'winner':''}">
+            <div class="results-rank ${i===0?'first':'second'}">${i+1}</div>
+            <div><div class="results-cand-name">${r.name}</div><div class="results-cand-party">${r.party}</div></div>
+            <div class="results-votes" style="text-align:right">${(r.votes/1e6).toFixed(2)}M</div>
+            <div class="results-pct" style="text-align:right">${r.pct.toFixed(2)}%</div>
+            <div style="text-align:center;font-size:11px">${i===0?'<span class="winner-badge">🏆 Eleito</span>':'<span class="second-badge">2º</span>'}</div>
+          </div>`).join('')}
+        </div>
+        <div style="margin-top:12px;padding:10px;background:rgba(245,197,24,.07);border-radius:8px;text-align:center">
+          <div style="font-size:20px;margin-bottom:4px">🏛️</div>
+          <div style="font-weight:700;font-size:14px">${winner.name} foi eleito Presidente do Brasil</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:3px">${winner.party} · ${winner.pct.toFixed(1)}% dos votos válidos</div>
+        </div>
+      </div>`;
+  }
+
+  document.getElementById('final-results-table').innerHTML=html;
   document.getElementById('post-election-options').innerHTML=`
     <div class="post-election-actions">
       ${won?`<div class="post-action-card" onclick="showModal('🏛️ Governar o Brasil','Esta funcionalidade chegará na próxima versão do Simulador Eleitoral Global! Fique ligado.',()=>{},'Ok',false)"><div class="post-action-icon">🏛️</div><div class="post-action-title">JOGAR COMO PRESIDENTE</div><div class="post-action-desc">Em desenvolvimento — próxima versão</div></div>`:
@@ -3836,8 +4944,9 @@ function showFinalResults(results,outcome,round){
 
 function restartGame(){
   if(G.timer)clearInterval(G.timer);
-  SCHEDULED_DEBATES.forEach(d=>delete d.triggered);
-  G={selectedCandidate:null,selectedVice:null,player:null,vice:null,difficulty:'medium',sandbox:false,currentDate:new Date('2021-10-02'),gameStartDate:new Date('2021-10-02'),firstRoundDate:new Date('2022-10-02'),secondRoundDate:new Date('2022-10-30'),paused:false,speed:1,phase:'campaign',round:1,timer:null,daysPassed:0,totalDays:366,money:0,popularity:0,rejection:0,momentum:50,polls:{},statePoll:{},historicalPolls:[],rejectPolls:{},events:[],allies:[],focusedState:null,financeHistory:[],debateState:null,secondRoundCandidates:[],secondRoundActive:false,investedAreas:{},aiLastAction:{},agendaSlots:{},activeSocialPlatform:'twitter',socialPosts:[],interviewCooldown:0,scandals:[],viceCooldowns:{},viceHistory:[],actionCount:{},campaignActions:{comicio:{cooldown:0,maxCooldown:35},tv:{cooldown:0,maxCooldown:45},digital:{cooldown:0,maxCooldown:30},viagem:{cooldown:0,maxCooldown:50},equipe:{cooldown:0,maxCooldown:70},proposta:{cooldown:0,maxCooldown:30},jantar:{cooldown:0,maxCooldown:60}}};
+  getScheduledDebates().forEach(d=>delete d.triggered);
+  const dates=getElectionDates();
+  G={selectedCandidate:null,selectedVice:null,player:null,vice:null,difficulty:G.difficulty||'medium',sandbox:false,currentDate:new Date(dates.start),gameStartDate:new Date(dates.start),firstRoundDate:new Date(dates.first),secondRoundDate:new Date(dates.second),paused:false,speed:1,phase:'campaign',round:1,timer:null,daysPassed:0,totalDays:dates.totalDays,money:0,popularity:0,rejection:0,momentum:50,energy:100,energyRegen:0,polls:{},statePoll:{},historicalPolls:[],rejectPolls:{},events:[],allies:[],focusedState:null,financeHistory:[],debateState:null,secondRoundCandidates:[],secondRoundActive:false,investedAreas:{},aiLastAction:{},agendaSlots:{},activeSocialPlatform:'twitter',socialPosts:[],interviewCooldown:0,scandals:[],viceCooldowns:{},viceHistory:[],actionCount:{},financeCooldowns:{},financeLockedKey:null,thirdCandSurged:null,stateInvestments:{},campaignActions:{comicio:{cooldown:0,maxCooldown:20},tv:{cooldown:0,maxCooldown:25},digital:{cooldown:0,maxCooldown:15},viagem:{cooldown:0,maxCooldown:30},equipe:{cooldown:0,maxCooldown:40},proposta:{cooldown:0,maxCooldown:20},jantar:{cooldown:0,maxCooldown:25}}};
   // Re-enable speed buttons
   document.querySelectorAll('.speed-btn').forEach((b,i)=>{b.disabled=false;b.style.opacity='';b.title='';b.classList.remove('active');if(i===0)b.classList.add('active');});
   mapLoaded=false;
@@ -3867,9 +4976,81 @@ function setSpeed(s,btn){
 function togglePause(){G.paused=!G.paused;document.getElementById('pause-btn').textContent=G.paused?'▶ Continuar':'⏸ Pausar';}
 
 // ════════════════════════════════════════════════════════
+// SOUND EFFECTS — Web Audio API (no files needed)
+// ════════════════════════════════════════════════════════
+let _sfxCtx=null;
+function getSFXCtx(){
+  if(!_sfxCtx){try{_sfxCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  return _sfxCtx;
+}
+function playSFX(type='click'){
+  try{
+    const ctx=getSFXCtx();if(!ctx)return;
+    if(ctx.state==='suspended')ctx.resume();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    const t=ctx.currentTime;
+    switch(type){
+      case'click':
+        o.type='sine';o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(340,t+0.07);
+        g.gain.setValueAtTime(0.07,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+        o.start(t);o.stop(t+0.12);break;
+      case'success':{
+        // Two-note chime
+        const o2=ctx.createOscillator(),g2=ctx.createGain();
+        o2.connect(g2);g2.connect(ctx.destination);
+        o.type='sine';o.frequency.setValueAtTime(440,t);
+        g.gain.setValueAtTime(0.09,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+        o.start(t);o.stop(t+0.35);
+        o2.type='sine';o2.frequency.setValueAtTime(660,t+0.12);
+        g2.gain.setValueAtTime(0.09,t+0.12);g2.gain.exponentialRampToValueAtTime(0.001,t+0.45);
+        o2.start(t+0.12);o2.stop(t+0.45);break;}
+      case'error':
+        o.type='sawtooth';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(110,t+0.28);
+        g.gain.setValueAtTime(0.07,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.3);
+        o.start(t);o.stop(t+0.3);break;
+      case'tweet':
+        o.type='sine';o.frequency.setValueAtTime(880,t);o.frequency.setValueAtTime(1100,t+0.06);o.frequency.setValueAtTime(880,t+0.13);
+        g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+        o.start(t);o.stop(t+0.2);break;
+      case'cash':{
+        const o2=ctx.createOscillator(),g2=ctx.createGain();
+        o2.connect(g2);g2.connect(ctx.destination);
+        o.type='sine';o.frequency.setValueAtTime(523,t);
+        g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.2);
+        o.start(t);o.stop(t+0.2);
+        o2.type='sine';o2.frequency.setValueAtTime(784,t+0.1);
+        g2.gain.setValueAtTime(0.08,t+0.1);g2.gain.exponentialRampToValueAtTime(0.001,t+0.35);
+        o2.start(t+0.1);o2.stop(t+0.35);break;}
+      case'tab':
+        o.type='sine';o.frequency.setValueAtTime(380,t);o.frequency.exponentialRampToValueAtTime(520,t+0.08);
+        g.gain.setValueAtTime(0.05,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+        o.start(t);o.stop(t+0.1);break;
+      case'event':
+        o.type='triangle';o.frequency.setValueAtTime(220,t);o.frequency.exponentialRampToValueAtTime(440,t+0.18);
+        g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.28);
+        o.start(t);o.stop(t+0.28);break;
+      case'debate':
+        o.type='triangle';o.frequency.setValueAtTime(330,t);o.frequency.setValueAtTime(440,t+0.09);o.frequency.setValueAtTime(330,t+0.18);
+        g.gain.setValueAtTime(0.09,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.36);
+        o.start(t);o.stop(t+0.36);break;
+      default:
+        o.type='sine';o.frequency.setValueAtTime(400,t);
+        g.gain.setValueAtTime(0.05,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.08);
+        o.start(t);o.stop(t+0.08);
+    }
+  }catch(e){}
+}
+
+// ════════════════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
+  // Global soft click on interactive elements
+  document.addEventListener('click',e=>{
+    const el=e.target.closest('button:not(:disabled),a,.candidate-card,.vice-card,.invest-card,.nav-btn,.speed-btn,.alliance-btn,.event-choice-btn,.interview-choice,.diff-btn,.agenda-slot,.post-action-card');
+    if(el&&!el.disabled)playSFX('click');
+  },{passive:true});
   renderDifficultyGrid();
   renderCandidateCards();
 });
