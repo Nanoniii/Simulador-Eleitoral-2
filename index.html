@@ -2451,7 +2451,12 @@ function updatePolls(){
 // reflects realistic regional distribution.
 // Additionally, stateInvestments (from viagem action) add a persistent boost per state.
 function recomputeStatePolls(){
-  const cands = getCandidates();
+  // No 2º turno só existem 2 candidatos — usar apenas eles
+  const allCands = getCandidates();
+  const cands = G.secondRoundActive
+    ? G.secondRoundCandidates.map(r => allCands.find(c => c.id === r.id)).filter(Boolean)
+    : allCands;
+
   const stateInvestments = G.stateInvestments || {};
   const realResults = getRealResults();
   const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : CURRENT_ELECTION===2014 ? ['dilma14','aecio14'] : ['lula','bolsonaro'];
@@ -2470,8 +2475,15 @@ function recomputeStatePolls(){
     const playerIsLeading = nationalLeader && nationalLeader[0] === G.player.id;
     const playerNatPct = G.polls[G.player.id] || 0.1;
 
+    // No 2º turno: normalizar os polls dos 2 candidatos para somarem 100%
+    let pollTotal = 0;
+    cands.forEach(c => { pollTotal += G.polls[c.id] || 0.1; });
+
     cands.forEach(c => {
-      const natPct = G.polls[c.id] || 0.1;
+      // No 2º turno, usar poll normalizado para que some 100%
+      const natPct = G.secondRoundActive
+        ? ((G.polls[c.id] || 0.1) / pollTotal * 100)
+        : (G.polls[c.id] || 0.1);
       const regionMult = c.regionBias?.[st.region] || 1.0;
       const investBoost = (c.id === G.player.id && stateInvestments[abbr]) ? stateInvestments[abbr] : 0;
       const noise = (Math.random() - 0.5) * 1.2;
@@ -2479,21 +2491,18 @@ function recomputeStatePolls(){
       // Compute "dynamic" value: national % × regional bias
       let dynamicVal = natPct * regionMult + investBoost + noise;
 
-      // For top-2 historical candidates, blend in the real historical result as an anchor.
-      // BUT: reduce anchor weight proportionally when the player is leading nationally.
-      // If player leads by X points, loosen the historical anchor so the map reflects reality.
+      // Para candidatos históricos do top-2, blender com resultado real como âncora
+      // No 2º turno usar resultados do 2º turno real (dilma/aecio no 2T 2014 etc.)
       if(real && top2ids.includes(c.id)) {
         let realKey;
         if(CURRENT_ELECTION===2018) realKey = c.id==='bolsonaro18' ? 'bolsonaro' : 'haddad';
         else if(CURRENT_ELECTION===2014) realKey = c.id==='dilma14' ? 'dilma' : 'aecio';
         else realKey = c.id===top2ids[0] ? 'lula' : 'bolsonaro';
         const realVal = real[realKey] || dynamicVal;
-        // anchor weight: starts at 0.5 max, and dissolves fast when player leads
         let anchorWeight = Math.max(0, 0.5 - progress * 0.5);
-        // If player is leading nationally, aggressively release the historical anchor
         if(playerIsLeading) {
-          const playerLead = playerNatPct - natPct; // pts ahead of THIS historical candidate
-          const loosening = clamp(playerLead / 10, 0, anchorWeight); // 1pt lead = 10% loosening
+          const playerLead = playerNatPct - natPct;
+          const loosening = clamp(playerLead / 10, 0, anchorWeight);
           anchorWeight = Math.max(0, anchorWeight - loosening);
         }
         dynamicVal = dynamicVal * (1 - anchorWeight) + realVal * anchorWeight;
@@ -2503,7 +2512,9 @@ function recomputeStatePolls(){
       total += raw[c.id];
     });
 
-    // Normalize to 100%
+    // Normaliza apenas os candidatos ativos para 100%
+    // Zera os eliminados
+    allCands.forEach(c => { G.statePoll[abbr][c.id] = 0; });
     cands.forEach(c => {
       G.statePoll[abbr][c.id] = raw[c.id] / total * 100;
     });
@@ -4880,7 +4891,10 @@ function wireMapEvents(svg){
     const abbr=getAbbr(e.target);
     if(!abbr){tt.style.display='none';return;}
     const sp=G.statePoll[abbr]||{};
-    const top=getCandidates().map(c=>({...c,pct:sp[c.id]||0})).sort((a,b)=>b.pct-a.pct).slice(0,4);
+    const activeCands = G.secondRoundActive
+      ? G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean)
+      : getCandidates();
+    const top=activeCands.map(c=>({...c,pct:sp[c.id]||0})).sort((a,b)=>b.pct-a.pct).slice(0,4);
     document.getElementById('tt-state-name').innerHTML=
       '<strong>'+STATES[abbr].name+'</strong> <span style="color:var(--text3);font-size:10px">'+abbr+'</span>';
     document.getElementById('tt-top3').innerHTML=top.map((c,i)=>
@@ -6026,6 +6040,14 @@ function simulateElection(round){
   const cands=round===2?G.secondRoundCandidates.map(r=>getCandidates().find(c=>c.id===r.id)).filter(Boolean):getCandidates();
   let totalV=0;const sv={};
   cands.forEach(c=>sv[c.id]=0);
+
+  // No 2º turno, normalizar os polls nacionais para somarem 100%
+  let pollNorm={};
+  if(round===2){
+    let pt=cands.reduce((s,c)=>s+(G.polls[c.id]||0.1),0);
+    cands.forEach(c=>pollNorm[c.id]=(G.polls[c.id]||0.1)/pt*100);
+  }
+
   Object.entries(STATES).forEach(([a,st])=>{
     const voters=st.voters;totalV+=voters;
     cands.forEach(c=>sv[c.id]+=(G.statePoll[a]?.[c.id]||0)/100*voters);
@@ -6034,7 +6056,7 @@ function simulateElection(round){
   // Blend state result with national polls to avoid wild drops (60/40 blend)
   cands.forEach(c=>{
     const statePct=sv[c.id]/tot*100;
-    const natPct=G.polls[c.id]||statePct;
+    const natPct=round===2?(pollNorm[c.id]||statePct):(G.polls[c.id]||statePct);
     // Weighted blend: 55% national poll, 45% state-by-state result
     sv[c.id]=(statePct*0.45+natPct*0.55);
   });
