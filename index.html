@@ -1727,7 +1727,18 @@ function startGame(){
   renderDebatesTab();
   renderAgendaTab();
   updateSidebarPoll();
-  loadMap();
+  // Always clear + reinit the map so we never get duplicate SVGs on restart
+  (function(){
+    const existing=document.getElementById('brazil-map');
+    const existingFb=document.getElementById('map-fallback');
+    if(existing)existing.remove();
+    if(existingFb)existingFb.remove();
+    mapLoaded=false;
+    const mc=document.getElementById('map-container');
+    if(mc){const ld=document.getElementById('map-loading');if(!ld){const d=document.createElement('div');d.id='map-loading';mc.appendChild(d);}}
+    loadMap();
+    renderMapLegend();
+  })();
 
   showScreen('game-screen');
   startGameLoop();
@@ -1767,11 +1778,15 @@ function initializePolls(){
       });
       dynamicVal*=(0.92+Math.random()*0.16); // small initial variance
       // For top-2 historical candidates, anchor heavily to real results at game start
+      // BUT: reduce anchor proportionally based on player's national poll share
       if(real && top2ids.includes(c.id)){
         const key=c.id===top2ids[0]?(CURRENT_ELECTION===2018?'bolsonaro':'lula'):(CURRENT_ELECTION===2018?'haddad':'bolsonaro');
         const realVal=real[key]||dynamicVal;
-        // At game start: 70% real, 30% dynamic
-        dynamicVal=dynamicVal*0.3+realVal*0.7;
+        const playerNatPct=G.polls[G.player.id]||0.1;
+        // If player leads this candidate by even 1pt, start unlocking states aggressively
+        const playerLead=clamp((playerNatPct-natPct)/10,0,1.0);
+        const anchorWeight=Math.max(0,0.5*(1-playerLead));
+        dynamicVal=dynamicVal*(1-anchorWeight)+realVal*anchorWeight;
       }
       raw[c.id]=Math.max(0.1,dynamicVal);
       total+=raw[c.id];
@@ -1903,10 +1918,16 @@ function updatePolls(){
 
   // State polls follow national with lag
   Object.keys(G.statePoll).forEach(abbr=>{
+    const st=STATES[abbr]||{};
     cands.forEach(c=>{
       const prev=G.historicalPolls.length>1?G.historicalPolls[G.historicalPolls.length-1].polls[c.id]:G.polls[c.id];
       const natDiff=G.polls[c.id]-prev;
-      G.statePoll[abbr][c.id]=clamp(G.statePoll[abbr][c.id]+natDiff*0.5+(Math.random()-.5)*0.6,0.05,92);
+      // Pull state poll toward the candidate's national poll level (slow convergence)
+      const regionMult=c.regionBias?.[st.region]||1.0;
+      const stateTarget=(G.polls[c.id]||0)*regionMult;
+      const currentState=G.statePoll[abbr][c.id]||0;
+      const pullToNational=(stateTarget-currentState)*0.25; // strong pull each tick
+      G.statePoll[abbr][c.id]=clamp(currentState+natDiff*0.5+pullToNational+(Math.random()-.5)*0.6,0.05,92);
     });
     let t=Object.values(G.statePoll[abbr]).reduce((a,b)=>a+b,0);
     Object.keys(G.statePoll[abbr]).forEach(k=>G.statePoll[abbr][k]=G.statePoll[abbr][k]/t*100);
@@ -1955,6 +1976,11 @@ function recomputeStatePolls(){
     const raw = {};
     let total = 0;
 
+    // Find the nationally-leading candidate to determine if player is leading
+    const nationalLeader = Object.entries(G.polls).sort((a,b)=>b[1]-a[1])[0];
+    const playerIsLeading = nationalLeader && nationalLeader[0] === G.player.id;
+    const playerNatPct = G.polls[G.player.id] || 0.1;
+
     cands.forEach(c => {
       const natPct = G.polls[c.id] || 0.1;
       const regionMult = c.regionBias?.[st.region] || 1.0;
@@ -1965,16 +1991,21 @@ function recomputeStatePolls(){
       let dynamicVal = natPct * regionMult + investBoost + noise;
 
       // For top-2 historical candidates, blend in the real historical result as an anchor.
-      // At start: 70% anchored to real result. At end: 100% dynamic.
-      // This prevents a candidate who was historically weak in a region
-      // from suddenly dominating just because they gained national support.
+      // BUT: reduce anchor weight proportionally when the player is leading nationally.
+      // If player leads by X points, loosen the historical anchor so the map reflects reality.
       if(real && top2ids.includes(c.id)) {
         const realKey = c.id === top2ids[0]
           ? (CURRENT_ELECTION===2018 ? 'bolsonaro' : 'lula')
           : (CURRENT_ELECTION===2018 ? 'haddad' : 'bolsonaro');
         const realVal = real[realKey] || dynamicVal;
-        // anchor weight decreases as campaign progresses: starts at 0.7, ends at 0.0
-        const anchorWeight = Math.max(0, 0.7 - progress * 0.7);
+        // anchor weight: starts at 0.5 max, and dissolves fast when player leads
+        let anchorWeight = Math.max(0, 0.5 - progress * 0.5);
+        // If player is leading nationally, aggressively release the historical anchor
+        if(playerIsLeading) {
+          const playerLead = playerNatPct - natPct; // pts ahead of THIS historical candidate
+          const loosening = clamp(playerLead / 10, 0, anchorWeight); // 1pt lead = 10% loosening
+          anchorWeight = Math.max(0, anchorWeight - loosening);
+        }
         dynamicVal = dynamicVal * (1 - anchorWeight) + realVal * anchorWeight;
       }
 
