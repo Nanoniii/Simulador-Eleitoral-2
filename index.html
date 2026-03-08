@@ -209,6 +209,11 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
   /* Esconde os botões extras no nav — aparecem só no painel */
   .nav-btn.nav-extra{ display:none !important; }
 
+  /* Re-habilita elementos mobile que o desktop esconde */
+  #nav-more-btn{ display:flex !important; }
+  #nav-more-panel.open{ display:block !important; }
+  #nav-more-overlay.open{ display:block !important; }
+
   /* Botão "⋯ Mais" */
   .nav-more-btn{
     display:flex !important;
@@ -599,6 +604,9 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
 .sidebar{width:155px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
 .sidebar-nav{display:flex;flex-direction:column;padding:6px;gap:2px}
 .nav-btn{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:var(--radius);cursor:pointer;color:var(--text2);background:transparent;border:none;font-family:'IBM Plex Sans',sans-serif;font-size:12px;font-weight:500;transition:all var(--t);text-align:left;width:100%}
+/* Desktop: esconde elementos exclusivos do mobile */
+#nav-more-panel,#nav-more-overlay,#nav-more-btn{display:none !important;}
+.nav-btn.nav-extra{display:flex !important;}
 .nav-btn:hover{background:var(--bg3);color:var(--text)}.nav-btn.active{background:rgba(0,212,255,.1);color:var(--accent)}
 .nav-btn .icon{font-size:14px;width:18px;text-align:center}
 .sidebar-bottom{margin-top:auto;padding:10px;border-top:1px solid var(--border)}
