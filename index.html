@@ -1085,6 +1085,28 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
           </label>
         </div>
 
+        <!-- Spectator Mode -->
+        <div style="margin-bottom:28px">
+          <label class="sandbox-toggle" style="border-color:rgba(155,89,182,.35);background:rgba(155,89,182,.06)">
+            <input type="checkbox" id="spectator-check" onchange="toggleSpectator(this.checked)">
+            <div>
+              <div class="sandbox-label" style="color:#9b59b6">👁️ MODO ESPECTADOR</div>
+              <div class="sandbox-desc">Apenas observe a corrida eleitoral — sem debates, eventos ou ações. Só pesquisas e resultados.</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- 1989 Desistentes Toggle (só visível em 1989) -->
+        <div id="desistentes-zone" style="display:none;margin-bottom:28px">
+          <label class="sandbox-toggle" style="border-color:rgba(249,168,37,.35);background:rgba(249,168,37,.06)">
+            <input type="checkbox" id="desistentes-check" onchange="toggleDesistentes1989(this.checked)">
+            <div>
+              <div class="sandbox-label" style="color:#f9a825">🚪 CANDIDATOS DESISTENTES / NÃO ACEITOS</div>
+              <div class="sandbox-desc">Inclui Sílvio Santos, Jânio Quadros e outros que não chegaram a disputar em 1989.</div>
+            </div>
+          </label>
+        </div>
+
         <!-- Candidates -->
         <div style="width:100%;margin-bottom:36px">
           <div class="section-heading">Escolha Seu Candidato</div>
@@ -1137,6 +1159,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tex
     </div>
     <div class="topbar-right">
       <span id="sandbox-badge-top" style="display:none" class="sandbox-badge">🏖️ SANDBOX</span>
+      <span id="spectator-badge-top" style="display:none;background:rgba(155,89,182,.2);color:#9b59b6;border:1px solid rgba(155,89,182,.4);padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:1px;font-family:'IBM Plex Mono',monospace">👁️ ESPECTADOR</span>
       <span style="font-size:10px;color:var(--text3)">Vel:</span>
       <button class="speed-btn active" onclick="setSpeed(1,this)">1x</button>
       <button class="speed-btn" onclick="setSpeed(2,this)">2x</button>
@@ -1456,6 +1479,8 @@ const PARTY_LOGOS = {
   'UNIÃO':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Uni%C3%A3o_Brasil_logo.svg/1280px-Uni%C3%A3o_Brasil_logo.svg.png',
   'PP':'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Progressistas_%28Brazil%29_logo.svg/960px-Progressistas_%28Brazil%29_logo.svg.png',
   'Republicanos':'https://upload.wikimedia.org/wikipedia/pt/0/0d/Republicanos_logo.png',
+  'PPR':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0a/Partido_Progressista_Reformador.png/960px-Partido_Progressista_Reformador.png',
+  'PRN':'https://upload.wikimedia.org/wikipedia/commons/6/6b/Logo_do_Partido_da_Renova%C3%A7%C3%A3o_Nacional_%281989-2000%29.png',
   'PSD':'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/PSD_Brazil_logo.svg/1280px-PSD_Brazil_logo.svg.png',
   'PSB':'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Logo_of_the_Brazilian_Socialist_Party_%28wordmark_color%29.svg/1920px-Logo_of_the_Brazilian_Socialist_Party_%28wordmark_color%29.svg.png',
   'PCdoB':'https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/PCdoB_logo.svg/1920px-PCdoB_logo.svg.png',
@@ -1487,6 +1512,18 @@ const PARTY_LOGOS = {
   'PTdoB':'https://www.camaraiguatemi.ms.gov.br/wp-content/uploads/2015/04/ptdob.png',
   'PSN':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Logo_-_Partido_Humanista_da_Solidariedade.png/1920px-Logo_-_Partido_Humanista_da_Solidariedade.png',
   'PHS':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Logo_-_Partido_Humanista_da_Solidariedade.png/1920px-Logo_-_Partido_Humanista_da_Solidariedade.png',
+  /* ── Partidos de 1989 ── */
+  'PDS':'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Partido_Democr%C3%A1tico_Social_logo.svg/960px-Partido_Democr%C3%A1tico_Social_logo.svg.png',
+  'PL89':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Logo_do_Partido_Liberal_%281995%29.svg/500px-Logo_do_Partido_Liberal_%281995%29.svg.png',
+  'PSP':'https://upload.wikimedia.org/wikipedia/commons/c/cd/Logo_Partido_PSP_1987.png',
+  'PCN':'https://upload.wikimedia.org/wikipedia/commons/c/c9/PartidoComunitarioNacional.png',
+  'PN':'https://upload.wikimedia.org/wikipedia/commons/7/74/LogoPN.png',
+  'PPB89':'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Partido_do_Povo_Brasileiro.png/960px-Partido_do_Povo_Brasileiro.png',
+  'PDCdoB':'https://upload.wikimedia.org/wikipedia/commons/9/95/PDC_DO_BRASIL_LOGO_57.jpg',
+  'PMB89':'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/PMB_logo_%28Brasil%29.png/960px-PMB_logo_%28Brasil%29.png',
+  'PS':'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Logo_do_Partido_Socialista_%281985%29.png/960px-Logo_do_Partido_Socialista_%281985%29.png',
+  'PTN89':'https://upload.wikimedia.org/wikipedia/commons/c/c9/PTNlogo.png',
+  'PMC':'https://upload.wikimedia.org/wikipedia/commons/f/f9/Partido_Municipalista_Comunit%C3%A1rio.png',
 };
 
 // ════════════════════════════════════════════════════════
@@ -1837,7 +1874,350 @@ const REAL_RESULTS_2010 = {
 };
 
 // ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATES 1994
+// ════════════════════════════════════════════════════════
+const CANDIDATES_1994 = [
+  { id:'fhc94', name:'Fernando Henrique Cardoso', shortName:'FHC', party:'PSDB', partyColor:'#1565c0', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/4/47/Fernando_Henrique_Cardoso_%28cropped%29.jpg',
+    baseVote:54, baseReject:28, attrs:{carisma:62,experiencia:90,rejeicao:28,apoioPartidario:78,arrecadacao:72},
+    regionBias:{N:0.85,NE:0.9,CO:1.1,SE:1.3,S:1.2},
+    vices:['marco_maciel94','acm94'],
+    debateStrengths:['economia','saude','educacao','corrupcao'],
+    description:'Ministro da Fazenda e pai do Plano Real — venceu no 1º turno com 54,3% graças à estabilização econômica' },
+  { id:'lula94', name:'Luiz Inácio Lula da Silva', shortName:'Lula', party:'PT', partyColor:'#e53935', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/a0/Lula_sentando_em_uma_cadeira_sorrindo_%28cropped%29.jpg',
+    baseVote:27, baseReject:40, attrs:{carisma:82,experiencia:68,rejeicao:40,apoioPartidario:85,arrecadacao:50},
+    regionBias:{N:0.95,NE:1.5,CO:0.85,SE:0.9,S:0.8},
+    vices:['mercadante94','arraes94'],
+    debateStrengths:['programas_sociais','economia','saude','educacao'],
+    description:'Segunda candidatura presidencial do metalúrgico e fundador do PT — liderava as pesquisas até o lançamento do Plano Real, obteve 27%' },
+  { id:'eneas94', name:'Enéas Ferreira Carneiro', shortName:'Enéas', party:'PRONA', partyColor:'#b71c1c', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Carneiro_cropped.jpg/500px-Carneiro_cropped.jpg',
+    baseVote:7.4, baseReject:22, attrs:{carisma:75,experiencia:48,rejeicao:22,apoioPartidario:38,arrecadacao:10},
+    regionBias:{N:0.7,NE:0.75,CO:0.9,SE:1.35,S:1.1},
+    vices:[{id:'eneas94v',name:'Sérgio Bueno (PRONA)',region:'Sudeste',party:'PRONA',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:30,align:95,bonus:{},desc:'Vice de Enéas Carneiro em 1994'}],
+    debateStrengths:['valores','seguranca','economia'],
+    description:'Médico cardiologista e fundador do PRONA — surpreendeu ao ser o 3º mais votado com 7,4%, ficando à frente de Quércia e Brizola. Famoso pelo bordão "Meu nome é Enéas!"' },
+  { id:'quercia94', name:'Orestes Quércia', shortName:'Quércia', party:'PMDB', partyColor:'#005baa', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Orestes_Qu%C3%A9rcia_%2817664883676%29.jpg/500px-Orestes_Qu%C3%A9rcia_%2817664883676%29.jpg',
+    baseVote:4.4, baseReject:30, attrs:{carisma:60,experiencia:88,rejeicao:30,apoioPartidario:65,arrecadacao:55},
+    regionBias:{N:0.8,NE:0.8,CO:1.0,SE:1.2,S:1.0},
+    vices:[{id:'quercia94v',name:'Íris Rezende Machado',region:'Centro-Oeste',party:'PMDB',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:55,exp:82,align:80,bonus:{GO:3,CO:2},desc:'Ex-governador de Goiás, vice de Quércia em 1994'}],
+    debateStrengths:['economia','corrupcao','educacao'],
+    description:'Ex-governador de São Paulo e presidente do PMDB — obteve 4,4%, muito abaixo das expectativas' },
+  { id:'brizola94', name:'Leonel Brizola', shortName:'Brizola', party:'PDT', partyColor:'#e65100', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Brizola.jpg/500px-Brizola.jpg',
+    baseVote:3.2, baseReject:32, attrs:{carisma:72,experiencia:92,rejeicao:32,apoioPartidario:65,arrecadacao:30},
+    regionBias:{N:0.8,NE:0.9,CO:0.85,SE:0.9,S:1.5},
+    vices:[{id:'brizola94v',name:'Darcy Ribeiro',region:'Rio de Janeiro',party:'PDT',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:70,exp:92,align:88,bonus:{RJ:4,S:2},desc:'Antropólogo e senador pelo RJ, vice de Brizola em 1994'}],
+    debateStrengths:['programas_sociais','educacao','economia'],
+    description:'Ícone do trabalhismo gaúcho e ex-governador do RS e RJ — obteve apenas 3,2%, em seu pior resultado' },
+  { id:'amin94', name:'Esperidião Amin', shortName:'Amin', party:'PPR', partyColor:'#37474f', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Senador_Esperidi%C3%A3o_Amin.jpg/960px-Senador_Esperidi%C3%A3o_Amin.jpg',
+    baseVote:2.8, baseReject:22, attrs:{carisma:55,experiencia:82,rejeicao:22,apoioPartidario:60,arrecadacao:38},
+    regionBias:{N:0.6,NE:0.6,CO:0.9,SE:1.0,S:1.7},
+    vices:[{id:'amin94v',name:'Amir Lando',region:'Centro-Oeste',party:'PPR',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:35,exp:55,align:82,bonus:{RO:2},desc:'Político de Rondônia, vice de Amin em 1994'}],
+    debateStrengths:['economia','valores','seguranca'],
+    description:'Ex-governador de Santa Catarina e candidato do PPR — obteve 2,75%, com boa votação no Sul' },
+  { id:'cgomes94', name:'Carlos Antônio Gomes', shortName:'Carlos Gomes', party:'PRN', partyColor:'#4a148c', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://i.ytimg.com/vi/ilwPaPoiXYs/maxresdefault.jpg',
+    baseVote:0.6, baseReject:16, attrs:{carisma:42,experiencia:55,rejeicao:16,apoioPartidario:25,arrecadacao:12},
+    regionBias:{N:0.8,NE:0.9,CO:0.9,SE:1.0,S:0.9},
+    vices:[{id:'cgomes94v',name:'José Tinoco Fonseca',region:'Nordeste',party:'PRN',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:18,exp:28,align:88,bonus:{},desc:'Vice de Carlos Antônio Gomes (PRN) em 1994'}],
+    debateStrengths:['economia','valores'],
+    description:'Candidato do PRN (partido do ex-presidente Collor) — obteve 0,61%' },
+  { id:'hernani94', name:'Hernani Goulart Fortuna', shortName:'Hernani Fortuna', party:'PSC', partyColor:'#2e7d32', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/c/c2/Hernani_Fortuna_1994.png',
+    baseVote:0.38, baseReject:14, attrs:{carisma:40,experiencia:55,rejeicao:14,apoioPartidario:22,arrecadacao:8},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.1,S:0.9},
+    vices:[{id:'hernani94v',name:'Plínio Martins',region:'Nordeste',party:'PSC',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:14,exp:26,align:88,bonus:{},desc:'Vice de Hernani Fortuna (PSC) em 1994'}],
+    debateStrengths:['valores','religiao'],
+    description:'Brigadeiro da Aeronáutica e candidato do PSC — obteve 0,38%' }
+];
+
+const VICES_1994 = {
+  marco_maciel94:{ id:'marco_maciel94', name:'Marco Maciel', party:'PFL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Marco_maciel_2010.jpg/500px-Marco_maciel_2010.jpg', region:'Nordeste', pop:65, exp:85, align:88, bonus:{NE:3,PE:3}, desc:'Vice real de FHC em 1994 — político pernambucano do PFL, substituiu Guilherme Palmeira acusado de corrupção' },
+  acm94:{ id:'acm94', name:'Antônio Carlos Magalhães', party:'PFL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/ACM_2007.jpeg/500px-ACM_2007.jpeg', region:'Nordeste', pop:72, exp:88, align:82, bonus:{BA:5,NE:3}, desc:'Ex-governador da Bahia e poderosa liderança do PFL no Nordeste — opção alternativa para a chapa de FHC' },
+  mercadante94:{ id:'mercadante94', name:'Aloizio Mercadante', party:'PT', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Transmiss%C3%A3o_do_Cargo_de_Ministro_de_Estado_do_MCTI_%2852605984340%29.jpg/500px-Transmiss%C3%A3o_do_Cargo_de_Ministro_de_Estado_do_MCTI_%2852605984340%29.jpg', region:'Sudeste', pop:52, exp:68, align:95, bonus:{SP:2,SE:1}, desc:'Vice real de Lula em 1994 — deputado federal pelo PT-SP, substituiu José Paulo Bisol após escândalo' },
+  arraes94:{ id:'arraes94', name:'Miguel Arraes', party:'PSB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Miguel_Arraes.jpg/500px-Miguel_Arraes.jpg', region:'Nordeste', pop:72, exp:92, align:85, bonus:{PE:5,NE:4}, desc:'Ex-governador de Pernambuco e ícone da esquerda nordestina — opção alternativa para a chapa de Lula' }
+};
+
+const REAL_RESULTS_1994 = {
+  AC:{fhc94:52.0,lula94:29.5}, AL:{fhc94:48.0,lula94:35.0},
+  AM:{fhc94:50.0,lula94:26.0}, AP:{fhc94:44.0,lula94:32.0},
+  BA:{fhc94:52.0,lula94:30.0}, CE:{fhc94:63.0,lula94:19.0},
+  DF:{fhc94:64.0,lula94:22.0}, ES:{fhc94:62.0,lula94:20.0},
+  GO:{fhc94:63.0,lula94:18.0}, MA:{fhc94:53.0,lula94:28.0},
+  MG:{fhc94:56.0,lula94:26.0}, MS:{fhc94:66.0,lula94:17.0},
+  MT:{fhc94:67.0,lula94:15.0}, PA:{fhc94:50.0,lula94:28.0},
+  PB:{fhc94:57.0,lula94:24.0}, PE:{fhc94:52.0,lula94:29.0},
+  PI:{fhc94:54.0,lula94:25.0}, PR:{fhc94:58.0,lula94:23.0},
+  RJ:{fhc94:52.0,lula94:27.0}, RN:{fhc94:59.0,lula94:22.0},
+  RO:{fhc94:64.0,lula94:15.0}, RR:{fhc94:61.0,lula94:18.0},
+  RS:{fhc94:50.0,lula94:30.0}, SC:{fhc94:62.0,lula94:18.0},
+  SE:{fhc94:54.0,lula94:28.0}, SP:{fhc94:56.0,lula94:27.0},
+  TO:{fhc94:64.0,lula94:18.0}
+};
+
+const SCHEDULED_DEBATES_1994 = [
+  {date:'1994-08-18',name:'Debate Band',participants:'todos',round:1},
+  {date:'1994-09-08',name:'Debate SBT',participants:'todos',round:1},
+  {date:'1994-09-22',name:'Debate Globo',participants:'top4',round:1}
+];
+
+// ════════════════════════════════════════════════════════
+// DATA — CANDIDATOS 1989
+// ════════════════════════════════════════════════════════
+const NO_PHOTO = 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%23333%22 width=%2280%22 height=%2280%22/><text fill=%22%23888%22 x=%2240%22 y=%2250%22 font-size=%2222%22 text-anchor=%22middle%22>?</text></svg>';
+
+const CANDIDATES_1989 = [
+  { id:'collor89', name:'Fernando Affonso Collor de Mello', shortName:'Collor', party:'PRN', partyColor:'#1a6b3a', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/0/03/Fernando_Collor_no_Pal%C3%A1cio_do_Planalto.jpg',
+    baseVote:30, baseReject:35, attrs:{carisma:85,experiencia:65,rejeicao:35,apoioPartidario:60,arrecadacao:60},
+    regionBias:{N:1.1,NE:1.3,CO:1.0,SE:0.9,S:0.8},
+    vices:['itamar89'],
+    debateStrengths:['corrupcao','economia','valores'],
+    description:'Ex-governador de Alagoas, "Caçador de Marajás" — venceu a eleição no 2º turno com 53% contra Lula. Primeiro presidente eleito diretamente após a ditadura militar.' },
+  { id:'lula89', name:'Luiz Inácio Lula da Silva', shortName:'Lula', party:'PT', partyColor:'#e53935', ideology:'Esquerda', ideologyClass:'ideo-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/a0/Lula_sentando_em_uma_cadeira_sorrindo_%28cropped%29.jpg',
+    baseVote:17, baseReject:40, attrs:{carisma:88,experiencia:58,rejeicao:40,apoioPartidario:90,arrecadacao:40},
+    regionBias:{N:0.9,NE:1.1,CO:0.85,SE:1.1,S:1.2},
+    vices:['bisol89'],
+    debateStrengths:['programas_sociais','economia','corrupcao'],
+    description:'Líder sindical e fundador do PT — chegou ao 2º turno com 16%, sendo derrotado por Collor com 47,3% dos votos válidos.' },
+  { id:'brizola89', name:'Leonel de Moura Brizola', shortName:'Brizola', party:'PDT', partyColor:'#e65100', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Brizola.jpg/500px-Brizola.jpg',
+    baseVote:16, baseReject:35, attrs:{carisma:80,experiencia:92,rejeicao:35,apoioPartidario:78,arrecadacao:48},
+    regionBias:{N:0.7,NE:0.75,CO:0.8,SE:1.1,S:1.6},
+    vices:[{id:'brizolav89',name:'Darcy Ribeiro',region:'Rio de Janeiro',party:'PDT',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:72,exp:90,align:88,bonus:{RJ:4,RS:3,S:2},desc:'Antropólogo, senador e intelectual — vice real de Brizola em 1989'}],
+    debateStrengths:['programas_sociais','educacao','economia'],
+    description:'Ex-governador do RS e RJ, ícone do trabalhismo — ficou em 3º lugar com 15,7%, impedindo Lula de ir ao 2º turno por pouquíssimos votos.' },
+  { id:'covas89', name:'Mário Covas', shortName:'Mário Covas', party:'PSDB', partyColor:'#1565c0', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/7/7c/Governador_M%C3%A1rio_Covas_%C3%A9_recepcionado_na_abertura_da_11%C2%AA_Fenasoft_%28cropped%29.jpg',
+    baseVote:11, baseReject:22, attrs:{carisma:68,experiencia:80,rejeicao:22,apoioPartidario:72,arrecadacao:55},
+    regionBias:{N:0.7,NE:0.65,CO:0.9,SE:1.35,S:1.2},
+    vices:[{id:'covasm89',name:'Antônio Ermírio de Moraes',region:'Sudeste',party:'PSDB',photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Antonio_Ermirio_de_Moraes.jpg/500px-Antonio_Ermirio_de_Moraes.jpg',pop:72,exp:80,align:78,bonus:{SP:4,SE:2},desc:'Empresário e herdeiro do grupo Votorantim — chegou a ser cotado como vice de Covas em 1989 antes de declinar'},
+             {id:'covasm2_89',name:'José Richa',region:'Sul',party:'PSDB',photo:NO_PHOTO,pop:58,exp:75,align:85,bonus:{PR:4,S:2},desc:'Ex-governador do Paraná e fundador do PSDB — opção alternativa de vice para Mário Covas'}],
+    debateStrengths:['economia','corrupcao','educacao'],
+    description:'Senador por SP e fundador do PSDB — obteve 11,5% no 1º turno em sua primeira candidatura presidencial.' },
+  { id:'maluf89', name:'Paulo Salim Maluf', shortName:'Maluf', party:'PDS', partyColor:'#37474f', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Paulo_Maluf_em_Avar%C3%A9_240810_REFON_5w.jpg/500px-Paulo_Maluf_em_Avar%C3%A9_240810_REFON_5w.jpg',
+    baseVote:8.3, baseReject:48, attrs:{carisma:62,experiencia:88,rejeicao:48,apoioPartidario:65,arrecadacao:72},
+    regionBias:{N:0.7,NE:0.65,CO:0.9,SE:1.4,S:1.0},
+    vices:[{id:'malufw89',name:'Antônio Waldimir Fortuna de Sena',region:'Norte',party:'PDS',photo:NO_PHOTO,pop:22,exp:45,align:80,bonus:{AM:2},desc:'Vice de Paulo Maluf (PDS) em 1989'}],
+    debateStrengths:['economia','corrupcao'],
+    description:'Ex-governador de SP e ex-prefeito de São Paulo — obteve 8,3% no 1º turno, com sua alta rejeição nacional impedindo crescimento.' },
+  { id:'afif89', name:'Guilherme Afif Domingos', shortName:'Afif', party:'PL89', partyColor:'#0d47a1', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Retratos_Oficiais_-_Secret%C3%A1rios_de_Estado_de_S%C3%A3o_Paulo_em_2023_04.jpg/500px-Retratos_Oficiais_-_Secret%C3%A1rios_de_Estado_de_S%C3%A3o_Paulo_em_2023_04.jpg',
+    baseVote:4.8, baseReject:22, attrs:{carisma:65,experiencia:72,rejeicao:22,apoioPartidario:58,arrecadacao:45},
+    regionBias:{N:0.7,NE:0.7,CO:0.9,SE:1.3,S:1.1},
+    vices:[{id:'afifm89',name:'Moacyr Dalla',region:'Rio Grande do Sul',party:'PL89',photo:NO_PHOTO,pop:28,exp:48,align:82,bonus:{RS:2,S:1},desc:'Vice de Afif Domingos (PL) em 1989'}],
+    debateStrengths:['economia','privatizacoes'],
+    description:'Empresário e político paulistano — obteve 4,8%, defensor do liberalismo econômico numa época de hiperinflação.' },
+  { id:'ulysses89', name:'Ulysses Silveira Guimarães', shortName:'Ulysses', party:'PMDB', partyColor:'#005baa', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Ulysses_nas_Diretas_J%C3%A1.jpg/500px-Ulysses_nas_Diretas_J%C3%A1.jpg',
+    baseVote:4.7, baseReject:28, attrs:{carisma:72,experiencia:95,rejeicao:28,apoioPartidario:68,arrecadacao:52},
+    regionBias:{N:0.8,NE:0.9,CO:0.9,SE:1.15,S:1.0},
+    vices:[{id:'ulyssesv89',name:'Waldir Pires',region:'Nordeste',party:'PMDB',photo:NO_PHOTO,pop:55,exp:72,align:85,bonus:{BA:3,NE:2},desc:'Ex-governador da Bahia, vice de Ulysses Guimarães em 1989'}],
+    debateStrengths:['corrupcao','economia','educacao'],
+    description:'Presidente da Assembleia Nacional Constituinte e ícone da redemocratização — obteve apenas 4,7%, abaixo das expectativas para o maior partido.' },
+  { id:'freire89', name:'Roberto Freire', shortName:'Roberto Freire', party:'PCB', partyColor:'#b71c1c', ideology:'Esquerda', ideologyClass:'ideo-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Ministro_da_Cultura%2C_Roberto_Freire_%2830905950414%29.jpg/500px-Ministro_da_Cultura%2C_Roberto_Freire_%2830905950414%29.jpg',
+    baseVote:1.1, baseReject:18, attrs:{carisma:60,experiencia:68,rejeicao:18,apoioPartidario:52,arrecadacao:18},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.2,S:1.1},
+    vices:[{id:'freirev89',name:'Sônia Vermelho',region:'Nordeste',party:'PCB',photo:NO_PHOTO,pop:30,exp:42,align:92,bonus:{NE:1},desc:'Vice de Roberto Freire (PCB) em 1989'}],
+    debateStrengths:['programas_sociais','educacao'],
+    description:'Deputado federal e líder histórico do PCB — obteve 1,1% em uma das últimas candidaturas do Partido Comunista Brasileiro.' },
+  { id:'chaves89', name:'Aureliano Tavares Bastos Chaves', shortName:'Aureliano Chaves', party:'PFL', partyColor:'#c62828', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Aureliano_Chaves_%281982%29.jpg/500px-Aureliano_Chaves_%281982%29.jpg',
+    baseVote:0.7, baseReject:20, attrs:{carisma:55,experiencia:90,rejeicao:20,apoioPartidario:55,arrecadacao:40},
+    regionBias:{N:0.7,NE:0.8,CO:0.9,SE:1.0,S:0.9},
+    vices:[{id:'chavesv89',name:'Lourival Batista',region:'Nordeste',party:'PFL',photo:NO_PHOTO,pop:35,exp:52,align:80,bonus:{SE:1},desc:'Vice de Aureliano Chaves (PFL) em 1989'}],
+    debateStrengths:['economia','corrupcao'],
+    description:'Ex-vice-presidente do Brasil (1979-1985) e ex-governador de MG — obteve apenas 0,7% apesar da experiência.' },
+  { id:'caiado89', name:'Ronaldo Ramos Caiado', shortName:'Caiado', party:'PSD', partyColor:'#4e342e', ideology:'Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Ronaldo_caiado.jpg/500px-Ronaldo_caiado.jpg',
+    baseVote:0.69, baseReject:25, attrs:{carisma:65,experiencia:55,rejeicao:25,apoioPartidario:48,arrecadacao:35},
+    regionBias:{N:0.7,NE:0.65,CO:1.5,SE:0.9,S:0.8},
+    vices:[{id:'caiadov89',name:'Siqueira Campos',region:'Centro-Oeste',party:'PSD',photo:NO_PHOTO,pop:45,exp:60,align:78,bonus:{GO:3,CO:2},desc:'Ex-governador de GO, vice de Ronaldo Caiado (PSD) em 1989'}],
+    debateStrengths:['ruralistas','valores','seguranca'],
+    description:'Líder da UDR (União Democrática Ruralista) e representante dos grandes proprietários rurais — obteve 0,69% com forte base no Centro-Oeste.' },
+  { id:'camargo89', name:'Affonso Alves de Camargo Netto', shortName:'Affonso Camargo', party:'PTB', partyColor:'#00695c', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/a/a8/Affonso_Camargo_Neto_senador.jpg',
+    baseVote:0.64, baseReject:18, attrs:{carisma:52,experiencia:75,rejeicao:18,apoioPartidario:50,arrecadacao:28},
+    regionBias:{N:0.8,NE:0.7,CO:0.9,SE:0.9,S:1.2},
+    vices:[{id:'camargov89',name:'Amílcar Moreira Bruning',region:'Sul',party:'PTB',photo:NO_PHOTO,pop:28,exp:42,align:80,bonus:{PR:2,S:1},desc:'Vice de Affonso Camargo Netto (PTB) em 1989'}],
+    debateStrengths:['economia','educacao'],
+    description:'Ex-governador do Paraná e senador — obteve 0,64%, representando o PTB histórico no Sul.' },
+  { id:'eneas89', name:'Enéas Ferreira Carneiro', shortName:'Enéas', party:'PRONA', partyColor:'#880e4f', ideology:'Extrema-Direita', ideologyClass:'ideo-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Carneiro_cropped.jpg/500px-Carneiro_cropped.jpg',
+    baseVote:0.49, baseReject:22, attrs:{carisma:72,experiencia:40,rejeicao:22,apoioPartidario:30,arrecadacao:8},
+    regionBias:{N:0.7,NE:0.75,CO:0.9,SE:1.3,S:1.1},
+    vices:[{id:'eneasv89',name:'Irapuan Costa Júnior',region:'Sul',party:'PRONA',photo:NO_PHOTO,pop:18,exp:28,align:95,bonus:{RS:1},desc:'Vice de Enéas Carneiro (PRONA) em 1989'}],
+    debateStrengths:['valores','seguranca','economia'],
+    description:'Médico cardiologista, fundador do PRONA — começou aqui sua trajetória chegando a 7,4% em 1994. Famoso pelo bordão "Meu nome é Enéas!"' },
+  { id:'marronzinho89', name:'José Maria de Almeida "Marronzinho"', shortName:'Marronzinho', party:'PSP', partyColor:'#6a1b9a', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://media.gazetadopovo.com.br/vozes/2014/10/marronzinho-95daa0b4.jpg',
+    baseVote:0.17, baseReject:15, attrs:{carisma:40,experiencia:35,rejeicao:15,apoioPartidario:22,arrecadacao:5},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'marronzv89',name:'Auricélio Araújo',region:'Nordeste',party:'PSP',photo:NO_PHOTO,pop:12,exp:20,align:80,bonus:{},desc:'Vice de Marronzinho (PSP) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido Social Progressista — obteve 0,17% na eleição.' },
+  { id:'gontijo89', name:'Paulo Gontijo', shortName:'Paulo Gontijo', party:'PP89', partyColor:'#4a148c', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:NO_PHOTO,
+    baseVote:0.08, baseReject:14, attrs:{carisma:35,experiencia:30,rejeicao:14,apoioPartidario:18,arrecadacao:4},
+    regionBias:{N:0.7,NE:0.8,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'gontijov89',name:'Candidato Vice PP',region:'Nacional',party:'PP89',photo:NO_PHOTO,pop:10,exp:18,align:80,bonus:{},desc:'Vice de Paulo Gontijo (PP) em 1989'}],
+    debateStrengths:['economia'],
+    description:'Candidato do Partido do Povo (PP) — obteve resultado irrisório.' },
+  { id:'zamir89', name:'Zamir Teixeira', shortName:'Zamir Teixeira', party:'PCN', partyColor:'#1a237e', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://hojepr.com/wp-content/uploads/2022/02/48438b4e-9da7-48f7-9049-7285773eef13-edited.jpg',
+    baseVote:0.07, baseReject:14, attrs:{carisma:38,experiencia:28,rejeicao:14,apoioPartidario:16,arrecadacao:4},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.0,S:1.0},
+    vices:[{id:'zamirv89',name:'Candidato Vice PCN',region:'Nacional',party:'PCN',photo:NO_PHOTO,pop:10,exp:16,align:80,bonus:{},desc:'Vice de Zamir Teixeira (PCN) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido Comunitário Nacional — obteve resultado irrisório.' },
+  { id:'livia89', name:'Lívia Maria Pio', shortName:'Lívia Maria', party:'PN', partyColor:'#4a148c', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://f.i.uol.com.br/fotografia/2018/05/19/15267558705b00721ea09e8_1526755870_3x2_rt.jpg',
+    baseVote:0.06, baseReject:14, attrs:{carisma:40,experiencia:28,rejeicao:14,apoioPartidario:16,arrecadacao:4},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'liviav89',name:'Candidato Vice PN',region:'Nacional',party:'PN',photo:NO_PHOTO,pop:10,exp:16,align:80,bonus:{},desc:'Vice de Lívia Maria Pio (PN) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidata do Partido Nacionalista — uma das poucas mulheres candidatas na eleição de 1989.' },
+  { id:'eudes89', name:'Eudes Fonseca Mattar', shortName:'Eudes Mattar', party:'PLP', partyColor:'#bf360c', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:NO_PHOTO,
+    baseVote:0.05, baseReject:14, attrs:{carisma:32,experiencia:25,rejeicao:14,apoioPartidario:14,arrecadacao:3},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'eudesv89',name:'Candidato Vice PLP',region:'Nacional',party:'PLP',photo:NO_PHOTO,pop:10,exp:14,align:80,bonus:{},desc:'Vice de Eudes Mattar (PLP) em 1989'}],
+    debateStrengths:['economia'],
+    description:'Candidato do Partido Liberal Progressista — resultado irrisório.' },
+  { id:'gabeira89', name:'Fernando Paulo Nagle Gabeira', shortName:'Gabeira', party:'PV', partyColor:'#2e7d32', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Fernando_Gabeira_01.jpg/500px-Fernando_Gabeira_01.jpg',
+    baseVote:0.50, baseReject:20, attrs:{carisma:62,experiencia:60,rejeicao:20,apoioPartidario:40,arrecadacao:18},
+    regionBias:{N:0.7,NE:0.65,CO:0.85,SE:1.3,S:1.1},
+    vices:[{id:'gabeirav89',name:'Candidato Vice PV',region:'Nacional',party:'PV',photo:NO_PHOTO,pop:18,exp:28,align:80,bonus:{},desc:'Vice de Fernando Gabeira (PV) em 1989'}],
+    debateStrengths:['programas_sociais','educacao','economia'],
+    description:'Escritor e ex-guerrilheiro, um dos fundadores do Partido Verde — obteve 0,5% representando o ambientalismo emergente.' },
+  { id:'brant89', name:'Celso Nereu Brant', shortName:'Celso Brant', party:'MOBILIZA', partyColor:'#00695c', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Celso_Brant_como_Deputado_Federal.jpg/500px-Celso_Brant_como_Deputado_Federal.jpg',
+    baseVote:0.08, baseReject:14, attrs:{carisma:42,experiencia:45,rejeicao:14,apoioPartidario:20,arrecadacao:6},
+    regionBias:{N:0.7,NE:0.8,CO:0.9,SE:1.2,S:0.9},
+    vices:[{id:'brantv89',name:'Candidato Vice Mobiliza',region:'Nacional',party:'MOBILIZA',photo:NO_PHOTO,pop:12,exp:20,align:82,bonus:{},desc:'Vice de Celso Brant (MOBILIZA) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Advogado e político mineiro — candidato do Partido Mobilização Nacional.' },
+  { id:'pedreira89', name:'Antônio Ferreira Pedreira', shortName:'Antônio Pedreira', party:'PPB89', partyColor:'#1b5e20', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:NO_PHOTO,
+    baseVote:0.05, baseReject:14, attrs:{carisma:35,experiencia:28,rejeicao:14,apoioPartidario:14,arrecadacao:3},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.0,S:0.9},
+    vices:[{id:'pedreirav89',name:'Candidato Vice PPB',region:'Nacional',party:'PPB89',photo:NO_PHOTO,pop:10,exp:14,align:80,bonus:{},desc:'Vice de Antônio Pedreira (PPB) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido do Povo Brasileiro (PPB, não confundir com o posterior Progressistas).' },
+  { id:'horta89', name:'Manoel de Castro Horta', shortName:'Manoel Horta', party:'PDCdoB', partyColor:'#006064', ideology:'Centro-Esquerda', ideologyClass:'ideo-center-left',
+    photo:NO_PHOTO,
+    baseVote:0.05, baseReject:14, attrs:{carisma:32,experiencia:35,rejeicao:14,apoioPartidario:16,arrecadacao:3},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.1,S:0.9},
+    vices:[{id:'hortav89',name:'Candidato Vice PDCdoB',region:'Nacional',party:'PDCdoB',photo:NO_PHOTO,pop:10,exp:14,align:80,bonus:{},desc:'Vice de Manoel Horta (PDCdoB) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido Democrata Cristão do Brasil (PDCdoB).' },
+  { id:'armando89', name:'Armando Corrêa da Silva', shortName:'Armando Corrêa', party:'PMB89', partyColor:'#37474f', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/8/8e/Armando_Correa.png',
+    baseVote:0.05, baseReject:14, attrs:{carisma:35,experiencia:30,rejeicao:14,apoioPartidario:14,arrecadacao:3},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.0,S:0.9},
+    vices:[{id:'armandov89',name:'Candidato Vice PMB',region:'Nacional',party:'PMB89',photo:NO_PHOTO,pop:10,exp:14,align:80,bonus:{},desc:'Vice de Armando Corrêa (PMB) em 1989'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido Municipalista Brasileiro (PMB).' }
+];
+
+// Candidatos desistentes / não aceitos de 1989 (desbloqueáveis)
+const CANDIDATES_1989_DESISTENTES = [
+  { id:'boris89', name:'Boris Moisés Nicolaievski', shortName:'Boris Nicolaievski', party:'PS', partyColor:'#b71c1c', ideology:'Esquerda', ideologyClass:'ideo-left',
+    photo:NO_PHOTO,
+    baseVote:0.3, baseReject:16, attrs:{carisma:40,experiencia:45,rejeicao:16,apoioPartidario:28,arrecadacao:6},
+    regionBias:{N:0.7,NE:0.8,CO:0.8,SE:1.1,S:1.0},
+    vices:[{id:'borisv89',name:'Vice Boris PS',region:'Nacional',party:'PS',photo:NO_PHOTO,pop:12,exp:20,align:82,bonus:{},desc:'Vice de Boris Nicolaievski (PS) — candidatura não realizada'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Candidato do Partido Socialista que desistiu/teve candidatura não aceita em 1989. [Candidato desbloqueável]',
+    desistente:true },
+  { id:'djanir89', name:"D'Janir Soares de Azevedo", shortName:"D'Janir Azevedo", party:'PTN89', partyColor:'#0d47a1', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:NO_PHOTO,
+    baseVote:0.2, baseReject:14, attrs:{carisma:35,experiencia:38,rejeicao:14,apoioPartidario:22,arrecadacao:5},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.0,S:1.0},
+    vices:[{id:'djanirv89',name:'Vice PTN',region:'Nacional',party:'PTN89',photo:NO_PHOTO,pop:10,exp:18,align:80,bonus:{},desc:'Vice de D\'Janir Azevedo (PTN) — candidatura não realizada'}],
+    debateStrengths:['economia'],
+    description:'Candidato do Partido Tancredista Nacional que não foi aceito nas eleições de 1989. [Candidato desbloqueável]',
+    desistente:true },
+  { id:'janio89', name:'Jânio da Silva Quadros', shortName:'Jânio Quadros', party:'PMC', partyColor:'#880e4f', ideology:'Centro-Direita', ideologyClass:'ideo-center-right',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/9/9c/J%C3%A2nio_Quadros_entrega_%C3%B4nibus_para_a_CMTC_%281987%29_%28cropped%29.jpg',
+    baseVote:5.0, baseReject:38, attrs:{carisma:78,experiencia:85,rejeicao:38,apoioPartidario:52,arrecadacao:45},
+    regionBias:{N:0.7,NE:0.7,CO:0.9,SE:1.35,S:1.1},
+    vices:[{id:'janiov89',name:'Vice PMC',region:'Nacional',party:'PMC',photo:NO_PHOTO,pop:20,exp:30,align:75,bonus:{SP:2},desc:'Vice de Jânio Quadros (PMC) — candidatura não realizada'}],
+    debateStrengths:['economia','corrupcao','valores'],
+    description:'Ex-presidente do Brasil (1961), político histórico — desistiu da candidatura em 1989. Prefeito de São Paulo na época. [Candidato desbloqueável]',
+    desistente:true },
+  { id:'joaoferreira89', name:'João Ferreira da Silva', shortName:'João Ferreira', party:'PAS', partyColor:'#4e342e', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:NO_PHOTO,
+    baseVote:0.15, baseReject:14, attrs:{carisma:30,experiencia:28,rejeicao:14,apoioPartidario:14,arrecadacao:3},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.0,S:0.9},
+    vices:[{id:'joaov89',name:'Vice PAS',region:'Nacional',party:'PAS',photo:NO_PHOTO,pop:8,exp:14,align:80,bonus:{},desc:'Vice de João Ferreira da Silva (PAS) — candidatura não realizada'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido de Ação Socialista — candidatura não aceita em 1989. [Candidato desbloqueável]',
+    desistente:true },
+  { id:'nildo89', name:'Nildo Martini', shortName:'Nildo Martini', party:'PNAB', partyColor:'#37474f', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:NO_PHOTO,
+    baseVote:0.1, baseReject:14, attrs:{carisma:28,experiencia:22,rejeicao:14,apoioPartidario:12,arrecadacao:2},
+    regionBias:{N:0.8,NE:0.8,CO:0.9,SE:1.0,S:0.9},
+    vices:[{id:'nildov89',name:'Vice PNAB',region:'Nacional',party:'PNAB',photo:NO_PHOTO,pop:8,exp:12,align:80,bonus:{},desc:'Vice de Nildo Martini (PNAB) — candidatura não aceita'}],
+    debateStrengths:['programas_sociais'],
+    description:'Candidato do Partido Nacional dos Aposentados do Brasil — candidatura não aceita. [Candidato desbloqueável]',
+    desistente:true },
+  { id:'silvio89', name:'Senor Abravanel "Sílvio Santos"', shortName:'Sílvio Santos', party:'PMB89', partyColor:'#f9a825', ideology:'Centro', ideologyClass:'ideo-center',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Silvio_Santos_em_1989.jpg/500px-Silvio_Santos_em_1989.jpg',
+    baseVote:8.0, baseReject:28, attrs:{carisma:92,experiencia:35,rejeicao:28,apoioPartidario:44,arrecadacao:90},
+    regionBias:{N:0.9,NE:1.0,CO:1.0,SE:1.1,S:1.0},
+    vices:[{id:'silviov89',name:'Cássio Remis',region:'São Paulo',party:'PMB89',photo:NO_PHOTO,pop:20,exp:28,align:75,bonus:{SP:2},desc:'Vice de Sílvio Santos se a candidatura tivesse prosseguido'},
+             {id:'silviov2_89',name:'Vice PMB Alternativo',region:'Nacional',party:'PMB89',photo:NO_PHOTO,pop:18,exp:25,align:72,bonus:{},desc:'Vice alternativo de Sílvio Santos'}],
+    debateStrengths:['programas_sociais','economia'],
+    description:'Apresentador e empresário — registrou candidatura pelo PMB em agosto de 1989, causando comoção nacional, mas teve a candidatura impugnada pelo TSE. [Candidato desbloqueável]',
+    desistente:true }
+];
+
+const VICES_1989 = {
+  itamar89:{ id:'itamar89', name:'Itamar Augusto Cautiero Franco', party:'PFL', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Itamar_Franco_assina_a_Constitui%C3%A7%C3%A3o_como_Senador.jpg/500px-Itamar_Franco_assina_a_Constitui%C3%A7%C3%A3o_como_Senador.jpg', region:'Minas Gerais', pop:65, exp:78, align:72, bonus:{MG:5,SE:2}, desc:'Senador por MG e vice real de Collor em 1989 — tornou-se presidente após o impeachment de Collor em 1992. Seria o criador do Plano Real.' },
+  sodre89:{ id:'sodre89', name:'Roberto Sodré', party:'PRN', photo:NO_PHOTO, region:'São Paulo', pop:38, exp:52, align:82, bonus:{SP:3,SE:1}, desc:'Político paulistano do PRN — opção alternativa de vice para Collor' },
+  bisol89:{ id:'bisol89', name:'José Paulo Bisol', party:'PSB', photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Jos%C3%A9_Paulo_Bisol.jpg/500px-Jos%C3%A9_Paulo_Bisol.jpg', region:'Sul', pop:58, exp:72, align:90, bonus:{RS:4,S:3}, desc:'Juiz gaúcho e vice real de Lula em 1989 — representava o PSB e a esquerda moderada do Sul' }
+};
+
+const REAL_RESULTS_1989 = {
+  // Collor 28.5%, Lula 16.1%, Brizola 15.7%, Covas 11.5%, Maluf 8.3%, Afif 4.8%, Ulysses 4.7%
+  // (resultado 1º turno — votos válidos aproximados por estado)
+  AC:{collor89:42.0,lula89:18.0}, AL:{collor89:42.0,lula89:14.0},
+  AM:{collor89:38.0,lula89:15.0}, AP:{collor89:35.0,lula89:18.0},
+  BA:{collor89:36.0,lula89:16.0}, CE:{collor89:40.0,lula89:14.0},
+  DF:{collor89:28.0,lula89:14.0}, ES:{collor89:32.0,lula89:15.0},
+  GO:{collor89:30.0,lula89:14.0}, MA:{collor89:38.0,lula89:16.0},
+  MG:{collor89:28.0,lula89:16.0}, MS:{collor89:30.0,lula89:13.0},
+  MT:{collor89:32.0,lula89:13.0}, PA:{collor89:36.0,lula89:17.0},
+  PB:{collor89:38.0,lula89:14.0}, PE:{collor89:34.0,lula89:18.0},
+  PI:{collor89:38.0,lula89:14.0}, PR:{collor89:22.0,lula89:16.0},
+  RJ:{collor89:22.0,lula89:17.0}, RN:{collor89:38.0,lula89:14.0},
+  RO:{collor89:34.0,lula89:13.0}, RR:{collor89:35.0,lula89:14.0},
+  RS:{collor89:18.0,lula89:22.0}, SC:{collor89:25.0,lula89:14.0},
+  SE:{collor89:40.0,lula89:15.0}, SP:{collor89:28.0,lula89:16.0},
+  TO:{collor89:34.0,lula89:15.0}
+};
+
+const SCHEDULED_DEBATES_1989 = [
+  {date:'1989-08-24',name:'Debate Band',participants:'top8',round:1},
+  {date:'1989-09-28',name:'Debate SBT',participants:'top8',round:1},
+  {date:'1989-11-28',name:'Debate Globo — 2º Turno',participants:'top2',round:2}
+];
+
+// Estado dos desistentes 1989
+let desistentes1989Enabled = false;
+
 // DATA — CANDIDATES 2006
+
 // ════════════════════════════════════════════════════════
 // DATA — CANDIDATES 1998
 // ════════════════════════════════════════════════════════
@@ -1867,7 +2247,7 @@ const CANDIDATES_1998 = [
     photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Carneiro_cropped.jpg/500px-Carneiro_cropped.jpg',
     baseVote:2.0, baseReject:20, attrs:{carisma:72,experiencia:50,rejeicao:20,apoioPartidario:38,arrecadacao:12},
     regionBias:{N:0.7,NE:0.8,CO:0.9,SE:1.3,S:1.1},
-    vices:[{id:'eneas98v',name:'João Batista Soares da Silva',region:'Sudeste',party:'PRONA',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:20,exp:35,align:92,bonus:{},desc:'Vice real de Enéas Carneiro em 1998'}],
+    vices:[{id:'eneas98v',name:'Irapuan Costa Júnior',region:'Sul',party:'PRONA',photo:'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg',pop:20,exp:35,align:92,bonus:{RS:1},desc:'Professor gaúcho, vice real de Enéas Carneiro em 1998'}],
     debateStrengths:['valores','seguranca','economia'],
     description:'Médico e político nacionalista, candidato do PRONA — obteve 2,1%. Famoso pelo slogan "Meu nome é Enéas!"' },
   { id:'ivanfrota98', name:'Ivan Frota', shortName:'Ivan Frota', party:'MOBILIZA', partyColor:'#546e7a', ideology:'Centro', ideologyClass:'ideo-center',
@@ -2185,7 +2565,7 @@ const SCHEDULED_DEBATES_2014 = [
   {date:'2014-09-26',name:'Debate Globo',participants:'top6',round:1},
   {date:'2014-10-24',name:'Debate Globo 2º Turno',participants:'top2',round:2}
 ];
-function getScheduledDebates(){ return CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:CURRENT_ELECTION===2014?SCHEDULED_DEBATES_2014:CURRENT_ELECTION===2010?SCHEDULED_DEBATES_2010:CURRENT_ELECTION===2006?SCHEDULED_DEBATES_2006:CURRENT_ELECTION===2002?SCHEDULED_DEBATES_2002:CURRENT_ELECTION===1998?SCHEDULED_DEBATES_1998:SCHEDULED_DEBATES_2022; }
+function getScheduledDebates(){ return CURRENT_ELECTION===1989?SCHEDULED_DEBATES_1989:CURRENT_ELECTION===2018?SCHEDULED_DEBATES_2018:CURRENT_ELECTION===2014?SCHEDULED_DEBATES_2014:CURRENT_ELECTION===2010?SCHEDULED_DEBATES_2010:CURRENT_ELECTION===2006?SCHEDULED_DEBATES_2006:CURRENT_ELECTION===2002?SCHEDULED_DEBATES_2002:CURRENT_ELECTION===1998?SCHEDULED_DEBATES_1998:CURRENT_ELECTION===1994?SCHEDULED_DEBATES_1994:SCHEDULED_DEBATES_2022; }
 
 const SCHEDULED_DEBATES_2010 = [
   {date:'2010-08-08',name:'Debate Band',participants:'todos',round:1},
@@ -2553,16 +2933,25 @@ function updateMorePanelActive(){
 // ════════════════════════════════════════════════════════
 let CURRENT_ELECTION = 2022;
 
-function getCandidates(){ return CURRENT_ELECTION===2018?CANDIDATES_2018:CURRENT_ELECTION===2014?CANDIDATES_2014:CURRENT_ELECTION===2010?CANDIDATES_2010:CURRENT_ELECTION===2006?CANDIDATES_2006:CURRENT_ELECTION===2002?CANDIDATES_2002:CURRENT_ELECTION===1998?CANDIDATES_1998:CANDIDATES_2022; }
-function getVices(){ return CURRENT_ELECTION===2018?VICES_2018:CURRENT_ELECTION===2014?VICES_2014:CURRENT_ELECTION===2010?VICES_2010:CURRENT_ELECTION===2006?VICES_2006:CURRENT_ELECTION===2002?VICES_2002:CURRENT_ELECTION===1998?VICES_1998:VICES_2022; }
-function getRealResults(){ return CURRENT_ELECTION===2018?REAL_RESULTS_2018:CURRENT_ELECTION===2014?REAL_RESULTS_2014:CURRENT_ELECTION===2010?REAL_RESULTS_2010:CURRENT_ELECTION===2006?REAL_RESULTS_2006:CURRENT_ELECTION===2002?REAL_RESULTS_2002:CURRENT_ELECTION===1998?REAL_RESULTS_1998:REAL_RESULTS_2022; }
+function getCandidates(){ 
+  if(CURRENT_ELECTION===1989){
+    const base=[...CANDIDATES_1989];
+    if(desistentes1989Enabled) CANDIDATES_1989_DESISTENTES.forEach(d=>{ if(!base.find(c=>c.id===d.id)) base.push(d); });
+    return base;
+  }
+  return CURRENT_ELECTION===2018?CANDIDATES_2018:CURRENT_ELECTION===2014?CANDIDATES_2014:CURRENT_ELECTION===2010?CANDIDATES_2010:CURRENT_ELECTION===2006?CANDIDATES_2006:CURRENT_ELECTION===2002?CANDIDATES_2002:CURRENT_ELECTION===1998?CANDIDATES_1998:CURRENT_ELECTION===1994?CANDIDATES_1994:CANDIDATES_2022;
+}
+function getVices(){ return CURRENT_ELECTION===1989?VICES_1989:CURRENT_ELECTION===2018?VICES_2018:CURRENT_ELECTION===2014?VICES_2014:CURRENT_ELECTION===2010?VICES_2010:CURRENT_ELECTION===2006?VICES_2006:CURRENT_ELECTION===2002?VICES_2002:CURRENT_ELECTION===1998?VICES_1998:CURRENT_ELECTION===1994?VICES_1994:VICES_2022; }
+function getRealResults(){ return CURRENT_ELECTION===1989?REAL_RESULTS_1989:CURRENT_ELECTION===2018?REAL_RESULTS_2018:CURRENT_ELECTION===2014?REAL_RESULTS_2014:CURRENT_ELECTION===2010?REAL_RESULTS_2010:CURRENT_ELECTION===2006?REAL_RESULTS_2006:CURRENT_ELECTION===2002?REAL_RESULTS_2002:CURRENT_ELECTION===1998?REAL_RESULTS_1998:CURRENT_ELECTION===1994?REAL_RESULTS_1994:REAL_RESULTS_2022; }
 function getElectionDates(){
+  if(CURRENT_ELECTION===1989) return {start:'1989-01-15',first:'1989-11-15',second:'1989-12-17',totalDays:304};
   if(CURRENT_ELECTION===2018) return {start:'2017-10-07',first:'2018-10-07',second:'2018-10-28',totalDays:366};
   if(CURRENT_ELECTION===2014) return {start:'2013-10-05',first:'2014-10-05',second:'2014-10-26',totalDays:366};
   if(CURRENT_ELECTION===2010) return {start:'2009-10-03',first:'2010-10-03',second:'2010-10-31',totalDays:366};
   if(CURRENT_ELECTION===2006) return {start:'2005-10-01',first:'2006-10-01',second:'2006-10-29',totalDays:366};
   if(CURRENT_ELECTION===2002) return {start:'2001-10-06',first:'2002-10-06',second:'2002-10-27',totalDays:366};
   if(CURRENT_ELECTION===1998) return {start:'1997-10-04',first:'1998-10-04',second:'1998-10-25',totalDays:366};
+  if(CURRENT_ELECTION===1994) return {start:'1993-10-03',first:'1994-10-03',second:'1994-10-24',totalDays:366};
   return {start:'2021-10-02',first:'2022-10-02',second:'2022-10-30',totalDays:366};
 }
 
@@ -2579,8 +2968,8 @@ const COUNTRY_ERAS = {
       years:'1985 – presente',
       desc:'Eleições diretas com sistema de dois turnos. Partidos modernos, TV, redes sociais e financiamento de campanha.',
       detail:'🗳️ Mecânica: dois turnos diretos · Coligações · HGPE · Debates na TV',
-      elections:[2022,2018,2014,2010,2006,2002,1998],
-      electionLabels:{2022:'🗳️ Eleição 2022',2018:'🗳️ Eleição 2018',2014:'🗳️ Eleição 2014',2010:'🗳️ Eleição 2010',2006:'🗳️ Eleição 2006',2002:'🗳️ Eleição 2002',1998:'🗳️ Eleição 1998'},
+      elections:[2022,2018,2014,2010,2006,2002,1998,1994,1989],
+      electionLabels:{2022:'🗳️ Eleição 2022',2018:'🗳️ Eleição 2018',2014:'🗳️ Eleição 2014',2010:'🗳️ Eleição 2010',2006:'🗳️ Eleição 2006',2002:'🗳️ Eleição 2002',1998:'🗳️ Eleição 1998',1994:'🗳️ Eleição 1994',1989:'🗳️ Eleição 1989 ⭐'},
       available:true
     },
     {
@@ -2704,6 +3093,10 @@ function selElectionAndAdvance(y, btn){
   document.getElementById('vice-section').style.display = 'none';
   document.getElementById('start-btn').disabled = true;
   document.getElementById('start-hint').textContent = 'Selecione candidato e vice para começar';
+  // Show/hide 1989 desistentes toggle
+  const dz = document.getElementById('desistentes-zone');
+  if(dz) dz.style.display = y===1989 ? '' : 'none';
+  if(y!==1989){ desistentes1989Enabled=false; const dc=document.getElementById('desistentes-check'); if(dc)dc.checked=false; }
   renderCandidateCards();
   renderDifficultyGrid();
   const zone = document.getElementById('inline-config-zone');
@@ -2741,6 +3134,15 @@ function toggleSandbox(on){
   G.sandbox=on;
 }
 
+function toggleSpectator(on){
+  G.spectator=on;
+}
+
+function toggleDesistentes1989(on){
+  desistentes1989Enabled=on;
+  renderCandidateCards();
+}
+
 function renderCandidateCards(){
   const g=document.getElementById('candidates-grid');
   g.innerHTML='';
@@ -2769,6 +3171,13 @@ function selectCandidate(id,el){
   G.selectedCandidate=id;
   G.selectedVice=null;
   const vs=document.getElementById('vice-section');
+  // Em modo espectador, não exige vice
+  if(G.spectator){
+    vs.style.display='none';
+    document.getElementById('start-btn').disabled=false;
+    document.getElementById('start-hint').textContent='✓ Modo Espectador — Clique para observar!';
+    return;
+  }
   vs.style.display='block';
   renderViceCards(id);
   document.getElementById('start-btn').disabled=true;
@@ -2831,7 +3240,8 @@ function selectVice(v,el){
 function startGame(){
   const cand=getCandidates().find(c=>c.id===G.selectedCandidate);
   G.player=JSON.parse(JSON.stringify(cand));
-  G.vice=G.selectedViceObj;
+  G.vice=G.selectedViceObj||null;
+  G.spectator=G.spectator||false;
   const diff=DIFFICULTIES.find(d=>d.id===G.difficulty)||DIFFICULTIES[3];
   G.diffSettings=diff;
   const dates=getElectionDates();
@@ -2845,7 +3255,8 @@ function startGame(){
     dilma10:320e6,serra10:280e6,marina10:60e6,plinio10:8e6,eymael10:2e6,zemaria10:1e6,fidelix10:3e6,ivan10:500000,ruicosta10:400000,
     lula06:380e6,alckmin06:300e6,cristovam06:20e6,heloisa06:12e6,rangel06:2e6,eymael06:1.5e6,bivar06:2e6,ruicosta06:400000,
     lula02:350e6,serra02:280e6,garotinho02:80e6,ciro02:60e6,zemaria02:3e6,ruicosta02:300000,
-    fhc98:400e6,lula98:250e6,ciro98:50e6,eneas98:8e6,ivanfrota98:2e6,sirkis98:3e6,zemaria98:2e6,jdeus98:1e6,eymael98:1e6,therezaruiz98:500000,sergiobueno98:500000,vasconeto98:300000};
+    fhc98:400e6,lula98:250e6,ciro98:50e6,eneas98:8e6,ivanfrota98:2e6,sirkis98:3e6,zemaria98:2e6,jdeus98:1e6,eymael98:1e6,therezaruiz98:500000,sergiobueno98:500000,vasconeto98:300000,
+    collor89:120e6,lula89:40e6,brizola89:50e6,covas89:60e6,maluf89:80e6,afif89:40e6,ulysses89:55e6,freire89:8e6,chaves89:20e6,caiado89:15e6,camargo89:12e6,eneas89:3e6,marronzinho89:1e6,gontijo89:500000,zamir89:500000,livia89:500000,eudes89:300000,gabeira89:3e6,brant89:1e6,pedreira89:300000,horta89:300000,armando89:300000,boris89:1e6,djanir89:500000,janio89:35e6,joaoferreira89:300000,nildo89:200000,silvio89:150e6};
   G.money=G.sandbox?1e12:(baseMoneys[cand.id]||10e6)*diff.moneyMult;
   G.popularity=cand.attrs.carisma;
   G.rejection=cand.baseReject;
@@ -2872,6 +3283,10 @@ function startGame(){
   document.getElementById('topbar-name').textContent=cand.shortName;
   document.getElementById('topbar-party').innerHTML=(PARTY_LOGOS[cand.party]?`<img src="${PARTY_LOGOS[cand.party]}" style="height:11px;width:auto;object-fit:contain;vertical-align:middle;margin-right:3px" onerror="this.style.display='none'">`:'')+(cand.party+' · '+cand.ideology);
   if(G.sandbox)document.getElementById('sandbox-badge-top').style.display='';
+  if(G.spectator){
+    const sb=document.getElementById('spectator-badge-top');
+    if(sb)sb.style.display='';
+  }
 
   updateTopBar();
   renderCampaignTab();
@@ -2902,7 +3317,7 @@ function startGame(){
 function initializePolls(){
   const cands=getCandidates();
   const realResults=getRealResults();
-  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:CURRENT_ELECTION===2014?['dilma14','aecio14','marina14']:CURRENT_ELECTION===2010?['dilma10','serra10','marina10']:CURRENT_ELECTION===2006?['lula06','alckmin06']:CURRENT_ELECTION===2002?['lula02','serra02','garotinho02','ciro02']:CURRENT_ELECTION===1998?['fhc98','lula98']:['lula','bolsonaro'];
+  const top2ids=CURRENT_ELECTION===2018?['bolsonaro18','haddad18']:CURRENT_ELECTION===2014?['dilma14','aecio14','marina14']:CURRENT_ELECTION===2010?['dilma10','serra10','marina10']:CURRENT_ELECTION===2006?['lula06','alckmin06']:CURRENT_ELECTION===2002?['lula02','serra02','garotinho02','ciro02']:CURRENT_ELECTION===1998?['fhc98','lula98']:CURRENT_ELECTION===1994?['fhc94','lula94']:CURRENT_ELECTION===1989?['collor89','lula89','brizola89']:['lula','bolsonaro'];
   G.polls={};G.rejectPolls={};
   const diff=G.diffSettings||DIFFICULTIES[3];
   cands.forEach(c=>{
@@ -2941,6 +3356,8 @@ function initializePolls(){
         else if(CURRENT_ELECTION===2006) key=c.id==='lula06'?'lula06':'alckmin06';
         else if(CURRENT_ELECTION===2002) key=c.id; // keys are same as ids in REAL_RESULTS_2002
         else if(CURRENT_ELECTION===1998) key=c.id; // keys are same as ids in REAL_RESULTS_1998
+        else if(CURRENT_ELECTION===1994) key=c.id; // keys are same as ids in REAL_RESULTS_1994
+        else if(CURRENT_ELECTION===1989) key=c.id; // keys are same as ids in REAL_RESULTS_1989
         else key=c.id==='lula'?'lula':'bolsonaro';
         const realVal=real[key]||dynamicVal;
         const playerNatPct=G.polls[G.player.id]||0.1;
@@ -3023,13 +3440,15 @@ function advanceOneDay(){
     if(cd<=0)G.financeLockedKey=null;
   }
   // Energy regeneration: very slow — 1 per day (heavy decisions matter!)
-  G.energy=clamp((G.energy||0)+1,0,100);
+  if(!G.spectator) G.energy=clamp((G.energy||0)+1,0,100);
   // Tweet cooldown
   if(typeof tweetCooldown!=='undefined'&&tweetCooldown>0)tweetCooldown--;
 
-  // Daily donation income
-  const donationIncome=Math.floor(randRange(10000,80000)*(1+G.polls[G.player.id]/100)*(G.sandbox?5:1));
-  G.money+=donationIncome;
+  // Daily donation income (only in non-spectator)
+  if(!G.spectator){
+    const donationIncome=Math.floor(randRange(10000,80000)*(1+G.polls[G.player.id]/100)*(G.sandbox?5:1));
+    G.money+=donationIncome;
+  }
 
   // Weekly poll update
   if(G.daysPassed%7===0){
@@ -3184,7 +3603,7 @@ function recomputeStatePolls(){
 
   const stateInvestments = G.stateInvestments || {};
   const realResults = getRealResults();
-  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : CURRENT_ELECTION===2014 ? ['dilma14','aecio14','marina14'] : CURRENT_ELECTION===2010 ? ['dilma10','serra10','marina10'] : CURRENT_ELECTION===2006 ? ['lula06','alckmin06'] : CURRENT_ELECTION===2002 ? ['lula02','serra02','garotinho02','ciro02'] : CURRENT_ELECTION===1998 ? ['fhc98','lula98'] : ['lula','bolsonaro'];
+  const top2ids = CURRENT_ELECTION===2018 ? ['bolsonaro18','haddad18'] : CURRENT_ELECTION===2014 ? ['dilma14','aecio14','marina14'] : CURRENT_ELECTION===2010 ? ['dilma10','serra10','marina10'] : CURRENT_ELECTION===2006 ? ['lula06','alckmin06'] : CURRENT_ELECTION===2002 ? ['lula02','serra02','garotinho02','ciro02'] : CURRENT_ELECTION===1998 ? ['fhc98','lula98'] : CURRENT_ELECTION===1994 ? ['fhc94','lula94'] : CURRENT_ELECTION===1989 ? ['collor89','lula89','brizola89'] : ['lula','bolsonaro'];
   // How far into the campaign are we? 0=start, 1=election day
   const progress = Math.min(1, (G.daysPassed||0) / (G.totalDays||366));
 
@@ -3226,6 +3645,8 @@ function recomputeStatePolls(){
         else if(CURRENT_ELECTION===2006) realKey = c.id==='lula06' ? 'lula06' : 'alckmin06';
         else if(CURRENT_ELECTION===2002) realKey = c.id; // keys match ids in REAL_RESULTS_2002
         else if(CURRENT_ELECTION===1998) realKey = c.id; // keys match ids in REAL_RESULTS_1998
+        else if(CURRENT_ELECTION===1994) realKey = c.id; // keys match ids in REAL_RESULTS_1994
+        else if(CURRENT_ELECTION===1989) realKey = c.id; // keys match ids in REAL_RESULTS_1989
         else realKey = c.id===top2ids[0] ? 'lula' : 'bolsonaro';
         const realVal = real[realKey] || dynamicVal;
         let anchorWeight = Math.max(0, 0.5 - progress * 0.5);
@@ -3330,6 +3751,7 @@ function renderAiTicker(){
 // EVENTS
 // ════════════════════════════════════════════════════════
 function triggerRandomEvent(){
+  if(G.spectator) return; // espectador não participa de eventos
   const diff=G.diffSettings||DIFFICULTIES[3];
   const ev=RANDOM_EVENTS[Math.floor(Math.random()*RANDOM_EVENTS.length)];
   showEventPopup(ev, diff);
@@ -3570,6 +3992,7 @@ function doAction(id,cost,cb){
 // INTERVIEW SYSTEM
 // ════════════════════════════════════════════════════════
 function openInterview(){
+  if(G.spectator){showToast('👁️ Espectador','No modo espectador você não participa de entrevistas.','info');return;}
   const q=INTERVIEW_QUESTIONS[Math.floor(Math.random()*INTERVIEW_QUESTIONS.length)];
   G._currentInterview=q;
   G.paused=true;
@@ -3657,6 +4080,7 @@ function applyPlayerGainToAI(boost){
 
 function runCampaignAction(id){
   if(!G.player)return;
+  if(G.spectator){showToast('👁️ Espectador','No modo espectador você não pode realizar ações de campanha.','info');return;}
   const diff=G.diffSettings||DIFFICULTIES[3];
   const inSecondRound=G.secondRoundActive;
 
@@ -5480,7 +5904,26 @@ function renderDebatesTab(){
 function checkScheduledDebates(){
   const dateStr=G.currentDate.toISOString().slice(0,10);
   const d=getScheduledDebates().find(d=>d.date===dateStr&&!d.triggered&&d.round===G.round);
-  if(d){d.triggered=true;G.paused=true;document.getElementById('pause-btn').textContent='▶ Continuar';triggerDebate(d);}
+  if(d){
+    d.triggered=true;
+    if(G.spectator){
+      // No espectador: apenas simula o debate automaticamente sem parar o jogo
+      simulateDebateAuto(d);
+      return;
+    }
+    G.paused=true;document.getElementById('pause-btn').textContent='▶ Continuar';triggerDebate(d);
+  }
+}
+
+function simulateDebateAuto(debate){
+  // Auto-simula debate sem interação do jogador
+  const cands=getCandidates();
+  cands.forEach(c=>{
+    const drift=(Math.random()-0.5)*1.5;
+    G.polls[c.id]=clamp((G.polls[c.id]||0)+drift,0.1,70);
+  });
+  normalizePoll();
+  showToast('📺 Debate',''+debate.name+' ocorreu. As pesquisas foram atualizadas.','info',4000);
 }
 
 function triggerDebate(debate){
@@ -6635,6 +7078,7 @@ function updateTweetCooldownDisplay(){
 }
 
 function openTweetModal(){
+  if(G.spectator){showToast('👁️ Espectador','No modo espectador você não pode tweetar.','info');return;}
   if(tweetCooldown>0){showToast('⏳ Calma!',`Aguarde ${tweetCooldown} dias antes de tweetar novamente.`,'warning');return;}
   const overlay=document.getElementById('tweet-modal-overlay');
   const auth=document.getElementById('tweet-modal-author');
@@ -7424,16 +7868,29 @@ function simulateElection(round){
   });
   // Re-normalize
   tot=Object.values(sv).reduce((a,b)=>a+b,0);
-  return cands.map(c=>({id:c.id,name:c.shortName,party:c.party,partyColor:c.partyColor,votes:Math.round(sv[c.id]/100*totalV),pct:sv[c.id]/tot*100,reject:G.rejectPolls[c.id]||0}));
+
+  // Votos brancos/nulos e abstenções (variam por eleição histórica)
+  const blanksNulls = CURRENT_ELECTION<=1994 ? (5+Math.random()*4) : (3+Math.random()*3);
+  const abstencoes  = CURRENT_ELECTION<=1994 ? (15+Math.random()*8) : (16+Math.random()*6);
+
+  return {
+    results: cands.map(c=>({id:c.id,name:c.shortName,party:c.party,partyColor:c.partyColor,votes:Math.round(sv[c.id]/100*totalV),pct:sv[c.id]/tot*100,reject:G.rejectPolls[c.id]||0})),
+    blanksNulls: parseFloat(blanksNulls.toFixed(1)),
+    abstencoes: parseFloat(abstencoes.toFixed(1)),
+    totalEleitores: totalV
+  };
 }
 
 function conductFirstRound(){
-  G.paused=true;document.getElementById('pause-btn').textContent='▶ Continuar';
-  const res=simulateElection(1).sort((a,b)=>b.pct-a.pct);
+  if(!G.spectator){ G.paused=true;document.getElementById('pause-btn').textContent='▶ Continuar'; }
+  const simResult=simulateElection(1);
+  const res=simResult.results.sort((a,b)=>b.pct-a.pct);
+  G.lastElectionBlanks=simResult.blanksNulls;
+  G.lastElectionAbstencoes=simResult.abstencoes;
   G.firstRoundResults=res;G.round=1;
-  renderResultsTab(res,1);
+  renderResultsTab(res,1,simResult.blanksNulls,simResult.abstencoes);
   const top2=res.slice(0,2);
-  if(res[0].pct>50){G.phase='finished';setTimeout(()=>showFinalResults(res,res[0].id===G.player.id?'win_r1':'loss_r1',1),1500);}
+  if(res[0].pct>50){G.phase='finished';setTimeout(()=>showFinalResults(res,G.spectator?'win_r1':(res[0].id===G.player.id?'win_r1':'loss_r1'),1),1500);}
   else{
     G.secondRoundCandidates=top2;
     // Remove non-second-round candidates from polls
@@ -7451,7 +7908,13 @@ function conductFirstRound(){
     const t2=G.polls[r1.id]+G.polls[r2.id];G.polls[r1.id]=G.polls[r1.id]/t2*100;G.polls[r2.id]=G.polls[r2.id]/t2*100;
     G.historicalPolls.push({date:new Date(G.currentDate),polls:{...G.polls}});
 
-    if(top2.find(r=>r.id===G.player.id)){
+    if(G.spectator){
+      // Espectador: avança automaticamente para o 2º turno sem modal
+      G.phase='secondround_campaign';G.secondRoundActive=true;
+      updateSidebarPoll();renderPollsTab();
+      showToast('📊 2º Turno',`${r1.name} e ${r2.name} avançaram. 2º turno em ${getElectionDates().second.split('-').reverse().join('/')}.`,'info',5000);
+      setTimeout(()=>{G.paused=false;},500);
+    } else if(top2.find(r=>r.id===G.player.id)){
       G.phase='secondround_campaign';G.secondRoundActive=true;
       G.speed=1;
       document.querySelectorAll('.speed-btn').forEach(b=>b.classList.remove('active'));
@@ -7465,7 +7928,7 @@ function conductFirstRound(){
       const r2Result=simulateSecondRoundFast(r1,r2,others);
       setTimeout(()=>{
         const elim2nd=[...r2Result].sort((a,b)=>b.pct-a.pct);
-        renderResultsTab(elim2nd,2);
+        renderResultsTab(elim2nd,2,simResult.blanksNulls,simResult.abstencoes);
         setTimeout(()=>showFinalResults(res,'eliminated',1,elim2nd),1200);
       },1500);
     }
@@ -7492,17 +7955,23 @@ function simulateSecondRoundFast(r1,r2,others){
 }
 
 function conductSecondRound(){
-  G.paused=true;
-  const res=simulateElection(2).sort((a,b)=>b.pct-a.pct);
+  if(!G.spectator){ G.paused=true; }
+  const simResult=simulateElection(2);
+  const res=simResult.results.sort((a,b)=>b.pct-a.pct);
   G.secondRoundResults=res;
-  renderResultsTab(res,2);
-  setTimeout(()=>showFinalResults(res,res[0].id===G.player.id?'win':'loss',2),1500);
+  renderResultsTab(res,2,simResult.blanksNulls,simResult.abstencoes);
+  setTimeout(()=>showFinalResults(res,G.spectator?'win':(res[0].id===G.player.id?'win':'loss'),2),1500);
 }
 
-function renderResultsTab(results,round){
+function renderResultsTab(results,round,blanksNulls,abstencoes){
+  blanksNulls=blanksNulls||G.lastElectionBlanks||5;
+  abstencoes=abstencoes||G.lastElectionAbstencoes||20;
   const sorted=[...results].sort((a,b)=>b.pct-a.pct);
+  const dates=getElectionDates();
+  const r1date=dates.first.split('-').reverse().join('/');
+  const r2date=dates.second.split('-').reverse().join('/');
   document.getElementById('results-tab-content').innerHTML=`
-    <div class="round-banner"><div class="round-banner-text">${round===1?(CURRENT_ELECTION===2018?'1º TURNO — 07/10/2018':CURRENT_ELECTION===2014?'1º TURNO — 05/10/2014':'1º TURNO — 02/10/2022'):(CURRENT_ELECTION===2018?'2º TURNO — 28/10/2018':CURRENT_ELECTION===2014?'2º TURNO — 26/10/2014':'2º TURNO — 30/10/2022')}</div><div style="font-size:11px;color:var(--text3)">Resultado Oficial TSE</div></div>
+    <div class="round-banner"><div class="round-banner-text">${round===1?`1º TURNO — ${r1date}`:`2º TURNO — ${r2date}`}</div><div style="font-size:11px;color:var(--text3)">Resultado Oficial TSE</div></div>
     <div class="results-table">
       <div class="results-row header"><span>#</span><span>Candidato</span><span style="text-align:right">Votos</span><span style="text-align:right">%</span><span style="text-align:center">Status</span></div>
       ${sorted.map((r,i)=>`<div class="results-row ${i===0?'winner':''} ${r.id===G.player.id?'player':''}">
@@ -7512,6 +7981,23 @@ function renderResultsTab(results,round){
         <div class="results-pct" style="text-align:right">${r.pct.toFixed(2)}%</div>
         <div style="text-align:center;font-size:11px">${i===0?'<span class="winner-badge">🏆 1º</span>':i===1?'<span class="second-badge">2º</span>':'<span class="eliminated-badge">Eliminado</span>'}${r.id===G.player.id?' <span style="color:var(--accent)">(Você)</span>':''}</div>
       </div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:14px;background:rgba(90,106,130,.08);border:1px solid var(--border2)">
+      <div class="card-title" style="margin-bottom:10px">📊 Votos Brancos, Nulos e Abstenções</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;text-align:center">
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--text3)">${blanksNulls.toFixed(1)}%</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Brancos e Nulos</div>
+        </div>
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--orange)">${abstencoes.toFixed(1)}%</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Abstenções</div>
+        </div>
+        <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-size:18px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--green)">${(100-abstencoes).toFixed(1)}%</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:3px">Comparecimento</div>
+        </div>
+      </div>
     </div>
     <div class="card" style="margin-top:14px">
       <div class="card-title">Análise de Rejeição ${round===2?'(Crucial no 2º Turno)':''}</div>
@@ -7525,12 +8011,26 @@ function renderResultsTab(results,round){
 function showFinalResults(results,outcome,round,secondRoundResults){
   showScreen('results-screen');
   const sorted=[...results].sort((a,b)=>b.pct-a.pct);
-  const won=outcome==='win'||outcome==='win_r1';
-  const titles={win:'🎉 VOCÊ GANHOU!',win_r1:'🎉 VITÓRIA NO 1º TURNO!',eliminated:'❌ ELIMINADO NO 1º TURNO',loss:'😔 DERROTA NO 2º TURNO',loss_r1:'😔 VOCÊ PERDEU'};
-  const subs={win:'Vitória no 2º turno! O Brasil escolheu você.',win_r1:'Maioria absoluta no 1º turno!',eliminated:'Você não avançou para o segundo turno. Veja abaixo quem venceu.',loss:'Derrota no segundo turno.',loss_r1:'Você perdeu no primeiro turno.'};
-  document.getElementById('final-results-title').textContent=titles[outcome]||'RESULTADO FINAL';
-  document.getElementById('final-results-title').className=`results-title ${won?'win':'lose'}`;
-  document.getElementById('final-results-subtitle').textContent=subs[outcome]||'';
+  const winner=sorted[0];
+  const isSpectator=G.spectator;
+  const won=!isSpectator&&(outcome==='win'||outcome==='win_r1');
+
+  // In spectator mode: show who won instead of player-centric messages
+  let titleText, subtitleText, titleClass;
+  if(isSpectator){
+    titleText=`🏆 ${winner.name} ELEITO!`;
+    subtitleText=`${winner.party} · ${winner.pct.toFixed(1)}% dos votos válidos — ${round===1?'Venceu no 1º turno':'Venceu no 2º turno'}`;
+    titleClass='results-title win';
+  } else {
+    const titles={win:'🎉 VOCÊ GANHOU!',win_r1:'🎉 VITÓRIA NO 1º TURNO!',eliminated:'❌ ELIMINADO NO 1º TURNO',loss:'😔 DERROTA NO 2º TURNO',loss_r1:'😔 VOCÊ PERDEU'};
+    const subs={win:'Vitória no 2º turno! O Brasil escolheu você.',win_r1:'Maioria absoluta no 1º turno!',eliminated:'Você não avançou para o segundo turno. Veja abaixo quem venceu.',loss:'Derrota no segundo turno.',loss_r1:'Você perdeu no primeiro turno.'};
+    titleText=titles[outcome]||'RESULTADO FINAL';
+    subtitleText=subs[outcome]||'';
+    titleClass=`results-title ${won?'win':'lose'}`;
+  }
+  document.getElementById('final-results-title').textContent=titleText;
+  document.getElementById('final-results-title').className=titleClass;
+  document.getElementById('final-results-subtitle').textContent=subtitleText;
 
   const build1stRound=()=>`
     <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--text3);margin-bottom:10px;text-transform:uppercase">📊 Resultado 1º Turno</div>
@@ -7547,8 +8047,25 @@ function showFinalResults(results,outcome,round,secondRoundResults){
 
   let html=build1stRound();
 
+  // Votos brancos/nulos e abstenções
+  const blanks=G.lastElectionBlanks||5;
+  const abst=G.lastElectionAbstencoes||20;
+  html+=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px">
+    <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);text-align:center">
+      <div style="font-size:16px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--text3)">${blanks.toFixed(1)}%</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px">Brancos e Nulos</div>
+    </div>
+    <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);text-align:center">
+      <div style="font-size:16px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--orange)">${abst.toFixed(1)}%</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px">Abstenções</div>
+    </div>
+    <div style="padding:10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);text-align:center">
+      <div style="font-size:16px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--green)">${(100-abst).toFixed(1)}%</div>
+      <div style="font-size:9px;color:var(--text3);margin-top:2px">Comparecimento</div>
+    </div>
+  </div>`;
+
   if(outcome==='eliminated'&&secondRoundResults&&secondRoundResults.length){
-    const sr=[...secondRoundResults].sort((a,b)=>b.pct-a.pct);
     const winner=sr[0];
     html+=`
       <div style="margin-top:22px;padding:14px;background:rgba(0,212,255,.04);border:1px solid var(--border2);border-radius:10px">
@@ -7596,6 +8113,11 @@ function restartGame(){
   document.getElementById('start-hint').textContent='Selecione candidato e vice para começar';
   document.getElementById('sandbox-check').checked=false;
   document.getElementById('sandbox-badge-top').style.display='none';
+  const sc=document.getElementById('spectator-check'); if(sc)sc.checked=false;
+  const spb=document.getElementById('spectator-badge-top'); if(spb)spb.style.display='none';
+  G.spectator=false;
+  const spbadge=document.getElementById('spectator-badge-top');
+  if(spbadge)spbadge.style.display='none';
   showScreen('intro-screen');
   const _iz=document.getElementById('inline-election-zone');
   const _iz2=document.getElementById('inline-config-zone');
